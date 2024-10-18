@@ -110,9 +110,21 @@
          <td>
                 <img src="img/edit-5.svg" />
           </td>`;
-        // You could also do the same for the cells and inputs
+
+
+          row.addEventListener('click', function() {
+        // Action on row click - e.g., logging row data or navigating
+        const firstName = "firstname"+i;
+        const lastName = "lastname"+i;
+        window.location.href = `../payroll/index.html?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
+    
+           });
+
           table.appendChild(row);
       }
+
+
+
       
       </script>
 
