@@ -63,56 +63,6 @@
   box-shadow: 0px 4px 4px #00000040;
 }
 
-.payroll .rectangle-4 {
-  position: absolute;
-  width: 861px;
-  height: 45px;
-  top: 193px;
-  left: 460px;
-  background-color: #d9d9d9;
-  border-radius: 10px;
-}
-
-.payroll .rectangle-5 {
-  position: absolute;
-  width: 861px;
-  height: 45px;
-  top: 249px;
-  left: 460px;
-  background-color: #d9d9d9;
-  border-radius: 10px;
-}
-
-.payroll .rectangle-6 {
-  position: absolute;
-  width: 861px;
-  height: 45px;
-  top: 305px;
-  left: 460px;
-  background-color: #d9d9d9;
-  border-radius: 10px;
-}
-
-.payroll .rectangle-7 {
-  position: absolute;
-  width: 861px;
-  height: 45px;
-  top: 364px;
-  left: 460px;
-  background-color: #d9d9d9;
-  border-radius: 10px;
-}
-
-.payroll .rectangle-8 {
-  position: absolute;
-  width: 861px;
-  height: 45px;
-  top: 423px;
-  left: 460px;
-  background-color: #d9d9d9;
-  border-radius: 10px;
-}
-
 .payroll .rectangle-9 {
   position: absolute;
   width: 347px;
@@ -133,6 +83,8 @@
   font-size: 24px;
   letter-spacing: 0;
   line-height: normal;
+  display: flex;
+  flex-direction: column; 
 }
 
 .payroll .text-wrapper {
@@ -250,4 +202,32 @@
   left: 40px;
   position: absolute;
   object-fit: cover;
+}
+
+/* all code below is for the text boxes for user input */
+.input-box {
+  width: 861px; 
+  height: 45px; 
+  border: none; 
+  border-radius: 10px; 
+  background-color: #d9d9d9; 
+  padding: 10px; 
+  font-family: "Inter", Helvetica; 
+  font-size: 16px; 
+  flex: 1; 
+  padding: 5px; 
+  box-sizing: border-box; 
+  min-width: 100px; 
+}
+
+.input-container {
+  display: flex;
+  align-items: center; 
+  margin-bottom: 10px; 
+}
+
+.input-label {
+  margin-right: 15px;
+  white-space: nowrap; 
+  flex: 0 0 200px;
 }
