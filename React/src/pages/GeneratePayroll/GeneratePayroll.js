@@ -27,6 +27,28 @@ const GeneratePayroll = () => {
         deductions: 0,
         total: 0
     });
+
+    const [placeholderFile, setPlaceholderFile] = useState(null);
+
+    const generateEmail = () => {
+        const emailContent = "test email";
+        const blob = new Blob([emailContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        setPlaceholderFile(url);
+    };
+
+    const sendEmail = () => {
+        const hardcodedEmail = "diego_martin_herrera@dlsu.edu.ph"; // hardcoded for testing purposes, change if you want to try out
+        const subject = "Test";
+        const body = "Please see attached file";
+
+        const encodedEmail = encodeURIComponent(hardcodedEmail);
+        const encodedSubject = encodeURIComponent(subject);
+        const encodedBody = encodeURIComponent(body);
+    
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedEmail}&su=${encodedSubject}&body=${encodedBody}`;
+        window.open(gmailUrl, '_blank');
+    };
     //change logic
     const calculatePayroll = () => {
         const { ot, salaryIncrease, mealAllow, bdayBonus, incentive, otherPayrollInfo } = payrollInfo;
@@ -146,7 +168,16 @@ const GeneratePayroll = () => {
                     <span>{results.total}</span>
                 </div>
                 <div className="button-container">
-                    <button>Email to Employee</button>
+                    <button onClick={generateEmail}>Email to Employee</button>
+                    {placeholderFile && (
+                        <div>
+                            <h3>Preview: </h3>
+                            <a href={placeholderFile} target="_blank" rel="noopener noreferrer">
+                            View Test File
+                            </a>
+                            <button onClick={sendEmail}>Email Test File</button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
