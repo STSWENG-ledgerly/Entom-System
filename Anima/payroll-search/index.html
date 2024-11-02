@@ -96,6 +96,13 @@
             <td>${employee.lastName}</td>
             <td>${employee.dob}</td>
             <td><img src="img/edit-5.svg" /></td>`;
+
+          row.addEventListener('click', function() {
+            // Action on row click - e.g., logging row data or navigating
+            const firstName = employee.firstName;
+            const lastName = employee.lastName;
+            window.location.href = `../payroll/index.html?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
+          });
           table.appendChild(row);
         });
       }
