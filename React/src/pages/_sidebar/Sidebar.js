@@ -27,11 +27,13 @@ const Header = () => {
 
     return (
       <div className={styles.background}>
-        <button className={styles.menuButton} onClick={handleMenu}>  </button> <br></br>
-        <button className={styles.defaButton} onClick={handleDefa}>  </button> <br></br>
-        <button className={styles.histButton} onClick={handleHist}>  </button> <br></br>
-        <button className={styles.calcButton} onClick={handleCalc}>  </button> <br></br>
-        <button className={styles.prevButton} onClick={handleBack}>  </button> <br></br>
+        <div className={styles.content}>
+          <button className={styles.menuButton} onClick={handleMenu}>  </button> <br></br>
+          <button className={styles.defaButton} onClick={handleDefa}>  </button> <br></br>
+          <button className={styles.histButton} onClick={handleHist}>  </button> <br></br>
+          <button className={styles.calcButton} onClick={handleCalc}>  </button> <br></br>
+          <button className={styles.prevButton} onClick={handleBack}>  </button> <br></br>
+        </div>
       </div>
     );
   };

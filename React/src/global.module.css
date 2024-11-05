@@ -1,7 +1,9 @@
+@import '/src/pages/_sidebar/Sidebar.module.css';
+
 .wrapper {
     display: flex; 
 }
 
 .content div{
-    padding-left: 20px;
+    padding-left: var(--sidebar-width);
 }
