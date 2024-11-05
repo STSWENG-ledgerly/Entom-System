@@ -1,0 +1,25 @@
+.formSection {
+    width: 360px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.formGroup {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.formGroup label {
+    width: 150px;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.formGroup input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

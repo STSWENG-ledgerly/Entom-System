@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../_header/Header';
+import PayrollInfo from '../_payrollInfo/PayrollInfo';
+import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import styles from './GeneratePayroll.module.css'
 
 //Audrey
@@ -49,15 +51,17 @@ const GeneratePayroll = () => {
         const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedEmail}&su=${encodedSubject}&body=${encodedBody}`;
         window.open(gmailUrl, '_blank');
     };
-    //change logic
+    
     const calculatePayroll = () => {
         const { ot, salaryIncrease, mealAllow, bdayBonus, incentive, otherPayrollInfo } = payrollInfo;
         const { cashAdvance, healthCard, absences, otherDeductions } = deductions;
-        const payroll_total = 0;
-        const deductions_total = 0;
-        const total = 0;
+        const payroll_total = parseFloat(ot) + parseFloat(salaryIncrease) + parseFloat(mealAllow) +
+                        parseFloat(bdayBonus) + parseFloat(incentive) + parseFloat(otherPayrollInfo);
+        const deductions_total = parseFloat(cashAdvance) + parseFloat(healthCard) +
+                        parseFloat(absences) + parseFloat(otherDeductions);
+        const total = payroll_total - deductions_total;
 
-        setResults({ payroll_total, deductions_total, total });
+        setResults({ payroll: payroll_total, deductions: deductions_total, total: total });
     };
 
     return (
@@ -65,107 +69,25 @@ const GeneratePayroll = () => {
             <h1>Generate Payroll for {fname} {lname}</h1>
             <Header></Header>
 
-            <div className={styles.formSection}>
-                <p>Input all the information needed</p>
-                <div className={styles.formGroup}>
-                    <label>Date:</label>
-                    <input
-                        type="date" value={payrollInfo.date}
-                        onChange={(e) => setPayrollInfo({ ...payrollInfo, date: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>OT:</label>
-                    <input
-                        type="number" value={payrollInfo.ot}
-                        onChange={(e) => setPayrollInfo({ ...payrollInfo, ot: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Salary Increase:</label>
-                    <input
-                        type="number" value={payrollInfo.salaryIncrease}
-                        onChange={(e) => setPayrollInfo({ ...payrollInfo, salaryIncrease: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Meal Allow:</label>
-                    <input
-                        type="number" value={payrollInfo.mealAllow}
-                        onChange={(e) => setPayrollInfo({ ...payrollInfo, mealAllow: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Birthday Bonus:</label>
-                    <input
-                        type="number" value={payrollInfo.bdayBonus}
-                        onChange={(e) => setPayrollInfo({ ...payrollInfo, bdayBonus: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Incentive:</label>
-                    <input
-                        type="number" value={payrollInfo.incentive}
-                        onChange={(e) => setPayrollInfo({ ...payrollInfo, incentive: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Others:</label>
-                    <input
-                        type="number" value={payrollInfo.otherPayrollInfo}
-                        onChange={(e) => setPayrollInfo({ ...payrollInfo, otherPayrollInfo: e.target.value })}
-                    />
-                </div>
+            <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
+            <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
+            <div className={styles.buttonContainer}>
+                <button className={styles.button} onClick={calculatePayroll}>Calculate</button>
             </div>
-
-            <div className={styles.formSection}>
-                <p>Deductions</p>
-                <div className={styles.formGroup}>
-                    <label>Cash Advance:</label>
-                    <input
-                        type="number" value={deductions.cashAdvance}
-                        onChange={(e) => setDeductions({ ...deductions, cashAdvance: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Health Card:</label>
-                    <input
-                        type="number" value={deductions.healthCard}
-                        onChange={(e) => setDeductions({ ...deductions, healthCard: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Absences:</label>
-                    <input
-                        type="number" value={deductions.absences}
-                        onChange={(e) => setDeductions({ ...deductions, absences: e.target.value })}
-                    />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Others:</label>
-                    <input
-                        type="number" value={deductions.otherDeductions}
-                        onChange={(e) => setDeductions({ ...deductions, otherDeductions: e.target.value })}
-                    />
-                </div>
-                <div className={styles.buttonContainer}>
-                    <button className={styles.button} onClick={calculatePayroll}>Calculate</button>
-                </div>
-            </div>
-
+            
             <div className={styles.resultSection}>
                 <p>Results</p>
                 <div>
                     <label>Payroll: </label>
-                    <span>{results.payroll_total}</span>
+                    <span>{results.payroll.toFixed(2)}</span>
                 </div>
                 <div>
                     <label>Deductions: </label>
-                    <span>{results.deductions_total}</span>
+                    <span>{results.deductions.toFixed(2)}</span>
                 </div>
                 <div>
                     <label>Total: </label>
-                    <span>{results.total}</span>
+                    <span>{results.total.toFixed(2)}</span>
                 </div>
                 <div className={styles.buttonContainer}>
                     <button className={styles.button} onClick={generateEmail}>Email to Employee</button>
