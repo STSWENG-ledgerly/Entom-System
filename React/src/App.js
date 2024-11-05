@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import MainMenu from './pages/MainMenu/MainMenu';
@@ -7,12 +7,14 @@ import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
 import GeneratePayroll from './pages/GeneratePayroll/GeneratePayroll';
 import EditPayroll from './pages/EditPayroll/EditPayroll';
+import {ConfigProvider} from './ConfigContext';
 
 
 function App() {
   // setup all available/possible links within the app
   return (
     <BrowserRouter>
+    <ConfigProvider>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/MainMenu" element={<MainMenu />} />
@@ -22,6 +24,7 @@ function App() {
         <Route path="/GeneratePayroll/:id/:fname/:lname" element={<GeneratePayroll />} />
         <Route path="/EditPayroll/:payment_id/:fname/:lname" element={<EditPayroll />} />
       </Routes>
+    </ConfigProvider>
     </BrowserRouter>
   );
 }
