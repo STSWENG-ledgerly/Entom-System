@@ -1,0 +1,8 @@
+.background {
+    background-color: #0088CA;
+    flex-direction: column;
+    width: 100vw;
+    height: 85px;
+    padding-top: 15px;
+    justify-content: center; 
+}
