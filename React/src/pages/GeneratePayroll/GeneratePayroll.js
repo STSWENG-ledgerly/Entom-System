@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from '../_header/Header';
+import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
 import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import styles from './GeneratePayroll.module.css'
+import global from '../../global.module.css'
+import TempHeader from '../_header/TempHeader';
 
-//Audrey
 const GeneratePayroll = () => {
     const { id, fname, lname } = useParams();
     //vars
@@ -65,9 +66,13 @@ const GeneratePayroll = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <h1>Generate Payroll for {fname} {lname}</h1>
-            <Header></Header>
+        <div className={global.wrapper}>
+            <Sidebar></Sidebar>
+            <div>
+            <TempHeader></TempHeader>
+
+        <div className={`${styles.container} ${global.mainContent}`}>
+            <h1><span className={global.title}>Generate Payroll for {fname} {lname}</span></h1>
 
             <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
             <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
@@ -101,6 +106,10 @@ const GeneratePayroll = () => {
                         </div>
                     )}
                 </div>
+            </div>
+        </div>
+
+
             </div>
         </div>
     );
