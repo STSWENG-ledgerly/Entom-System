@@ -1,5 +1,8 @@
+@import '/src/pages/_sidebar/Sidebar.module.css';
+
 .background {
     background-color: #0088CA;
+    padding-left: var(--sidebar-width);
     flex-direction: column;
     width: 100vw;
     height: 85px;
