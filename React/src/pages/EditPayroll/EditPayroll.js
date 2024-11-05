@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from '../_header/Header';
+import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
 import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import styles from './EditPayroll.module.css'
+import TempHeader from '../_header/TempHeader';
+import global from '../../global.module.css';
 
 const EditPayroll = () => {
     const { id, fname, lname } = useParams();  // params passed from previous pages
@@ -24,11 +26,14 @@ const EditPayroll = () => {
       otherDeductions: 0
     });
 
-    //Audrey
     return (
-      <div className={styles.container}>
-            <h1>Edit Payroll for {fname} {lname}</h1>
-            <Header></Header>
+      <div className={global.wrapper}>
+        <Sidebar></Sidebar>
+        <div>
+            <TempHeader></TempHeader>
+
+      <div className={`${styles.container} ${global.mainContent}`}>
+            <h1><span className={global.title}>Edit Payroll for {fname} {lname}</span></h1>
 
             <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
             <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
@@ -36,6 +41,9 @@ const EditPayroll = () => {
                 <button className={styles.button}>Save</button>
             </div>
         </div>
+
+        </div>
+      </div>
     );
   };
   
