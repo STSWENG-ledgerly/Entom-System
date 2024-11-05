@@ -6,39 +6,39 @@
     font-family: Arial, sans-serif;
 }
 
-.form-section {
+.formSection {
     width: 360px;
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
 }
 
-.form-group {
+.formGroup {
     display: flex;
     align-items: center;
     padding-bottom: 10px;
 }
 
-.form-group label {
+.formGroup label {
     width: 150px;
     margin-right: 10px;
     font-weight: bold;
 }
 
-.form-group input {
+.formGroup input {
     flex: 1;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.button-container {
+.buttonContainer {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
 
-button {
+.button {
     padding: 8px 15px;
     margin: 5px;
     font-size: 16px;
@@ -49,11 +49,11 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+.button:hover {
     background-color: #3f3f3f;
 }
 
-.result-section {
+.resultSection {
     width: 360px;
     display: flex;
     flex-direction: column;
@@ -61,7 +61,7 @@ button:hover {
     text-align: left;
 }
 
-.result-section label {
+.resultSection label {
     font-weight: bold;
     margin-bottom: 5px;
 }

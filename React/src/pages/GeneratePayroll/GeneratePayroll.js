@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../_header/Header';
-import './GeneratePayroll.css'
+import styles from './GeneratePayroll.module.css'
 
 //Audrey
 const GeneratePayroll = () => {
@@ -11,7 +11,7 @@ const GeneratePayroll = () => {
         date: '',
         ot: 0,
         salaryIncrease: 0,
-        mealAllow: 0, //not sure if I read this right?
+        mealAllow: 0,
         bdayBonus: 0,
         incentive: 0,
         otherPayrollInfo: 0
@@ -61,55 +61,55 @@ const GeneratePayroll = () => {
     };
 
     return (
-        <div className="container">
+        <div className={styles.container}>
             <h1>Generate Payroll for {fname} {lname}</h1>
             <Header></Header>
 
-            <div className="form-section">
+            <div className={styles.formSection}>
                 <p>Input all the information needed</p>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Date:</label>
                     <input
                         type="date" value={payrollInfo.date}
                         onChange={(e) => setPayrollInfo({ ...payrollInfo, date: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>OT:</label>
                     <input
                         type="number" value={payrollInfo.ot}
                         onChange={(e) => setPayrollInfo({ ...payrollInfo, ot: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Salary Increase:</label>
                     <input
                         type="number" value={payrollInfo.salaryIncrease}
                         onChange={(e) => setPayrollInfo({ ...payrollInfo, salaryIncrease: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Meal Allow:</label>
                     <input
                         type="number" value={payrollInfo.mealAllow}
                         onChange={(e) => setPayrollInfo({ ...payrollInfo, mealAllow: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Birthday Bonus:</label>
                     <input
                         type="number" value={payrollInfo.bdayBonus}
                         onChange={(e) => setPayrollInfo({ ...payrollInfo, bdayBonus: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Incentive:</label>
                     <input
                         type="number" value={payrollInfo.incentive}
                         onChange={(e) => setPayrollInfo({ ...payrollInfo, incentive: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Others:</label>
                     <input
                         type="number" value={payrollInfo.otherPayrollInfo}
@@ -118,42 +118,42 @@ const GeneratePayroll = () => {
                 </div>
             </div>
 
-            <div className="form-section">
+            <div className={styles.formSection}>
                 <p>Deductions</p>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Cash Advance:</label>
                     <input
                         type="number" value={deductions.cashAdvance}
                         onChange={(e) => setDeductions({ ...deductions, cashAdvance: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Health Card:</label>
                     <input
                         type="number" value={deductions.healthCard}
                         onChange={(e) => setDeductions({ ...deductions, healthCard: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Absences:</label>
                     <input
                         type="number" value={deductions.absences}
                         onChange={(e) => setDeductions({ ...deductions, absences: e.target.value })}
                     />
                 </div>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label>Others:</label>
                     <input
                         type="number" value={deductions.otherDeductions}
                         onChange={(e) => setDeductions({ ...deductions, otherDeductions: e.target.value })}
                     />
                 </div>
-                <div className="button-container">
-                    <button onClick={calculatePayroll}>Calculate</button>
+                <div className={styles.buttonContainer}>
+                    <button className={styles.button} onClick={calculatePayroll}>Calculate</button>
                 </div>
             </div>
 
-            <div className="result-section">
+            <div className={styles.resultSection}>
                 <p>Results</p>
                 <div>
                     <label>Payroll: </label>
@@ -167,8 +167,8 @@ const GeneratePayroll = () => {
                     <label>Total: </label>
                     <span>{results.total}</span>
                 </div>
-                <div className="button-container">
-                    <button onClick={generateEmail}>Email to Employee</button>
+                <div className={styles.buttonContainer}>
+                    <button className={styles.button} onClick={generateEmail}>Email to Employee</button>
                     {placeholderFile && (
                         <div>
                             <h3>Preview: </h3>
