@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 import global from '../../global.module.css';
-import TempHeader from '../_header/TempHeader';
+import TempHeader from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
 import styles from './SetDefaults.module.css'
 import {ConfigContext} from '../../ConfigContext';

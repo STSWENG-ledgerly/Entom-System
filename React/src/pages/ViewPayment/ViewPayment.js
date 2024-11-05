@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
-import TempHeader from '../_header/TempHeader';
+import Header from '../_header/Header';
 import global from '../../global.module.css';
 
 
@@ -22,7 +22,7 @@ const ViewPayment = () => {
       <div className={global.wrapper}>
         <Sidebar></Sidebar>
         <div>
-        <TempHeader></TempHeader>
+        <Header></Header>
 
         <div className={global.mainContent}>
         <h1><span className={global.title}>Payroll History of {fname} {lname}</span></h1>

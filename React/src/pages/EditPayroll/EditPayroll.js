@@ -4,7 +4,7 @@ import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
 import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import styles from './EditPayroll.module.css'
-import TempHeader from '../_header/TempHeader';
+import Header from '../_header/Header';
 import global from '../../global.module.css';
 
 const EditPayroll = () => {
@@ -30,7 +30,7 @@ const EditPayroll = () => {
       <div className={global.wrapper}>
         <Sidebar></Sidebar>
         <div>
-            <TempHeader></TempHeader>
+            <Header></Header>
 
       <div className={`${styles.container} ${global.mainContent}`}>
             <h1><span className={global.title}>Edit Payroll for {fname} {lname}</span></h1>

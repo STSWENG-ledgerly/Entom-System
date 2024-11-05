@@ -5,7 +5,7 @@ import PayrollInfo from '../_payrollInfo/PayrollInfo';
 import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import styles from './GeneratePayroll.module.css'
 import global from '../../global.module.css'
-import TempHeader from '../_header/TempHeader';
+import Header from '../_header/Header';
 
 const GeneratePayroll = () => {
     const { id, fname, lname } = useParams();
@@ -69,7 +69,7 @@ const GeneratePayroll = () => {
         <div className={global.wrapper}>
             <Sidebar></Sidebar>
             <div>
-            <TempHeader></TempHeader>
+            <Header></Header>
 
         <div className={`${styles.container} ${global.mainContent}`}>
             <h1><span className={global.title}>Generate Payroll for {fname} {lname}</span></h1>
