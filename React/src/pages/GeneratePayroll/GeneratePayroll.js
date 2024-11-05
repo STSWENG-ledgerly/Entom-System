@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
@@ -6,6 +6,7 @@ import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import styles from './GeneratePayroll.module.css'
 import global from '../../global.module.css'
 import Header from '../_header/Header';
+import {ConfigContext} from '../../ConfigContext';
 
 const GeneratePayroll = () => {
     const { id, fname, lname } = useParams();
@@ -30,6 +31,7 @@ const GeneratePayroll = () => {
         deductions: 0,
         total: 0
     });
+    const {config, setConfig} = useContext(ConfigContext);
 
     const [placeholderFile, setPlaceholderFile] = useState(null);
 
@@ -73,6 +75,14 @@ const GeneratePayroll = () => {
 
         <div className={`${styles.container} ${global.mainContent}`}>
             <h1><span className={global.title}>Generate Payroll for {fname} {lname}</span></h1>
+
+                {/* demo on how to get and use the default configs
+                            <span>{config.rate}</span>
+                            <span>{config.basic}</span>
+                            <span>{config.sss}</span>
+                            <span>{config.philHealth}</span>
+                            <span>{config.pagIbig}</span>
+                 */}
 
             <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
             <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
