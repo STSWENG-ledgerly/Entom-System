@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '../_header/Header';
+import Sidebar from '../_sidebar/Sidebar';
+import TempHeader from '../_header/TempHeader';
+import global from '../../global.module.css'
 
 const SearchEmployee = () => {
     const navigate = useNavigate();
@@ -60,12 +62,15 @@ const SearchEmployee = () => {
       setFilteredEmployees(filtered);
     };
     
-    // TODO - Diego
     // Note: change to SQL implementation later
     return (
+      <div className={global.wrapper}>
+        <Sidebar></Sidebar>
       <div>
-      <h1>{title}</h1>
-      <Header></Header>
+        <TempHeader></TempHeader>
+
+      <div className={global.mainContent}>
+      <h1><span className={global.title}>{title}</span></h1>
 
       <div>
         <input
@@ -118,6 +123,9 @@ const SearchEmployee = () => {
           ))}
         </tbody>
       </table>
+      </div>
+
+      </div>
       </div>
     );
   };
