@@ -79,9 +79,6 @@ const GeneratePayroll = () => {
                 {/* demo on how to get and use the default configs
                             <span>{config.rate}</span>
                             <span>{config.basic}</span>
-                            <span>{config.sss}</span>
-                            <span>{config.philHealth}</span>
-                            <span>{config.pagIbig}</span>
                  */}
 
             <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
