@@ -11,7 +11,7 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Overtime:</label>
+            <label>Overtime (in Days):</label>
             <input
                 type="number" value={payrollInfo.ot}
                 onChange={(e) => setPayrollInfo({ ...payrollInfo, ot: e.target.value })}

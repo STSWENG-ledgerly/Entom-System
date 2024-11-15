@@ -67,24 +67,3 @@
     margin-right: 40px;
     text-align: left;
 }
-
-.formGroup {
-    display: flex;
-    align-items: center;
-    padding-bottom: 20px;
-}
-
-.resultSection label {
-    width: 100px;
-    margin-right: 20px;
-}
-
-.resultSection input {
-    pointer-events:none;
-    border: none;
-    padding-left: 20px;
-    flex: 1;
-    padding: 6px;
-    background-color: #c7dae8;
-    border-radius: 4px;
-}

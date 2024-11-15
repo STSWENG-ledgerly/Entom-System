@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
 import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
+import ResultsInfo from '../_resultsInfo/ResultsInfo';
+import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
 import styles from './GeneratePayroll.module.css'
 import global from '../../global.module.css'
 import Header from '../_header/Header';
@@ -101,8 +103,8 @@ const GeneratePayroll = () => {
         ];
 
         deductionDetails.forEach(detail => {
-        doc.text(detail, 12, yPosition);
-        yPosition += 10;
+            doc.text(detail, 12, yPosition);
+            yPosition += 10;
         });
 
         // Summary Section
@@ -145,17 +147,8 @@ const GeneratePayroll = () => {
         window.open(gmailUrl, '_blank');
     };
 
-    const calculatePayroll = () => {
-        const { ot, salaryIncrease, mealAllow, bdayBonus, incentive, otherPayrollInfo } = payrollInfo;
-        const { sss, philhealth, pagibig, cashAdvance, healthCard, absences, otherDeductions } = deductions;
-        const payroll_total = parseFloat(ot * config.rate) + parseFloat(salaryIncrease) + parseFloat(mealAllow) +
-            parseFloat(bdayBonus) + parseFloat(incentive) + parseFloat(otherPayrollInfo)
-            + parseFloat(config.basic);
-        const deductions_total = parseFloat(sss) + parseFloat(philhealth) + parseFloat(pagibig) + parseFloat(cashAdvance) + parseFloat(healthCard) +
-            parseFloat(absences) + parseFloat(otherDeductions);
-        const total = payroll_total - deductions_total;
-
-        setResults({ payroll: payroll_total, deductions: deductions_total, total: total });
+    const showPayrollResults = () => {
+        setResults(calculatePayroll(payrollInfo, deductions, config));
         setShowResults(true);
     };
 
@@ -178,46 +171,37 @@ const GeneratePayroll = () => {
                             <div className={styles.formsSection}>
                                 <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
                                 <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
-                                {!showResults && (
-                                    <div className={styles.buttonContainer}>
-                                        <button className={styles.button} onClick={() => { calculatePayroll(); createUserPaymentData();}}>
-                                            CALCULATE
-                                        </button>
-                                    </div>
-                                )}
+                                <div className={styles.buttonContainer}>
+                                    <button className={styles.button} onClick={() => { showPayrollResults(); }}>
+                                        CALCULATE
+                                    </button>
+                                </div>
                             </div>
-
 
                             <div className={styles.resultSection}>
-                                {showResults && (
+                                {showResults && (<ResultsInfo results={results} />)}
+                                {showResults && placeholderFile && (
                                     <div>
-                                        <div className={styles.formGroup}>
-                                            <label>PAYROLL: </label>
-                                            <input value={results.payroll.toFixed(2)} readOnly />
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>DEDUCTIONS: </label>
-                                            <input value={results.deductions.toFixed(2)} readOnly />
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>TOTAL: </label>
-                                            <input value={results.total.toFixed(2)} readOnly />
-                                        </div>
-                                        <div className={styles.buttonContainer}>
-                                            <button className={styles.button} onClick={generateEmail}>Download/Email</button>
-                                            {placeholderFile && (
-                                                <div>
-                                                    <span>Preview: </span>
-                                                    <a href={placeholderFile} target="_blank" rel="noopener noreferrer">
-                                                        View Test File
-                                                    </a>
-                                                    <button className={styles.button} onClick={sendEmail}>Email Test File</button>
-                                                </div>
-                                            )}
-                                        </div>
+                                        <span>Preview: </span>
+                                        <a href={placeholderFile} target="_blank" rel="noopener noreferrer">
+                                            View Test File
+                                        </a>
+                                    </div>
+                                )}
+                                {showResults && (
+                                    <div className={styles.buttonContainer}>
+                                        {//change to "Generate Email" ?
+                                        }
+                                        <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); }}>Download/Email</button>
+                                    </div>)
+                                }
+                                {showResults && placeholderFile && (
+                                    <div className={styles.buttonContainer}>
+                                        <button className={styles.button} onClick={sendEmail}>Email Test File</button>
                                     </div>
                                 )}
                             </div>
+
                         </div>
                     </div>
                 </div>
