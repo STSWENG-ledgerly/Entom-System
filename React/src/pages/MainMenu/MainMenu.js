@@ -14,7 +14,7 @@ const MainMenu = () => {
           <div className={global.mainContent}>
             <h1><span className={global.title}>MAIN MENU</span></h1>
             <div className={styles.links}>
-              <Link to="/SetDefaults"> Set Defaults </Link> <br></br>
+              <Link to="/SetDefaults"> Set Default Rates </Link> <br></br>
               <Link to="/SearchEmployee/ViewPayrollHistory"> View Payroll History </Link> <br></br>
               <Link to="/SearchEmployee/CalculatePayroll"> Generate Employee Payroll </Link> <br></br>
               <Link to="/"> Exit </Link> <br></br>

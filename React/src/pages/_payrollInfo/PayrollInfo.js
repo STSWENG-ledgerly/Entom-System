@@ -3,7 +3,6 @@ import styles from './PayrollInfo.module.css'
 
 const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
     <div className={styles.formSection}>
-        <p>Input all the information needed</p>
         <div className={styles.formGroup}>
             <label>Date:</label>
             <input

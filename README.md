@@ -5,6 +5,7 @@ Running:
 <ul>
   <li> if you haven't installed dependencies, go to `React` directory, type `npm install` (node_modules is not included since its very large) </li>
   <li> go into `React` directory, then type `npm start` on CLI </li>
+  <li> for the pdf generation: run 'npm install jspdf'</li>
 </ul>
 
 

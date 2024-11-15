@@ -1,5 +1,5 @@
 .formSection {
-    width: 360px;
+    width: 80%;
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
@@ -12,14 +12,15 @@
 }
 
 .formGroup label {
-    width: 150px;
+    width: 200px;
     margin-right: 10px;
-    font-weight: bold;
 }
 
 .formGroup input {
+    border: none;
     flex: 1;
     padding: 8px;
-    border: 1px solid #ccc;
+    margin: 2px;
+    background-color: #c7dae8;
     border-radius: 4px;
 }

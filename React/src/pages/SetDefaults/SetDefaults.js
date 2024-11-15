@@ -13,9 +13,6 @@ const SetDefaults = () => {
     const [newConfig, setNewConfig] = useState({
         rate: config.rate,
         basic: config.basic,
-        sss: config.sss,
-        philHealth: config.philHealth,
-        pagIbig: config.pagIbig
     });
 
     const handleSubmit = (e) => {
@@ -23,9 +20,6 @@ const SetDefaults = () => {
         ...prevConfig,
         rate: newConfig.rate,
         basic: newConfig.basic,
-        sss: newConfig.sss,
-        philHealth: newConfig.philHealth,
-        pagIbig: newConfig.pagIbig
       }));
       navigate('/MainMenu');
     };
@@ -53,27 +47,6 @@ const SetDefaults = () => {
                   <input type='number' min='0' value={newConfig.basic} step='any' onChange={(e)=>setNewConfig({...newConfig, basic: e.target.value})}></input>
                   </div>
                 
-                </div>
-              </div>
-
-              <div className={`${styles.deductions} ${styles.group}`}>
-                <span>DEDUCTIONS</span>
-
-                <div>
-                  <div className={styles.inputField2}>
-                  <label>SSS</label><br></br>
-                  <input type='number' min='0' value={newConfig.sss} step='any' onChange={(e)=>setNewConfig({...newConfig, sss: e.target.value})}></input><br></br>
-                  </div>
-                  
-                  <div className={styles.inputField2}>
-                  <label>PhilHealth</label><br></br>
-                  <input type='number' min='0' value={newConfig.philHealth} step='any' onChange={(e)=>setNewConfig({...newConfig, philHealth: e.target.value})}></input><br></br>
-                  </div>
-                  
-                  <div className={styles.inputField2}>
-                  <label>Pag-Ibig</label><br></br>
-                  <input type='number' min='0' value={newConfig.pagIbig} step='any' onChange={(e)=>setNewConfig({...newConfig, pagIbig: e.target.value})}></input>
-                  </div>
                 </div>
               </div>
 

@@ -22,7 +22,7 @@ function App() {
         <Route path="/SearchEmployee/:searchType" element={<SearchEmployee />} />
         <Route path="/ViewPayment/:id/:fname/:lname" element={<ViewPayment/>} />
         <Route path="/GeneratePayroll/:id/:fname/:lname" element={<GeneratePayroll />} />
-        <Route path="/EditPayroll/:payment_id/:fname/:lname" element={<EditPayroll />} />
+        <Route path="/EditPayroll/:id/:payment_id/:fname/:lname" element={<EditPayroll />} />
       </Routes>
     </ConfigProvider>
     </BrowserRouter>

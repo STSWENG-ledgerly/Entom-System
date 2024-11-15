@@ -23,10 +23,6 @@
     height:200px;
 }
 
-.deductions {
-    height:250px;
-}
-
 .inputField {
     display: flex;
     flex-direction:row;
@@ -35,16 +31,6 @@
 
 .inputField label {
     width: 120px;
-}
-
-.inputField2 {
-    display: flex;
-    flex-direction:row;
-    line-height: 50px
-}
-
-.inputField2 label {
-    width: 230px;
 }
 
 .content input {

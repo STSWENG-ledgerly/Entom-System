@@ -3,7 +3,28 @@ import styles from './DeductionsInfo.module.css'
 
 const DeductionsInfo = ({ deductions, setDeductions }) => (
     <div className={styles.formSection}>
-        <p>Deductions</p>
+        <span>DEDUCTIONS</span>
+        <div className={styles.formGroup}>
+            <label>SSS:</label>
+            <input
+                type="number" value={deductions.sss}
+                onChange={(e) => setDeductions({ ...deductions, sss: e.target.value })}
+            />
+        </div>
+        <div className={styles.formGroup}>
+            <label>Philhealth:</label>
+            <input
+                type="number" value={deductions.philhealth}
+                onChange={(e) => setDeductions({ ...deductions, philhealth: e.target.value })}
+            />
+        </div>
+        <div className={styles.formGroup}>
+            <label>PAG-IBIG:</label>
+            <input
+                type="number" value={deductions.pagibig}
+                onChange={(e) => setDeductions({ ...deductions, pagibig: e.target.value })}
+            />
+        </div>
         <div className={styles.formGroup}>
             <label>Cash Advance:</label>
             <input
