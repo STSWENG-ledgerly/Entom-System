@@ -28,11 +28,32 @@ const Header = () => {
     return (
       <div className={styles.background}>
         <div className={styles.content}>
-          <button className={styles.menuButton} onClick={handleMenu}>  </button> <br></br>
-          <button className={styles.defaButton} onClick={handleDefa}>  </button> <br></br>
-          <button className={styles.histButton} onClick={handleHist}>  </button> <br></br>
-          <button className={styles.calcButton} onClick={handleCalc}>  </button> <br></br>
-          <button className={styles.prevButton} onClick={handleBack}>  </button> <br></br>
+
+          <div className={styles.iconGroup}>
+            <button className={styles.menuButton} onClick={handleMenu}>  </button> <br></br>
+            <div className={styles.label}> MAIN MENU </div>
+          </div>
+
+          <div className={styles.iconGroup}> 
+            <button className={styles.defaButton} onClick={handleDefa}>  </button> <br></br>
+            <div className={styles.label}> SET DEFAULT RATES </div>
+          </div>
+
+          <div className={styles.iconGroup}> 
+            <button className={styles.histButton} onClick={handleHist}>  </button> <br></br>
+            <div className={styles.label}> PAYMENT HISTORY </div>
+          </div>
+
+          <div className={styles.iconGroup}> 
+            <button className={styles.calcButton} onClick={handleCalc}>  </button> <br></br>
+            <div className={styles.label}> CALCULATE PAYROLL </div>
+          </div>
+
+          <div className={styles.iconGroup}>
+            <button className={styles.prevButton} onClick={handleBack}>  </button> <br></br>
+            <div className={styles.label}> BACK </div>
+          </div>
+            
         </div>
       </div>
     );

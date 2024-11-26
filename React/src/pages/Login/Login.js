@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
+import {ConfigContext} from '../../ConfigContext';
 
 const Login = () => {
-  const [password, setPassword] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [errMessage, setErrMessage] = useState('');
   const navigate = useNavigate();
+
+  const {password, setPassword} = useContext(ConfigContext);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === '123') {
+    if (userPassword === password) {
       navigate('/MainMenu');
     } else {
-      alert('Incorrect password');
+      setErrMessage('Password is incorrect.');
     }
   };
 
@@ -22,10 +27,11 @@ const Login = () => {
         <form className={styles.formSection}onSubmit={handleSubmit}>
           <input className={styles.passwordHolder}
             type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+            value={userPassword} 
+            onChange={(e) => setUserPassword(e.target.value)} 
             placeholder="Admin Password" 
-          /> <br></br>
+          /> 
+          <span className={styles.errMessage}>{errMessage}</span><br></br>
           <button className={styles.submitButton} type="submit">LOGIN</button>
         </form>
       </div>
