@@ -13,13 +13,18 @@ import jsPDF from 'jspdf';
 
 //Audrey
 const GeneratePayroll = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); 
+    const dd = String(today.getDate()).padStart(2, '0');
+    const dateToday = `${yyyy}-${mm}-${dd}`;
     const { id, fname, lname } = useParams();
     const { config, createUserPayment } = useContext(ConfigContext);
     const [showResults, setShowResults] = useState(false);
     const [placeholderFile, setPlaceholderFile] = useState(null);
 
     const [payrollInfo, setPayrollInfo] = useState({
-        date: '',
+        date: dateToday,
         ot: 0,
         salaryIncrease: 0,
         mealAllow: 0,
