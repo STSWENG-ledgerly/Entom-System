@@ -19,7 +19,6 @@ const ViewPayment = () => {
     deleteUserPayment(id, payment_id);
   };
 
-  // TODO - Brian, pass each payment_id to respective buttons
   return (
     <div className={global.wrapper}>
       <Sidebar></Sidebar>
@@ -30,7 +29,7 @@ const ViewPayment = () => {
           <h1><span className={global.title}>Payroll History of {fname} {lname}</span></h1>
 
           {
-            //added payments here for navigation to edit payroll (Audrey)
+            //added payments here for navigation to edit payroll 
           }
           {userPayments.map((payment) => (
             <span key={payment.paymentId}>

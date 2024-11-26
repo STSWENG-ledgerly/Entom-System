@@ -11,7 +11,6 @@ import Header from '../_header/Header';
 import { ConfigContext } from '../../ConfigContext';
 import jsPDF from 'jspdf';
 
-//Audrey
 const GeneratePayroll = () => {
     const today = new Date();
     const yyyy = today.getFullYear();

@@ -10,7 +10,6 @@ import Header from '../_header/Header';
 import global from '../../global.module.css';
 import { ConfigContext } from '../../ConfigContext';
 
-//Audrey
 const EditPayroll = () => {
   const navigate = useNavigate();
   const { id, payment_id, fname, lname } = useParams();  // params passed from previous pages
