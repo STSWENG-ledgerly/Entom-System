@@ -5,8 +5,8 @@ import PayrollInfo from '../_payrollInfo/PayrollInfo';
 import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import ResultsInfo from '../_resultsInfo/ResultsInfo';
 import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
-import styles from './GeneratePayroll.module.css'
-import global from '../../global.module.css'
+import styles from './GeneratePayroll.module.css';
+import global from '../../global.module.css';
 import Header from '../_header/Header';
 import { ConfigContext } from '../../ConfigContext';
 import jsPDF from 'jspdf';
@@ -20,6 +20,7 @@ const GeneratePayroll = () => {
     const { id, fname, lname } = useParams();
     const { config, createUserPayment } = useContext(ConfigContext);
     const [showResults, setShowResults] = useState(false);
+    const [showDownloadButtons, setShowDownloadButtons] = useState(false);
     const [placeholderFile, setPlaceholderFile] = useState(null);
 
     const [payrollInfo, setPayrollInfo] = useState({
@@ -136,6 +137,9 @@ const GeneratePayroll = () => {
         const pdfBlob = doc.output('blob');
         const url = URL.createObjectURL(pdfBlob);
         setPlaceholderFile(url);
+
+        // Show the download/email buttons
+        setShowDownloadButtons(true);
     };
 
     const sendEmail = () => {
@@ -154,6 +158,7 @@ const GeneratePayroll = () => {
     const showPayrollResults = () => {
         setResults(calculatePayroll(payrollInfo, deductions, config));
         setShowResults(true);
+        setShowDownloadButtons(false); // Reset the visibility of download/email buttons
     };
 
     const createUserPaymentData = () => {
@@ -184,24 +189,23 @@ const GeneratePayroll = () => {
 
                             <div className={styles.resultSection}>
                                 {showResults && (<ResultsInfo results={results} />)}
-                                {showResults && placeholderFile && (
-                                    <div>
-                                        <span>Preview: </span>
-                                        <a href={placeholderFile} target="_blank" rel="noopener noreferrer">
-                                            View Test File
-                                        </a>
-                                    </div>
-                                )}
                                 {showResults && (
                                     <div className={styles.buttonContainer}>
-                                        {//change to "Generate Email" ?
-                                        }
                                         <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); }}>Download/Email</button>
-                                    </div>)
-                                }
-                                {showResults && placeholderFile && (
+                                    </div>
+                                )}
+                                {showResults && showDownloadButtons && placeholderFile && (
                                     <div className={styles.buttonContainer}>
-                                        <button className={styles.button} onClick={sendEmail}>Email Test File</button>
+                                        <button className={styles.button}>
+                                            <a href={placeholderFile} download="PayrollSlip.pdf" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                                                Download Payroll Slip
+                                            </a>
+                                        </button>
+                                    </div>
+                                )}
+                                {showResults && showDownloadButtons && placeholderFile && (
+                                    <div className={styles.buttonContainer}>
+                                        <button className={styles.button} onClick={sendEmail}>Email File</button>
                                     </div>
                                 )}
                             </div>
