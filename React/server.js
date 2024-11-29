@@ -31,7 +31,7 @@ app.get('/employee', (req, res) => {
 app.get('/payments/:employee_index_id', (req, res) => { 
     const id = req.params.employee_index_id; 
     console.log(`Get payment of employee ${id}`);
-    const sql = "SELECT *, DATE_FORMAT(payDate, '%Y-%m-%d') AS formatted_date FROM payments WHERE employee_index_id = ?";
+    const sql = "SELECT *, DATE_FORMAT(payDate, '%Y-%m-%d') AS formatted_date FROM payments WHERE employee_index_id = ? AND isDeleted = 0";
     
     db.query(sql, [id], (err, data) => {
         if (err) return res.json(err);
@@ -55,6 +55,17 @@ app.get('/getPayment/:payment_id', (req, res) => {
     const payment_id = req.params.payment_id; 
     console.log(`get payment id ${payment_id}`);
     const sql = "SELECT *, DATE_FORMAT(payDate, '%Y-%m-%d') AS formatted_date FROM payments WHERE payment_id = ?";
+
+    db.query(sql, [payment_id], (err, data)=> {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+});
+
+app.post('/deletePayment/:payment_id', (req, res) => {
+    const payment_id = req.params.payment_id; 
+    console.log(`delete payment id ${payment_id}`);
+    const sql = `UPDATE payments SET isDeleted = true WHERE payment_id = ?;`
 
     db.query(sql, [payment_id], (err, data)=> {
         if (err) return res.json(err);
