@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
@@ -22,6 +22,22 @@ const GeneratePayroll = () => {
     const [showResults, setShowResults] = useState(false);
     const [showDownloadButtons, setShowDownloadButtons] = useState(false);
     const [placeholderFile, setPlaceholderFile] = useState(null);
+    const [savedStatus, setSavedStatus] = useState(null);
+    const [ email, setEmail ] = useState();
+
+    useEffect (()=>{
+        const employee_index_id = {employee_index_id:id};
+        fetch('http://localhost:8000/getEmail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(employee_index_id),
+        })
+        .then(res => res.json())
+        .then(data => {
+          setEmail(data[0].email);
+        })
+        .catch(err => console.log(err));
+      }, [])
 
     const [payrollInfo, setPayrollInfo] = useState({
         date: dateToday,
@@ -33,7 +49,7 @@ const GeneratePayroll = () => {
         otherPayrollInfo: 0
     });
     const [deductions, setDeductions] = useState({
-        sss: 0.,
+        sss: 0,
         philhealth: 0,
         pagibig: 0,
         cashAdvance: 0,
@@ -143,7 +159,9 @@ const GeneratePayroll = () => {
     };
 
     const sendEmail = () => {
-        const hardcodedEmail = "diego_martin_herrera@dlsu.edu.ph"; // hardcoded for testing purposes, change if you want to try out
+        const hardcodedEmail = email; // hardcoded for testing purposes, change if you want to try out
+        console.log(email);
+
         const subject = "Payroll Slip";
         const body = "Please see attached file";
 
@@ -159,11 +177,35 @@ const GeneratePayroll = () => {
         setResults(calculatePayroll(payrollInfo, deductions, config));
         setShowResults(true);
         setShowDownloadButtons(false); // Reset the visibility of download/email buttons
+        setSavedStatus('');
     };
 
     const createUserPaymentData = () => {
         const newData = { payrollInfo, deductions };
         createUserPayment(id, newData);
+    };
+
+    const saveToDB = () => {
+        const newPayment = {
+            employee_index_id: id,
+            rate: config.rate,
+            basic: config.basic,
+            payrollInfo, 
+            deductions,
+            results
+        };
+        console.log(JSON.stringify(newPayment));
+        fetch('http://localhost:8000/addPayment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newPayment),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            setSavedStatus('Saved to Database!');
+            console.log(data);
+        })
+        .catch((err) => console.log(err));
     };
 
     return (
@@ -190,8 +232,11 @@ const GeneratePayroll = () => {
                             <div className={styles.resultSection}>
                                 {showResults && (<ResultsInfo results={results} />)}
                                 {showResults && (
+                                    <div>
                                     <div className={styles.buttonContainer}>
-                                        <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); }}>Download/Email</button>
+                                        <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); saveToDB();}}>Download/Email/Save</button>
+                                    </div>
+                                        <span className={styles.buttonContainer}>{savedStatus}</span>
                                     </div>
                                 )}
                                 {showResults && showDownloadButtons && placeholderFile && (

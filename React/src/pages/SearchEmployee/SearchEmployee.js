@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import Header from '../_header/Header';
@@ -13,27 +13,19 @@ const SearchEmployee = () => {
     const [searchID, setSearchID] = useState('');
     const [searchFName, setSearchFName] = useState('');
     const [searchLName, setSearchLName] = useState('');
-    
-    // temporary, can add/remove attributes shown based on employee SQL table (phone, position, etc)
-    const employees = [
-      { id: 1, fname: 'John', lname: 'Doe', email: 'jdoe@gmail.com' },
-      { id: 2, fname: 'Iker', lname: 'Ventura', email: 'iventura@gmail.com' },
-      { id: 3, fname: 'Zora', lname: 'Scott', email: 'zscott@gmail.com' },
-      { id: 4, fname: 'Alice', lname: 'Johnson', email: 'ajohnson@gmail.com' },
-      { id: 5, fname: 'Bob', lname: 'Smith', email: 'bsmith@gmail.com' },
-      { id: 6, fname: 'Charlie', lname: 'Brown', email: 'cbrown@gmail.com' },
-      { id: 7, fname: 'David', lname: 'Wilson', email: 'dwilson@gmail.com' },
-      { id: 8, fname: 'Eva', lname: 'Martinez', email: 'emartinez@gmail.com' },
-      { id: 9, fname: 'Frank', lname: 'Garcia', email: 'fgarcia@gmail.com' },
-      { id: 10, fname: 'Grace', lname: 'Lee', email: 'glee@gmail.com' },
-      { id: 11, fname: 'Hannah', lname: 'Walker', email: 'hwalker@gmail.com' },
-      { id: 12, fname: 'Ian', lname: 'Hall', email: 'ihall@gmail.com' },
-      { id: 13, fname: 'Jack', lname: 'Young', email: 'jyoung@gmail.com' },
-      { id: 14, fname: 'Karen', lname: 'King', email: 'kking@gmail.com' },
-      { id: 15, fname: 'Liam', lname: 'Wright', email: 'lwright@gmail.com' }
-  ];
-
+    const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState(employees);
+
+    useEffect (()=>{
+      fetch('http://localhost:8000/employee')
+      .then(res => res.json())
+      .then(data => {
+        setEmployees(data)
+        setFilteredEmployees(data);
+      })
+      .catch(err => console.log(err));
+    }, [])
+
 
     const handleSearchID = (e) => {
       setSearchID(e.target.value);
