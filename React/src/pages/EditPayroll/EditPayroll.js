@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
@@ -13,24 +13,90 @@ import { ConfigContext } from '../../ConfigContext';
 const EditPayroll = () => {
   const navigate = useNavigate();
   const { id, payment_id, fname, lname } = useParams();  // params passed from previous pages
-
   const { config } = useContext(ConfigContext);
   const { getUserPayment, saveUserPayment } = useContext(ConfigContext);
   const userSavedPayment = getUserPayment(id, payment_id) || { payrollInfo: {}, deductions: {} };
   const [payrollInfo, setPayrollInfo] = useState(userSavedPayment.payrollInfo);
   const [deductions, setDeductions] = useState(userSavedPayment.deductions);
   const [results, setResults] = useState(calculatePayroll(payrollInfo, deductions, config));
+  const [defaults, setDefaults] = useState(config);
+  const [savedStatus, setSavedStatus] = useState("Saved to Database!");
+  const [isVisible, setIsVisible] = useState(false);
 
-  const showPayrollResults = () => {
-    setResults(calculatePayroll(payrollInfo, deductions, config));
+  // save new values to DB
+  const saveUserPayrollData = () => {
+    // show results on UI
+    const newResults = calculatePayroll(payrollInfo, deductions, defaults);
+    setResults(newResults);
+
+    // save to DB
+    const editedPayment = {
+      employee_index_id: id,
+      rate: defaults.rate,
+      basic: defaults.basic,
+      payrollInfo, 
+      deductions,
+      results: newResults
+    };
+    fetch(`http://localhost:8000/editPayment/${payment_id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editedPayment),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => console.log(err));
+
+    handleFadeOut();
+
   };
 
-  const saveUserPayrollData = () => {
-    const newData = { payrollInfo, deductions };
-    saveUserPayment(id, payment_id, newData);
-    showPayrollResults();
+  // setup prev values into input boxes
+  useEffect (()=>{
+    fetch(`http://localhost:8000/getPayment/${payment_id}`)
+    .then(res => res.json())
+    .then(data => {
+      const prevPayroll = {
+        date: data[0].formatted_date,
+        ot: data[0].overtimeDays,
+        salaryIncrease: data[0].salaryIncrease,
+        mealAllow: data[0].mealAllowance, 
+        bdayBonus: data[0].birthdayBonus,
+        incentive: data[0].incentive,
+        otherPayrollInfo: data[0].otherAdditions
+      }
+      const prevDeductions = {
+        sss: data[0].sss,
+        philhealth: data[0].philHealth,
+        pagibig: data[0].pagIbig,
+        cashAdvance: data[0].cashAdvance,
+        healthCard: data[0].healthCard, 
+        absences: data[0].lateAbsent,
+        otherDeductions: data[0].otherDeductions
+      }
+      const results = {
+        payroll: data[0].payroll,
+        deductions: data[0].deductions,
+        total: data[0].total
+      }
+      const defaults = {
+        rate: data[0].rate,
+        basic: data[0].basic
+      }
+      setPayrollInfo(prevPayroll);
+      setDeductions(prevDeductions);
+      setResults(results);
+      setDefaults(defaults);
+      console.log(data);
+    })
+    .catch(err => console.log(err));
+  }, [])
 
-    //navigate(`../ViewPayment/${id}/${fname}/${lname}`);
+  const handleFadeOut = () => {
+    setIsVisible(false); 
+    setTimeout(() => setIsVisible(true)); 
   };
 
   return (
@@ -54,8 +120,22 @@ const EditPayroll = () => {
               </div>
 
               <div className={styles.resultSection}>
+                <div className={styles.formGroup}>
+                  <label>RATE: </label>
+                  <input value={defaults.rate} type='number' onChange={(e) => setDefaults({ ...defaults, rate: e.target.value })}/>
+                </div>
+                <div className={styles.formGroup}>
+                    <label>BASIC: </label>
+                    <input value={defaults.basic} type="number" onChange={(e) => setDefaults({ ...defaults, basic: e.target.value })}/>
+                </div>
+                <br></br>
+                <div className={styles.formSection}><span>RESULTS</span></div>
                 <ResultsInfo results={results} />
+                <div className={`${styles.formGroup} ${isVisible ? styles.fadeOut : styles.opacity0}`}>
+                    <span> {savedStatus} </span>
+                </div>
               </div>
+           
             </div>
           </div>
         </div>

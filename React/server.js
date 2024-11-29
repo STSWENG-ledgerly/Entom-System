@@ -31,7 +31,7 @@ app.get('/employee', (req, res) => {
 app.get('/payments/:employee_index_id', (req, res) => { 
     const id = req.params.employee_index_id; 
     console.log(`Get payment of employee ${id}`);
-    const sql = "SELECT * FROM payments WHERE employee_index_id = ?";
+    const sql = "SELECT *, DATE_FORMAT(payDate, '%Y-%m-%d') AS formatted_date FROM payments WHERE employee_index_id = ?";
     
     db.query(sql, [id], (err, data) => {
         if (err) return res.json(err);
@@ -48,8 +48,59 @@ app.post('/getEmail', (req, res) => {
         if (err) return res.json(err);
         return res.json(data);
     });
-})
+});
 
+
+app.get('/getPayment/:payment_id', (req, res) => {
+    const payment_id = req.params.payment_id; 
+    console.log(`get payment id ${payment_id}`);
+    const sql = "SELECT *, DATE_FORMAT(payDate, '%Y-%m-%d') AS formatted_date FROM payments WHERE payment_id = ?";
+
+    db.query(sql, [payment_id], (err, data)=> {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+});
+
+app.post('/editPayment/:payment_id', (req, res) => {
+    const payment_id = req.params.payment_id; 
+    const { employee_index_id, rate, basic, payrollInfo, deductions, results } = req.body; 
+    console.log(`edit payment id ${payment_id}`);
+    const sql = `UPDATE payments 
+        SET payDate = ?, rate = ?, basic = ?, overtimeDays = ?, salaryIncrease = ?, 
+        mealAllowance = ?, birthdayBonus = ?, incentive = ?, otherAdditions = ?, sss = ?, 
+        philHealth = ?, pagIbig = ?, cashAdvance = ?, healthCard = ?, lateAbsent = ?, otherDeductions = ?, 
+        payroll = ?, deductions = ?, total = ?
+        WHERE payment_id = ?;`;
+
+    const values = [
+        payrollInfo.date, 
+        rate, 
+        basic, 
+        payrollInfo.ot, 
+        payrollInfo.salaryIncrease, 
+        payrollInfo.mealAllow, 
+        payrollInfo.bdayBonus, 
+        payrollInfo.incentive, 
+        payrollInfo.otherPayrollInfo, 
+        deductions.sss, 
+        deductions.philhealth, 
+        deductions.pagibig, 
+        deductions.cashAdvance, 
+        deductions.healthCard, 
+        deductions.absences, 
+        deductions.otherDeductions, 
+        results.payroll, 
+        results.deductions, 
+        results.total, 
+        payment_id
+    ];
+
+    db.query(sql, values, (err, data)=> {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+});
 
 app.post('/addPayment', (req, res) => {
     console.log('add payment');

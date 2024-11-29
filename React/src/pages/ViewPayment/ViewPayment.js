@@ -1,15 +1,17 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import Header from '../_header/Header';
 import global from '../../global.module.css';
 import { ConfigContext } from '../../ConfigContext';
+import styles from './ViewPayment.module.css';
 
 const ViewPayment = () => {
   const navigate = useNavigate();
   const { id, fname, lname } = useParams();  // params passed from previous pages
   const { getAllUserPayments, deleteUserPayment } = useContext(ConfigContext);
-  const userPayments = getAllUserPayments(id);
+  //const userPayments = getAllUserPayments(id);
+  const [ userPayments, setUserPayments] = useState(null);
 
   const handleEdit = (payment_id) => {
     navigate(`../EditPayroll/${id}/${payment_id}/${fname}/${lname}`);
@@ -18,6 +20,18 @@ const ViewPayment = () => {
   const handleDelete = (payment_id) => {
     deleteUserPayment(id, payment_id);
   };
+
+  useEffect (()=>{
+    fetch(`http://localhost:8000/payments/${id}`, {
+    })
+    .then(res => res.json())
+    .then(data => {
+      setUserPayments(data);
+      console.log(data[0]);
+    })
+    .catch(err => console.log(err));
+  }, [])
+
 
   return (
     <div className={global.wrapper}>
@@ -31,20 +45,21 @@ const ViewPayment = () => {
           {
             //added payments here for navigation to edit payroll 
           }
-          {userPayments.map((payment) => (
-            <span key={payment.paymentId}>
-              <span>{payment.paymentId}</span>
-              <span>
-                <button onClick={() => handleEdit(payment.paymentId)}>Edit</button>
-                <button onClick={() => handleDelete(payment.paymentId)}>Delete</button>
-              </span>
-            </span>
-          ))}
+          <div className = {styles.tableContainer}>
+            <table>
+              <tbody>
+                {userPayments?.map(payment => (
+                  <tr key={payment.payment_id}>
+                  <td className={styles.date}> {payment.formatted_date}</td>
+                  <td className={styles.total}>{payment.total}</td>
+                  <td className={styles.edit}> <button onClick={() => handleEdit(payment.payment_id)}>EDIT</button>  </td>
+                  <td className={styles.delete}> <button onClick={() => handleDelete(payment.payment_id)}>DELETE</button> </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {/*
-          <td><button onClick={() => handleEdit(1)}>Edit</button></td>
-          <td><button onClick={() => handleDelete(1)}>Delete</button></td>*/
-          }
         </div>
 
       </div>
