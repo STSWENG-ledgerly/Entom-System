@@ -4,8 +4,9 @@ Group 1 CSSWENG
 Running: 
 <ul>
   <li> if you haven't installed dependencies, go to `React` directory, type `npm install` (node_modules is not included since its very large) </li>
-  <li> go into `React` directory, then type `npm start` on CLI </li>
-  <li> for the pdf generation: run 'npm install jspdf'</li>
+  <li> also install these: `npm install express mysql2 cors nodemon jspdf concurrently --save-dev` </li>
+  <li> be sure to change the password on server.js to the password you use for sql database</li>
+  <li> go into `React` directory, then type `npm run start:both` on CLI </li>
 </ul>
 
 
