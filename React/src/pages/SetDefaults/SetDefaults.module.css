@@ -58,3 +58,9 @@
 .confirm:hover {
     background-color: #ff0000;
 }
+
+.status {
+    justify-self:center;
+    font-weight:bold;
+    font-size:24px;
+}

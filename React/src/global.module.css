@@ -28,3 +28,20 @@
     box-shadow: 0px 3px 2px rgb(124, 151, 169);
 
 }
+
+.fadeOut {
+    animation: fadeOut 3s forwards;
+}
+
+.opacity0 {
+    opacity: 0;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

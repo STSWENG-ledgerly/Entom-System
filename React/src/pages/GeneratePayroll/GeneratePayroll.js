@@ -24,6 +24,7 @@ const GeneratePayroll = () => {
     const [placeholderFile, setPlaceholderFile] = useState(null);
     const [savedStatus, setSavedStatus] = useState(null);
     const [ email, setEmail ] = useState();
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect (()=>{
         const employee_index_id = {employee_index_id:id};
@@ -208,6 +209,11 @@ const GeneratePayroll = () => {
         .catch((err) => console.log(err));
     };
 
+    const handleFadeOut = () => {
+        setIsVisible(false); 
+        setTimeout(() => setIsVisible(true)); 
+      };
+
     return (
         <div className={global.wrapper}>
             <Sidebar></Sidebar>
@@ -234,9 +240,9 @@ const GeneratePayroll = () => {
                                 {showResults && (
                                     <div>
                                     <div className={styles.buttonContainer}>
-                                        <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); saveToDB();}}>Download/Email/Save</button>
+                                        <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); saveToDB(); handleFadeOut();}}>Download/Email/Save</button>
                                     </div>
-                                        <span className={styles.buttonContainer}>{savedStatus}</span>
+                                        <span className={`${styles.buttonContainer} ${isVisible ? global.fadeOut : global.opacity0}`}>{savedStatus}</span>
                                     </div>
                                 )}
                                 {showResults && showDownloadButtons && placeholderFile && (

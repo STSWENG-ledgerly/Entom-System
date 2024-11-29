@@ -8,8 +8,7 @@ import {ConfigContext} from '../../ConfigContext';
 
 const SetDefaults = () => {
     const {config, setConfig} = useContext(ConfigContext);
-    const navigate = useNavigate();
-
+    const [isVisible, setIsVisible] = useState(false);
     const [newConfig, setNewConfig] = useState({
         rate: config.rate,
         basic: config.basic,
@@ -21,7 +20,12 @@ const SetDefaults = () => {
         rate: newConfig.rate,
         basic: newConfig.basic,
       }));
-      navigate('/MainMenu');
+      handleFadeOut();
+    };
+
+    const handleFadeOut = () => {
+      setIsVisible(false); 
+      setTimeout(() => setIsVisible(true)); 
     };
 
     return (
@@ -46,6 +50,8 @@ const SetDefaults = () => {
                   <label>Basic</label><br></br>
                   <input type='number' min='0' value={newConfig.basic} step='any' onChange={(e)=>setNewConfig({...newConfig, basic: e.target.value})}></input>
                   </div>
+
+                  <div className={`${styles.status} ${isVisible ? global.fadeOut : global.opacity0}`}> Saved! </div>
                 
                 </div>
               </div>

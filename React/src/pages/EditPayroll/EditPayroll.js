@@ -131,7 +131,7 @@ const EditPayroll = () => {
                 <br></br>
                 <div className={styles.formSection}><span>RESULTS</span></div>
                 <ResultsInfo results={results} />
-                <div className={`${styles.formGroup} ${isVisible ? styles.fadeOut : styles.opacity0}`}>
+                <div className={`${styles.formGroup} ${isVisible ? global.fadeOut : global.opacity0}`}>
                     <span> {savedStatus} </span>
                 </div>
               </div>
