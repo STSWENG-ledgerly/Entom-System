@@ -6,6 +6,10 @@ import Header from '../_header/Header';
 import styles from './MainMenu.module.css';
 
 const MainMenu = () => {
+    const handleExit = () => {
+        sessionStorage.removeItem('userValid');
+    };
+
     return (
       <div className={global.wrapper}>
         <Sidebar></Sidebar>
@@ -17,7 +21,7 @@ const MainMenu = () => {
               <Link to="/SetDefaults"> Set Default Rates </Link> <br></br>
               <Link to="/SearchEmployee/ViewPayrollHistory"> View Payroll History </Link> <br></br>
               <Link to="/SearchEmployee/CalculatePayroll"> Generate Employee Payroll </Link> <br></br>
-              <Link to="/"> Exit </Link> <br></br>
+              <Link to="/" onClick={handleExit}> Exit </Link> <br></br>
             </div>
           </div>
         </div>

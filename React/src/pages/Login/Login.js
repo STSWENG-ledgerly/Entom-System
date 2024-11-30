@@ -14,6 +14,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (userPassword === password) {
+      sessionStorage.setItem('userValid', true);
       navigate('/MainMenu');
     } else {
       setErrMessage('Password is incorrect.');

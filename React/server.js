@@ -11,7 +11,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
-    password:'!', // replace w password to db
+    password:'', // replace w password to db
     database: 'entompestcontrol'
 
 })
