@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import Header from '../_header/Header';
 import global from '../../global.module.css';
-import { ConfigContext } from '../../ConfigContext';
+import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import styles from './ViewPayment.module.css';
 import Popup from './Popup';
 
@@ -26,7 +26,7 @@ const ViewPayment = () => {
   };
 
   useEffect (()=>{
-    fetch(`http://localhost:8000/payments/${id}`, {
+    fetch(`${BASE_URL}/payments/${id}`, {
     })
     .then(res => res.json())
     .then(data => {

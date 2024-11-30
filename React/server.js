@@ -1,3 +1,4 @@
+const SERVER_PORT = 8000;
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -10,7 +11,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
-    password:'', // replace w password to db
+    password:'!', // replace w password to db
     database: 'entompestcontrol'
 
 })
@@ -186,6 +187,6 @@ app.post('/addPayment', (req, res) => {
 
 
 
-app.listen(8000, ()=> {
-    console.log("listening");
+app.listen(SERVER_PORT, ()=> {
+    console.log(`listening on ${SERVER_PORT}`);
 })

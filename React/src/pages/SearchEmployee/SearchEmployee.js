@@ -4,6 +4,7 @@ import Sidebar from '../_sidebar/Sidebar';
 import Header from '../_header/Header';
 import global from '../../global.module.css'
 import styles from './SearchEmployee.module.css';
+import {BASE_URL} from '../../ConfigContext';
 
 const SearchEmployee = () => {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const SearchEmployee = () => {
     const [filteredEmployees, setFilteredEmployees] = useState(employees);
 
     useEffect (()=>{
-      fetch('http://localhost:8000/employee')
+      fetch(`${BASE_URL}/employee`)
       .then(res => res.json())
       .then(data => {
         setEmployees(data)

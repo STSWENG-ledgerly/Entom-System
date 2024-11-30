@@ -12,8 +12,6 @@ Running:
 
 Other: 
 <ul>
-  <li> 123 is the password for now </li>
-  <li> ideally, the structure is modular as in, editing your own part in the .js should not affect others </li>
-  <li> do chat if there are issues </li>
-  
+  <li> 123 is the default password, password can be setup through database </li>
+  <li> server port is changeable on server.js and ConfigContext.js </li>
 </ul>

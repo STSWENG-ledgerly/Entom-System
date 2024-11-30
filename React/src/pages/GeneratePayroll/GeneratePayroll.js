@@ -8,7 +8,7 @@ import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
 import styles from './GeneratePayroll.module.css';
 import global from '../../global.module.css';
 import Header from '../_header/Header';
-import { ConfigContext } from '../../ConfigContext';
+import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import jsPDF from 'jspdf';
 
 const GeneratePayroll = () => {
@@ -28,7 +28,7 @@ const GeneratePayroll = () => {
 
     useEffect (()=>{
         const employee_index_id = {employee_index_id:id};
-        fetch('http://localhost:8000/getEmail', {
+        fetch(`${BASE_URL}/getEmail`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(employee_index_id),
@@ -196,7 +196,7 @@ const GeneratePayroll = () => {
             results
         };
         console.log(JSON.stringify(newPayment));
-        fetch('http://localhost:8000/addPayment', {
+        fetch(`${BASE_URL}/addPayment`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newPayment),

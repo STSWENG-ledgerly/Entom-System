@@ -8,7 +8,7 @@ import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
 import styles from './EditPayroll.module.css'
 import Header from '../_header/Header';
 import global from '../../global.module.css';
-import { ConfigContext } from '../../ConfigContext';
+import { ConfigContext, BASE_URL } from '../../ConfigContext';
 
 const EditPayroll = () => {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const EditPayroll = () => {
       deductions,
       results: newResults
     };
-    fetch(`http://localhost:8000/editPayment/${payment_id}`, {
+    fetch(`${BASE_URL}/editPayment/${payment_id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editedPayment),
@@ -55,7 +55,7 @@ const EditPayroll = () => {
 
   // setup prev values into input boxes
   useEffect (()=>{
-    fetch(`http://localhost:8000/getPayment/${payment_id}`)
+    fetch(`${BASE_URL}/getPayment/${payment_id}`)
     .then(res => res.json())
     .then(data => {
       const prevPayroll = {

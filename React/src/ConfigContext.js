@@ -1,4 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
+export const SERVER_PORT = 8000;
+export const BASE_URL = `http://localhost:${SERVER_PORT}`;
+
 
 export const ConfigContext = createContext();
 
@@ -9,7 +12,7 @@ export const ConfigProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    fetch('http://localhost:8000/getConfig')
+    fetch(`${BASE_URL}/getConfig`)
     .then((res) => res.json())
     .then((data) => {
       setConfig({ rate: data[0].rate, basic: data[0].basic });      

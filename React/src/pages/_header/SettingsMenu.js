@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './SettingsMenu.module.css';
 import {useState, useContext} from 'react';
-import {ConfigContext} from '../../ConfigContext';
+import {ConfigContext, BASE_URL} from '../../ConfigContext';
 
 
 
@@ -31,7 +31,7 @@ function SettingsMenu (props)  {
         const np = {
             password: newPassword
         };
-        fetch('http://localhost:8000/savePassword', {
+        fetch(`${BASE_URL}/savePassword`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}, 
             body: JSON.stringify(np)

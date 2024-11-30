@@ -4,7 +4,7 @@ import global from '../../global.module.css';
 import TempHeader from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
 import styles from './SetDefaults.module.css'
-import {ConfigContext} from '../../ConfigContext';
+import {ConfigContext, BASE_URL} from '../../ConfigContext';
 
 const SetDefaults = () => {
     const {config, setConfig} = useContext(ConfigContext);
@@ -40,7 +40,7 @@ const SetDefaults = () => {
         rate: rate, 
         basic: basic
       }
-      fetch('http://localhost:8000/saveConfig', {
+      fetch(`${BASE_URL}/saveConfig`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(nc)

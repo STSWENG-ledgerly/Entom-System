@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Popup.module.css';
 import {useState, useContext} from 'react';
-import {ConfigContext} from '../../ConfigContext';
+import {ConfigContext, BASE_URL} from '../../ConfigContext';
 
 function Popup (props)  {
 
@@ -10,7 +10,7 @@ function Popup (props)  {
     }
 
     const handleDelete = () => {
-        fetch(`http://localhost:8000/deletePayment/${props.pid}`, {
+        fetch(`${BASE_URL}/deletePayment/${props.pid}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
           })
