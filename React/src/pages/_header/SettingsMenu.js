@@ -14,17 +14,33 @@ function SettingsMenu (props)  {
     const {password, setPassword} = useContext(ConfigContext);
 
     const handleSave = () => {
-        alert(password);
         if (newPass === '') setSuccessMessage('New password cannot be blank.');
         else setSuccessMessage('');
         
-        if (oldPass != password) setErrMessage('Password is incorrect.');
+        if (oldPass !== password) setErrMessage('Password is incorrect.');
         else setErrMessage('');
 
-        if (oldPass === password && newPass != '') {
+        if (oldPass === password && newPass !== '') {
             setPassword(newPass);
+            saveToDB(newPass);
             setSuccessMessage('Password change successfully!');
         }
+    };
+
+    const saveToDB = (newPassword) => {
+        const np = {
+            password: newPassword
+        };
+        fetch('http://localhost:8000/savePassword', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(np)
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log('password saved, verifiable with db');
+        })
+        .catch((err) => console.log(err));
     };
 
     const handleExit = () => {

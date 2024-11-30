@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import global from '../../global.module.css';
 import TempHeader from '../_header/Header';
@@ -10,9 +10,13 @@ const SetDefaults = () => {
     const {config, setConfig} = useContext(ConfigContext);
     const [isVisible, setIsVisible] = useState(false);
     const [newConfig, setNewConfig] = useState({
-        rate: config.rate,
-        basic: config.basic,
+        rate: '',
+        basic: '',
     });
+
+    useEffect(() => {
+      setNewConfig(config);
+    }, [config]);
 
     const handleSubmit = (e) => {
       setConfig((prevConfig) => ({
@@ -20,6 +24,7 @@ const SetDefaults = () => {
         rate: newConfig.rate,
         basic: newConfig.basic,
       }));
+      saveToDB(newConfig.rate, newConfig.basic)
       handleFadeOut();
     };
 
@@ -27,6 +32,25 @@ const SetDefaults = () => {
       setIsVisible(false); 
       setTimeout(() => setIsVisible(true)); 
     };
+
+    const saveToDB = (rate, basic) => {
+      console.log(config);
+
+      const nc = {
+        rate: rate, 
+        basic: basic
+      }
+      fetch('http://localhost:8000/saveConfig', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(nc)
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
+    }
 
     return (
       <div className={global.wrapper}>

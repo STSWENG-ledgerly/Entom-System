@@ -62,3 +62,14 @@ INSERT INTO payments
     (15, 15, '2024-11-16', 645, 8385, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8385, 0, 8385, FALSE),
     (16, 1, '2024-11-16', 645, 8385, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11610, 0, 11610, FALSE),
     (17, 1, '2024-12-16', 645, 8385, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11610, 0, 11610, FALSE);
+    
+    
+DROP TABLE IF EXISTS payroll_app_config;
+CREATE TABLE IF NOT EXISTS payroll_app_config (
+		password VARCHAR(100) NOT NULL,
+        rate FLOAT NOT NULL,
+        basic FLOAT NOT NULL
+);
+
+INSERT INTO payroll_app_config
+	VALUES ('123', 645, 8385);

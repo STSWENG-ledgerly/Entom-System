@@ -1,12 +1,22 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 export const ConfigContext = createContext();
 
 export const ConfigProvider = ({ children }) => {
   const [config, setConfig] = useState({
-    rate: 645,
-    basic: 8385,
+    rate: '',
+    basic: '',
   });
+
+  useEffect(() => {
+    fetch('http://localhost:8000/getConfig')
+    .then((res) => res.json())
+    .then((data) => {
+      setConfig({ rate: data[0].rate, basic: data[0].basic });      
+      setPassword(data[0].password);
+    })
+    .catch((err) => console.log(err));
+  }, []); 
 
   const [password, setPassword] = useState("123");
 

@@ -73,6 +73,38 @@ app.post('/deletePayment/:payment_id', (req, res) => {
     })
 });
 
+app.post('/saveConfig', (req, res) => {
+    const {rate, basic} = req.body;
+    console.log(`saving config, new rate ${rate} new basic ${basic}`);
+    const sql = `UPDATE payroll_app_config SET rate = ?, basic = ?`;
+
+    db.query(sql, [rate, basic], (err, data)=> {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+});
+
+app.get('/getConfig', (req, res) => {
+    console.log(`getting config`);
+    const sql = `SELECT * FROM payroll_app_config`;
+
+    db.query(sql, [], (err, data)=> {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+});
+
+app.post('/savePassword', (req, res) => {
+    const {password} = req.body;
+    console.log(`update new password ${password}`);
+    const sql = `UPDATE payroll_app_config SET password = ?`;
+
+    db.query(sql, [password], (err, data)=> {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+});
+
 app.post('/editPayment/:payment_id', (req, res) => {
     const payment_id = req.params.payment_id; 
     const { employee_index_id, rate, basic, payrollInfo, deductions, results } = req.body; 
