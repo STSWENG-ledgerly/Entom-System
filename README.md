@@ -14,4 +14,5 @@ Other:
 <ul>
   <li> 123 is the default password, password can be setup through database </li>
   <li> server port is changeable on server.js and ConfigContext.js </li>
+  <li> check the files in the sql setup folder for test data</li>
 </ul>
