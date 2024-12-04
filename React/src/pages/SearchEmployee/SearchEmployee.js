@@ -53,7 +53,7 @@ const SearchEmployee = () => {
 
     const handleSearchButtonID = () => {
       const filtered = searchID
-        ? employees.filter(employee => employee.id.toString() === searchID)
+        ? employees.filter(employee => employee.id.toString().includes(searchID))
         : employees;
   
       setFilteredEmployees(filtered);
