@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 import {ConfigContext} from '../../ConfigContext';
@@ -10,6 +10,9 @@ const Login = () => {
 
   const {password, setPassword} = useContext(ConfigContext);
 
+  useEffect (()=>{
+    sessionStorage.removeItem('userValid');
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault();

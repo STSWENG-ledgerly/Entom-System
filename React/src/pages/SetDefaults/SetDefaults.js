@@ -13,18 +13,24 @@ const SetDefaults = () => {
         rate: '',
         basic: '',
     });
+    const [statusMsg, setStatusMsg] = useState();
 
     useEffect(() => {
       setNewConfig(config);
     }, [config]);
 
     const handleSubmit = (e) => {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        rate: newConfig.rate,
-        basic: newConfig.basic,
-      }));
-      saveToDB(newConfig.rate, newConfig.basic)
+      if (parseFloat(newConfig.rate) >= 0 && parseFloat(newConfig.basic) >=0) {
+        setConfig((prevConfig) => ({
+          ...prevConfig,
+          rate: newConfig.rate,
+          basic: newConfig.basic,
+        }));
+        setStatusMsg('Saved!');
+        saveToDB(newConfig.rate, newConfig.basic)
+      } else {
+        setStatusMsg('Invalid values!');
+      }
       handleFadeOut();
     };
 
@@ -75,7 +81,7 @@ const SetDefaults = () => {
                   <input type='number' min='0' value={newConfig.basic} step='any' onChange={(e)=>setNewConfig({...newConfig, basic: e.target.value})}></input>
                   </div>
 
-                  <div className={`${styles.status} ${isVisible ? global.fadeOut : global.opacity0}`}> Saved! </div>
+                  <div className={`${styles.status} ${isVisible ? global.fadeOut : global.opacity0}`}> {statusMsg} </div>
                 
                 </div>
               </div>
