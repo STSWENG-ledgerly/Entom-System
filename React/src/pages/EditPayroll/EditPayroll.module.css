@@ -39,6 +39,10 @@
     font-size:30px;
 }
 
+#savedMessage {
+    font-size:14px;
+}
+
 .buttonContainer {
     display: flex;
     justify-content: center;
@@ -53,6 +57,7 @@
     color: #fff;
     border-radius: 6px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
 
 .button:hover {

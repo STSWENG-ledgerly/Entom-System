@@ -21,6 +21,7 @@ const EditPayroll = () => {
   const [payrollInfo, setPayrollInfo] = useState(userSavedPayment.payrollInfo);
   const [deductions, setDeductions] = useState(userSavedPayment.deductions);
   const [results, setResults] = useState(calculatePayroll(payrollInfo, deductions, config));
+  const [savedMessage, setSavedMessage] = useState(false);
 
   const showPayrollResults = () => {
     setResults(calculatePayroll(payrollInfo, deductions, config));
@@ -30,6 +31,11 @@ const EditPayroll = () => {
     const newData = { payrollInfo, deductions };
     saveUserPayment(id, payment_id, newData);
     showPayrollResults();
+    
+    setSavedMessage(true);
+    setTimeout(() => {
+        setSavedMessage(false);
+    }, 5000);
 
     //navigate(`../ViewPayment/${id}/${fname}/${lname}`);
   };
@@ -49,6 +55,7 @@ const EditPayroll = () => {
               <div className={styles.formsSection}>
                 <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
                 <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
+              {savedMessage && <div id={styles.savedMessage}>Changes have been saved.</div>}
                 <div className={styles.buttonContainer}>
                   <button className={styles.button} onClick={saveUserPayrollData}>SAVE</button>
                 </div>
