@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import Header from '../_header/Header';
 import global from '../../global.module.css'
@@ -8,6 +8,7 @@ import {BASE_URL} from '../../ConfigContext';
 
 const SearchEmployee = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { searchType } = useParams(); 
     const title = (searchType === 'ViewPayrollHistory' ? 'View Payroll History of an Employee' : 'Calculate Payroll for an Employee');
     const buttonText = (searchType === 'ViewPayrollHistory' ? 'View' : 'Calculate');
@@ -16,7 +17,7 @@ const SearchEmployee = () => {
     const [searchLName, setSearchLName] = useState('');
     const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState(employees);
-
+    
     useEffect (()=>{
       fetch(`${BASE_URL}/employee`)
       .then(res => res.json())
@@ -26,6 +27,12 @@ const SearchEmployee = () => {
       })
       .catch(err => console.log(err));
     }, [])
+
+    useEffect(() => {
+      setSearchID('');
+      setSearchFName('');
+      setSearchLName('');
+    }, [location]); 
 
 
     const handleSearchID = (e) => {
