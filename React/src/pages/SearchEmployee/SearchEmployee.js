@@ -57,6 +57,8 @@ const SearchEmployee = () => {
         : employees;
   
       setFilteredEmployees(filtered);
+      setSearchFName('');
+      setSearchLName('');
     };
 
     const handleSearchButtonFName = () => {
@@ -65,6 +67,8 @@ const SearchEmployee = () => {
         : employees;
   
       setFilteredEmployees(filtered);
+      setSearchID('');
+      setSearchLName('');
     };
 
     const handleSearchButtonLName = () => {
@@ -73,6 +77,8 @@ const SearchEmployee = () => {
         : employees;
   
       setFilteredEmployees(filtered);
+      setSearchID('');
+      setSearchFName('');
     };
     
     // Note: change to SQL implementation later
@@ -114,33 +120,43 @@ const SearchEmployee = () => {
       </div>
     </div>
     
-    <div className = {styles.tableContainer}>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredEmployees.map(employee => (
-            <tr key={employee.id}>
-            <td>{employee.id}</td>
-            <td>{employee.fname}</td>
-            <td>{employee.lname}</td>
-            <td>{employee.email}</td>
-            <td><button className = {styles.actionButton} onClick={() => handleButton(employee.id, employee.fname, employee.lname)}>{buttonText}</button></td>
+    <div className={styles.tableContainer}>
+      {filteredEmployees.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredEmployees.map(employee => (
+              <tr key={employee.id}>
+                <td>{employee.id}</td>
+                <td>{employee.fname}</td>
+                <td>{employee.lname}</td>
+                <td>{employee.email}</td>
+                <td>
+                  <button className={styles.actionButton} onClick={() => handleButton(employee.id, employee.fname, employee.lname)}>
+                    {buttonText}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className={styles.noRecord}>
+          No results found for the search criteria
+        </div>
+      )}
       </div>
     </div>
-      </div>
-      </div>
+  </div>
+</div>
     );
   };
   
