@@ -52,18 +52,24 @@ const ViewPayment = () => {
             //added payments here for navigation to edit payroll 
           }
           <div className = {styles.tableContainer}>
-            <table>
-              <tbody>
-                {userPayments?.map(payment => (
-                  <tr key={payment.payment_id}>
-                  <td className={styles.date}> {payment.formatted_date}</td>
-                  <td className={styles.total}>{payment.total}</td>
-                  <td className={styles.edit}> <button onClick={() => handleEdit(payment.payment_id)}>EDIT</button>  </td>
-                  <td className={styles.delete}> <button onClick={() => handleDelete(payment.payment_id)}>DELETE</button> </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {userPayments && userPayments.length > 0 ? (
+              <table>
+                <tbody>
+                  {userPayments?.map(payment => (
+                    <tr key={payment.payment_id}>
+                      <td className={styles.date}> {payment.formatted_date}</td>
+                      <td className={styles.total}>{payment.total}</td>
+                      <td className={styles.edit}> <button onClick={() => handleEdit(payment.payment_id)}>EDIT</button>  </td>
+                      <td className={styles.delete}> <button onClick={() => handleDelete(payment.payment_id)}>DELETE</button> </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>              
+            ) : (
+              <div className={styles.noRecord}>
+                No payroll history records found.
+              </div>
+            )}
           </div>
 
         </div>
