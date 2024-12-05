@@ -39,6 +39,11 @@
     font-size:30px;
 }
 
+#savedMessage {
+    padding-bottom:24px;
+    font-size:14px;
+}
+
 .buttonContainer {
     display: flex;
     justify-content: center;

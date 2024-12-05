@@ -20,6 +20,7 @@ const GeneratePayroll = () => {
     const { id, fname, lname } = useParams();
     const { config, createUserPayment } = useContext(ConfigContext);
     const [showResults, setShowResults] = useState(false);
+    const [savedMessage, setSavedMessage] = useState(false);
     const [showDownloadButtons, setShowDownloadButtons] = useState(false);
     const [placeholderFile, setPlaceholderFile] = useState(null);
     const [savedStatus, setSavedStatus] = useState(null);
@@ -184,6 +185,10 @@ const GeneratePayroll = () => {
     const createUserPaymentData = () => {
         const newData = { payrollInfo, deductions };
         createUserPayment(id, newData);
+        setSavedMessage(true);
+        setTimeout(() => {
+            setSavedMessage(false);
+        }, 5000);
     };
 
     const saveToDB = () => {
@@ -236,6 +241,7 @@ const GeneratePayroll = () => {
                             </div>
 
                             <div className={styles.resultSection}>
+                                {savedMessage && <div id={styles.savedMessage}>Payroll Info has been added to {fname} {lname}'s Payroll History</div>}
                                 {showResults && (<ResultsInfo results={results} />)}
                                 {showResults && (
                                     <div>
