@@ -23,8 +23,8 @@ const SetDefaults = () => {
       if (parseFloat(newConfig.rate) >= 0 && parseFloat(newConfig.basic) >=0) {
         setConfig((prevConfig) => ({
           ...prevConfig,
-          rate: newConfig.rate,
-          basic: newConfig.basic,
+          rate: parseFloat(newConfig.rate).toFixed(2),
+          basic: parseFloat(newConfig.basic).toFixed(2),
         }));
         setStatusMsg('Saved!');
         saveToDB(newConfig.rate, newConfig.basic)

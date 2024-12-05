@@ -100,6 +100,24 @@ const EditPayroll = () => {
     setTimeout(() => setIsVisible(true)); 
   };
 
+  const checkNumberInput = (e, setState, field) => {
+    const value = Math.max(0, parseFloat(e.target.value).toFixed(2) || 0);
+    setState((prevState) => ({
+        ...prevState,
+        [field]: value,
+    }));
+  };
+
+  const handleBlur = (e, setState, field) => {
+      if (isNaN(parseFloat(e.target.value).toFixed(2))) {
+          console.log('pain');
+          setState((prevState) => ({
+              ...prevState,
+              [field]: 0,
+          }));
+      }
+  };
+
   return (
     <div className={global.wrapper}>
       <Sidebar></Sidebar>
@@ -123,11 +141,19 @@ const EditPayroll = () => {
               <div className={styles.resultSection}>
                 <div className={styles.formGroup}>
                   <label>RATE: </label>
-                  <input value={defaults.rate} type='number' onChange={(e) => setDefaults({ ...defaults, rate: e.target.value })}/>
+                  <input value={defaults.rate} 
+                      type='number' 
+                      onChange={(e) => checkNumberInput(e, setDefaults, "rate")}
+                      onBlur={(e) => handleBlur(e, setDefaults, "rate")}
+                      />
                 </div>
                 <div className={styles.formGroup}>
                     <label>BASIC: </label>
-                    <input value={defaults.basic} type="number" onChange={(e) => setDefaults({ ...defaults, basic: e.target.value })}/>
+                    <input value={defaults.basic} 
+                      type="number" 
+                      onChange={(e) => checkNumberInput(e, setDefaults, "basic")}
+                      onBlur={(e) => handleBlur(e, setDefaults, "basic")}
+                      />
                 </div>
                 <br></br>
                 <div className={styles.formSection}><span>RESULTS</span></div>
