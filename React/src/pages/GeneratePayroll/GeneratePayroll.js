@@ -241,7 +241,6 @@ const GeneratePayroll = () => {
                             </div>
 
                             <div className={styles.resultSection}>
-                                {savedMessage && <div id={styles.savedMessage}>Payroll Info has been added to {fname} {lname}'s Payroll History</div>}
                                 {showResults && (<ResultsInfo results={results} />)}
                                 {showResults && (
                                     <div>
