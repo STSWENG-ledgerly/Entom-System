@@ -1,39 +1,39 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import Header from '../_header/Header';
 import global from '../../global.module.css'
 import styles from './SearchEmployee.module.css';
+import {BASE_URL} from '../../ConfigContext';
 
 const SearchEmployee = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { searchType } = useParams(); 
     const title = (searchType === 'ViewPayrollHistory' ? 'View Payroll History of an Employee' : 'Calculate Payroll for an Employee');
     const buttonText = (searchType === 'ViewPayrollHistory' ? 'View' : 'Calculate');
     const [searchID, setSearchID] = useState('');
     const [searchFName, setSearchFName] = useState('');
     const [searchLName, setSearchLName] = useState('');
-    
-    // temporary, can add/remove attributes shown based on employee SQL table (phone, position, etc)
-    const employees = [
-      { id: 1, fname: 'John', lname: 'Doe', email: 'jdoe@gmail.com' },
-      { id: 2, fname: 'Iker', lname: 'Ventura', email: 'iventura@gmail.com' },
-      { id: 3, fname: 'Zora', lname: 'Scott', email: 'zscott@gmail.com' },
-      { id: 4, fname: 'Alice', lname: 'Johnson', email: 'ajohnson@gmail.com' },
-      { id: 5, fname: 'Bob', lname: 'Smith', email: 'bsmith@gmail.com' },
-      { id: 6, fname: 'Charlie', lname: 'Brown', email: 'cbrown@gmail.com' },
-      { id: 7, fname: 'David', lname: 'Wilson', email: 'dwilson@gmail.com' },
-      { id: 8, fname: 'Eva', lname: 'Martinez', email: 'emartinez@gmail.com' },
-      { id: 9, fname: 'Frank', lname: 'Garcia', email: 'fgarcia@gmail.com' },
-      { id: 10, fname: 'Grace', lname: 'Lee', email: 'glee@gmail.com' },
-      { id: 11, fname: 'Hannah', lname: 'Walker', email: 'hwalker@gmail.com' },
-      { id: 12, fname: 'Ian', lname: 'Hall', email: 'ihall@gmail.com' },
-      { id: 13, fname: 'Jack', lname: 'Young', email: 'jyoung@gmail.com' },
-      { id: 14, fname: 'Karen', lname: 'King', email: 'kking@gmail.com' },
-      { id: 15, fname: 'Liam', lname: 'Wright', email: 'lwright@gmail.com' }
-  ];
-
+    const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState(employees);
+    
+    useEffect (()=>{
+      fetch(`${BASE_URL}/employee`)
+      .then(res => res.json())
+      .then(data => {
+        setEmployees(data)
+        setFilteredEmployees(data);
+      })
+      .catch(err => console.log(err));
+    }, [])
+
+    useEffect(() => {
+      setSearchID('');
+      setSearchFName('');
+      setSearchLName('');
+    }, [location]); 
+
 
     const handleSearchID = (e) => {
       setSearchID(e.target.value);
@@ -53,10 +53,12 @@ const SearchEmployee = () => {
 
     const handleSearchButtonID = () => {
       const filtered = searchID
-        ? employees.filter(employee => employee.id.toString() === searchID)
+        ? employees.filter(employee => employee.id.toString().includes(searchID))
         : employees;
   
       setFilteredEmployees(filtered);
+      setSearchFName('');
+      setSearchLName('');
     };
 
     const handleSearchButtonFName = () => {
@@ -65,6 +67,8 @@ const SearchEmployee = () => {
         : employees;
   
       setFilteredEmployees(filtered);
+      setSearchID('');
+      setSearchLName('');
     };
 
     const handleSearchButtonLName = () => {
@@ -73,6 +77,8 @@ const SearchEmployee = () => {
         : employees;
   
       setFilteredEmployees(filtered);
+      setSearchID('');
+      setSearchFName('');
     };
     
     // Note: change to SQL implementation later
@@ -114,33 +120,43 @@ const SearchEmployee = () => {
       </div>
     </div>
     
-    <div className = {styles.tableContainer}>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredEmployees.map(employee => (
-            <tr key={employee.id}>
-            <td>{employee.id}</td>
-            <td>{employee.fname}</td>
-            <td>{employee.lname}</td>
-            <td>{employee.email}</td>
-            <td><button className = {styles.actionButton} onClick={() => handleButton(employee.id, employee.fname, employee.lname)}>{buttonText}</button></td>
+    <div className={styles.tableContainer}>
+      {filteredEmployees.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredEmployees.map(employee => (
+              <tr key={employee.id}>
+                <td>{employee.id}</td>
+                <td>{employee.fname}</td>
+                <td>{employee.lname}</td>
+                <td>{employee.email}</td>
+                <td>
+                  <button className={styles.actionButton} onClick={() => handleButton(employee.id, employee.fname, employee.lname)}>
+                    {buttonText}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className={styles.noRecord}>
+          No results found for the search criteria
+        </div>
+      )}
       </div>
     </div>
-      </div>
-      </div>
+  </div>
+</div>
     );
   };
   

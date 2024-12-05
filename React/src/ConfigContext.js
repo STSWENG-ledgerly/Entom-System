@@ -1,12 +1,25 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+export const SERVER_PORT = 8000;
+export const BASE_URL = `http://localhost:${SERVER_PORT}`;
+
 
 export const ConfigContext = createContext();
 
 export const ConfigProvider = ({ children }) => {
   const [config, setConfig] = useState({
-    rate: 645,
-    basic: 8385,
+    rate: '',
+    basic: '',
   });
+
+  useEffect(() => {
+    fetch(`${BASE_URL}/getConfig`)
+    .then((res) => res.json())
+    .then((data) => {
+      setConfig({ rate: data[0].rate, basic: data[0].basic });      
+      setPassword(data[0].password);
+    })
+    .catch((err) => console.log(err));
+  }, []); 
 
   const [password, setPassword] = useState("123");
 

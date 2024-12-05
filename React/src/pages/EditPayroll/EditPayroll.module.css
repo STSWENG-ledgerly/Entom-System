@@ -72,3 +72,40 @@
     margin-right: 40px;
     text-align: left;
 }
+
+.formSection {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.formSection span {
+    padding-bottom:10px;
+    font-size:25px;
+}
+
+.formGroup {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.formGroup label {
+    width: 100px;
+    margin-right: 20px;
+}
+
+.formGroup input {
+    margin-bottom: 10px;
+    border: none;
+    flex: 1;
+    padding: 6px;
+    background-color: #c7dae8;
+    border-radius: 4px;
+}
+
+.formGroup span {
+    font-weight:bold;
+    font-size: 25px;
+}

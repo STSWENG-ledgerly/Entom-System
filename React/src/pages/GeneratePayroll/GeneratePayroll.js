@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
@@ -8,7 +8,7 @@ import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
 import styles from './GeneratePayroll.module.css';
 import global from '../../global.module.css';
 import Header from '../_header/Header';
-import { ConfigContext } from '../../ConfigContext';
+import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import jsPDF from 'jspdf';
 
 const GeneratePayroll = () => {
@@ -23,6 +23,23 @@ const GeneratePayroll = () => {
     const [savedMessage, setSavedMessage] = useState(false);
     const [showDownloadButtons, setShowDownloadButtons] = useState(false);
     const [placeholderFile, setPlaceholderFile] = useState(null);
+    const [savedStatus, setSavedStatus] = useState(null);
+    const [ email, setEmail ] = useState();
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect (()=>{
+        const employee_index_id = {employee_index_id:id};
+        fetch(`${BASE_URL}/getEmail`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(employee_index_id),
+        })
+        .then(res => res.json())
+        .then(data => {
+          setEmail(data[0].email);
+        })
+        .catch(err => console.log(err));
+      }, [])
 
     const [payrollInfo, setPayrollInfo] = useState({
         date: dateToday,
@@ -34,7 +51,7 @@ const GeneratePayroll = () => {
         otherPayrollInfo: 0
     });
     const [deductions, setDeductions] = useState({
-        sss: 0.,
+        sss: 0,
         philhealth: 0,
         pagibig: 0,
         cashAdvance: 0,
@@ -144,7 +161,9 @@ const GeneratePayroll = () => {
     };
 
     const sendEmail = () => {
-        const hardcodedEmail = "diego_martin_herrera@dlsu.edu.ph"; // hardcoded for testing purposes, change if you want to try out
+        const hardcodedEmail = email; // hardcoded for testing purposes, change if you want to try out
+        console.log(email);
+
         const subject = "Payroll Slip";
         const body = "Please see attached file";
 
@@ -159,8 +178,8 @@ const GeneratePayroll = () => {
     const showPayrollResults = () => {
         setResults(calculatePayroll(payrollInfo, deductions, config));
         setShowResults(true);
-        setShowDownloadButtons(false);
-
+        setShowDownloadButtons(false); // Reset the visibility of download/email buttons
+        setSavedStatus('');
     };
 
     const createUserPaymentData = () => {
@@ -171,6 +190,34 @@ const GeneratePayroll = () => {
             setSavedMessage(false);
         }, 5000);
     };
+
+    const saveToDB = () => {
+        const newPayment = {
+            employee_index_id: id,
+            rate: config.rate,
+            basic: config.basic,
+            payrollInfo, 
+            deductions,
+            results
+        };
+        console.log(JSON.stringify(newPayment));
+        fetch(`${BASE_URL}/addPayment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newPayment),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            setSavedStatus('Saved to Database!');
+            console.log(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    const handleFadeOut = () => {
+        setIsVisible(false); 
+        setTimeout(() => setIsVisible(true)); 
+      };
 
     return (
         <div className={global.wrapper}>
@@ -197,8 +244,11 @@ const GeneratePayroll = () => {
                                 {savedMessage && <div id={styles.savedMessage}>Payroll Info has been added to {fname} {lname}'s Payroll History</div>}
                                 {showResults && (<ResultsInfo results={results} />)}
                                 {showResults && (
+                                    <div>
                                     <div className={styles.buttonContainer}>
-                                        <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); }}>Download/Email</button>
+                                        <button className={styles.button} onClick={() => { generateEmail(); createUserPaymentData(); saveToDB(); handleFadeOut();}}>Download/Email/Save</button>
+                                    </div>
+                                        <span className={`${styles.buttonContainer} ${isVisible ? global.fadeOut : global.opacity0}`}>{savedStatus}</span>
                                     </div>
                                 )}
                                 {showResults && showDownloadButtons && placeholderFile && (

@@ -25,6 +25,11 @@ const Header = () => {
         navigate(-1);
     };
 
+    const handleLogout= () => {
+        sessionStorage.removeItem('userValid');
+        navigate('/');
+    };
+
     return (
       <div className={styles.background}>
         <div className={styles.content}>
@@ -41,7 +46,7 @@ const Header = () => {
 
           <div className={styles.iconGroup}> 
             <button className={styles.histButton} onClick={handleHist}>  </button> <br></br>
-            <div className={styles.label}> PAYMENT HISTORY </div>
+            <div className={styles.label}> PAYROLL HISTORY </div>
           </div>
 
           <div className={styles.iconGroup}> 
@@ -52,6 +57,11 @@ const Header = () => {
           <div className={styles.iconGroup}>
             <button className={styles.prevButton} onClick={handleBack}>  </button> <br></br>
             <div className={styles.label}> BACK </div>
+          </div>
+
+          <div className={styles.iconGroup}>
+            <button className={styles.logoutButton} onClick={handleLogout}>  </button> <br></br>
+            <div className={styles.label}> LOGOUT </div>
           </div>
             
         </div>

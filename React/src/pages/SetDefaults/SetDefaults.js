@@ -1,28 +1,62 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import global from '../../global.module.css';
 import TempHeader from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
 import styles from './SetDefaults.module.css'
-import {ConfigContext} from '../../ConfigContext';
+import {ConfigContext, BASE_URL} from '../../ConfigContext';
 
 const SetDefaults = () => {
     const {config, setConfig} = useContext(ConfigContext);
-    const navigate = useNavigate();
-
+    const [isVisible, setIsVisible] = useState(false);
     const [newConfig, setNewConfig] = useState({
-        rate: config.rate,
-        basic: config.basic,
+        rate: '',
+        basic: '',
     });
+    const [statusMsg, setStatusMsg] = useState();
+
+    useEffect(() => {
+      setNewConfig(config);
+    }, [config]);
 
     const handleSubmit = (e) => {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        rate: newConfig.rate,
-        basic: newConfig.basic,
-      }));
-      navigate('/MainMenu');
+      if (parseFloat(newConfig.rate) >= 0 && parseFloat(newConfig.basic) >=0) {
+        setConfig((prevConfig) => ({
+          ...prevConfig,
+          rate: newConfig.rate,
+          basic: newConfig.basic,
+        }));
+        setStatusMsg('Saved!');
+        saveToDB(newConfig.rate, newConfig.basic)
+      } else {
+        setStatusMsg('Invalid values!');
+      }
+      handleFadeOut();
     };
+
+    const handleFadeOut = () => {
+      setIsVisible(false); 
+      setTimeout(() => setIsVisible(true)); 
+    };
+
+    const saveToDB = (rate, basic) => {
+      console.log(config);
+
+      const nc = {
+        rate: rate, 
+        basic: basic
+      }
+      fetch(`${BASE_URL}/saveConfig`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(nc)
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
+    }
 
     return (
       <div className={global.wrapper}>
@@ -46,6 +80,8 @@ const SetDefaults = () => {
                   <label>Basic</label><br></br>
                   <input type='number' min='0' value={newConfig.basic} step='any' onChange={(e)=>setNewConfig({...newConfig, basic: e.target.value})}></input>
                   </div>
+
+                  <div className={`${styles.status} ${isVisible ? global.fadeOut : global.opacity0}`}> {statusMsg} </div>
                 
                 </div>
               </div>

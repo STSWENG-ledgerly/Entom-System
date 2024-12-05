@@ -95,3 +95,15 @@
   background-color: #015FA9; 
   color: white;
 }
+
+.noRecord {
+  text-align: center;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f8d7da;
+  color: #721c24;
+  font-size: 18px;
+  font-weight: bold;
+}
