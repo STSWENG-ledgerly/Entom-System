@@ -1,3 +1,34 @@
+            
+DROP TABLE IF EXISTS payments;
+CREATE TABLE IF NOT EXISTS payments (
+		payment_id INT NOT NULL AUTO_INCREMENT,
+        employee_index_id INT NOT NULL,
+		payDate DATE NOT NULL,
+		rate DECIMAL(38,2) NOT NULL,
+        basic DECIMAL(38,2) NOT NULL, 
+		overtimeDays INT NOT NULL,
+		salaryIncrease DECIMAL(38,2) NOT NULL,
+        mealAllowance DECIMAL(38,2) NOT NULL, 
+        birthdayBonus DECIMAL(38,2) NOT NULL,
+        incentive DECIMAL(38,2) NOT NULL,
+        otherAdditions DECIMAL(38,2) NOT NULL,
+        sss DECIMAL(38,2) NOT NULL,
+        philHealth DECIMAL(38,2) NOT NULL,
+        pagIbig DECIMAL(38,2) NOT NULL,
+        cashAdvance DECIMAL(38,2) NOT NULL,
+        healthCard DECIMAL(38,2) NOT NULL,
+        lateAbsent DECIMAL(38,2) NOT NULL,
+        otherDeductions DECIMAL(38,2) NOT NULL,
+        payroll DECIMAL(38,2) NOT NULL,
+        deductions DECIMAL(38,2) NOT NULL,
+        total DECIMAL(38,2) NOT NULL,
+        isDeleted BOOL DEFAULT FALSE NOT NULL,
+		PRIMARY KEY (payment_id),
+		FOREIGN KEY (employee_index_id)
+			REFERENCES employee(id)
+);
+
+DELETE FROM employee;
 INSERT INTO	employee
 	VALUES	(1, 111, 1, 'John', 'A', 'Doe', '09100000000', 'jdoe@gmail.com', 'designation', 'position', '2001-10-10', 1),
 			(2, 112, 1, 'Iker', 'A', 'Ventura', '09100000000', 'iventura@gmail.com', 'designation', 'position', '2001-10-10', 1),
@@ -14,35 +45,7 @@ INSERT INTO	employee
             (13, 1113, 1, 'Jack', 'A', 'Young', '09100000000', 'jyoung@gmail.com', 'designation', 'position', '2001-10-10', 1),
             (14, 1114, 1, 'Karen', 'A', 'King', '09100000000', 'kking@gmail.com', 'designation', 'position', '2001-10-10', 1),
             (15, 1115, 1, 'Liam', 'A', 'Wright', '09100000000', 'lwright@gmail.com', 'designation', 'position', '2001-10-10', 1);
-            
-DROP TABLE IF EXISTS payments;
-CREATE TABLE IF NOT EXISTS payments (
-		payment_id INT NOT NULL AUTO_INCREMENT,
-        employee_index_id INT NOT NULL,
-		payDate DATE NOT NULL,
-		rate FLOAT NOT NULL,
-        basic FLOAT NOT NULL, 
-		overtimeDays INT NOT NULL,
-		salaryIncrease FLOAT NOT NULL,
-        mealAllowance FLOAT NOT NULL, 
-        birthdayBonus FLOAT NOT NULL,
-        incentive FLOAT NOT NULL,
-        otherAdditions FLOAT NOT NULL,
-        sss FLOAT NOT NULL,
-        philHealth FLOAT NOT NULL,
-        pagIbig FLOAT NOT NULL,
-        cashAdvance FLOAT NOT NULL,
-        healthCard FLOAT NOT NULL,
-        lateAbsent FLOAT NOT NULL,
-        otherDeductions FLOAT NOT NULL,
-        payroll FLOAT NOT NULL,
-        deductions FLOAT NOT NULL,
-        total FLOAT NOT NULL,
-        isDeleted BOOL DEFAULT FALSE NOT NULL,
-		PRIMARY KEY (payment_id),
-		FOREIGN KEY (employee_index_id)
-			REFERENCES employee(id)
-);
+
 
 INSERT INTO payments
 	VALUES (1, 1, '2024-10-16', 645, 8385, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8385, 0, 8385, FALSE),
@@ -63,12 +66,11 @@ INSERT INTO payments
     (16, 1, '2024-11-16', 645, 8385, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11610, 0, 11610, FALSE),
     (17, 1, '2024-12-16', 645, 8385, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11610, 0, 11610, FALSE);
     
-    
 DROP TABLE IF EXISTS payroll_app_config;
 CREATE TABLE IF NOT EXISTS payroll_app_config (
 		password VARCHAR(100) NOT NULL,
-        rate FLOAT NOT NULL,
-        basic FLOAT NOT NULL
+        rate DECIMAL(38,2) NOT NULL,
+        basic DECIMAL(38,2) NOT NULL
 );
 
 INSERT INTO payroll_app_config
