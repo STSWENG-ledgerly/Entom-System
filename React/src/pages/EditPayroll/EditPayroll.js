@@ -115,7 +115,6 @@ const EditPayroll = () => {
               <div className={styles.formsSection}>
                 <PayrollInfo payrollInfo={payrollInfo} setPayrollInfo={setPayrollInfo} />
                 <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
-              {savedMessage && <div id={styles.savedMessage}>Changes have been saved.</div>}
                 <div className={styles.buttonContainer}>
                   <button className={styles.button} onClick={saveUserPayrollData}>SAVE</button>
                 </div>
