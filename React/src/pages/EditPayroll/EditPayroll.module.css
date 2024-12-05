@@ -39,6 +39,10 @@
     font-size:30px;
 }
 
+#savedMessage {
+    font-size:14px;
+}
+
 .buttonContainer {
     display: flex;
     justify-content: center;
