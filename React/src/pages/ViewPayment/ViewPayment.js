@@ -58,7 +58,7 @@ const ViewPayment = () => {
                   {userPayments?.map(payment => (
                     <tr key={payment.payment_id}>
                       <td className={styles.date}> {payment.formatted_date}</td>
-                      <td className={styles.total}>{payment.total}</td>
+                      <td className={styles.total}>P {parseFloat(payment.total).toFixed(2)}</td>
                       <td className={styles.edit}> <button onClick={() => handleEdit(payment.payment_id)}>EDIT</button>  </td>
                       <td className={styles.delete}> <button onClick={() => handleDelete(payment.payment_id)}>DELETE</button> </td>
                     </tr>

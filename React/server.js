@@ -76,7 +76,7 @@ app.post('/deletePayment/:payment_id', (req, res) => {
 
 app.post('/saveConfig', (req, res) => {
     const {rate, basic} = req.body;
-    console.log(`saving config, new rate ${rate} new basic ${basic}`);
+    console.log(`saving config`);
     const sql = `UPDATE payroll_app_config SET rate = ?, basic = ?`;
 
     db.query(sql, [rate, basic], (err, data)=> {
@@ -97,7 +97,7 @@ app.get('/getConfig', (req, res) => {
 
 app.post('/savePassword', (req, res) => {
     const {password} = req.body;
-    console.log(`update new password ${password}`);
+    console.log(`update new password`);
     const sql = `UPDATE payroll_app_config SET password = ?`;
 
     db.query(sql, [password], (err, data)=> {
@@ -176,8 +176,6 @@ app.post('/addPayment', (req, res) => {
         results.total, 
         false
     ];
-
-    console.log(values);
 
     db.query(sql, values , (err, data) => {
         if (err) return res.json(err);
