@@ -13,14 +13,22 @@ export const ConfigProvider = ({ children }) => {
 
   useEffect(() => {
     fetch(`${BASE_URL}/getConfig`)
-    .then((res) => res.json())
-    .then((data) => {
-      setConfig({ rate: data[0].rate, basic: data[0].basic });      
-      setPassword(data[0].password);
-    })
-    .catch((err) => console.log(err));
-  }, []); 
-
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setConfig({
+            rate: data.rate,
+            basic: data.basic,
+          });
+          if (data.password) {
+            setPassword(data.password); // Optional
+          }
+        } else {
+          console.warn("No config data returned from server");
+        }
+      })
+      .catch((err) => console.error("Failed to fetch config:", err));
+  }, []);
   const [password, setPassword] = useState("123");
 
   //payroll configs
@@ -63,7 +71,7 @@ export const ConfigProvider = ({ children }) => {
   const getUserPayment = (userId, paymentId) => {
     const userPayments = getAllUserPayments(userId);
     console.log("All payments of", paymentId, userPayments);
-    const pay = userPayments.find(payment => { return payment.paymentId == paymentId; }) || null;
+    const pay = userPayments.find(payment => { return payment.paymentId === paymentId; }) || null;
     console.log("Found Payment:", pay);  //for debugging
     return pay;
   };
@@ -72,14 +80,14 @@ export const ConfigProvider = ({ children }) => {
     setUserPayroll((payroll) => ({
       ...payroll,
       [userId]: payroll[userId].map((payment) =>
-        payment.paymentId == paymentId ? { ...payment, ...newData } : payment
+        payment.paymentId === paymentId ? { ...payment, ...newData } : payment
       ),
     }));
   };
   const deleteUserPayment = (userId, paymentId) => {
     setUserPayroll((payroll) => ({
       ...payroll,
-      [userId]: payroll[userId].filter(payment => payment.paymentId != paymentId)
+      [userId]: payroll[userId].filter(payment => payment.paymentId !== paymentId)
     }));
     console.log("Deleted Payment", userId, paymentId);   //for debugging
   };

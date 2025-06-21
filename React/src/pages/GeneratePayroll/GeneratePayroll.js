@@ -20,26 +20,32 @@ const GeneratePayroll = () => {
     const { id, fname, lname } = useParams();
     const { config, createUserPayment } = useContext(ConfigContext);
     const [showResults, setShowResults] = useState(false);
-    const [savedMessage, setSavedMessage] = useState(false);
+    const [savedMessage, setSavedMessage] = useState('');
     const [showDownloadButtons, setShowDownloadButtons] = useState(false);
     const [placeholderFile, setPlaceholderFile] = useState(null);
     const [savedStatus, setSavedStatus] = useState(null);
     const [ email, setEmail ] = useState();
     const [isVisible, setIsVisible] = useState(false);
 
-    useEffect (()=>{
-        const employee_index_id = {employee_index_id:id};
-        fetch(`${BASE_URL}/getEmail`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(employee_index_id),
-        })
+    useEffect(() => {
+    const employee_index_id = { employee_index_id: id };
+    
+    fetch(`${BASE_URL}/getEmail`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(employee_index_id),
+    })
         .then(res => res.json())
         .then(data => {
-          setEmail(data[0].email);
+        if (data.length > 0 && data[0].email) {
+            setEmail(data[0].email);
+        } else {
+            console.warn("No email found for employee");
+        }
         })
-        .catch(err => console.log(err));
-      }, [])
+        .catch(err => console.log("Error fetching email:", err));
+    }, [id]);
+
 
     const [payrollInfo, setPayrollInfo] = useState({
         date: dateToday,
@@ -192,8 +198,9 @@ const GeneratePayroll = () => {
     };
 
     const saveToDB = () => {
+        console.log("💬 id before sending:", id);
         const newPayment = {
-            employee_index_id: id,
+            employee_id: id,
             rate: config.rate,
             basic: config.basic,
             payrollInfo, 

@@ -17,7 +17,7 @@ function Popup (props)  {
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
-            props.setUserPayments(userPayments => userPayments.filter(payment => payment.payment_id != props.pid));
+            props.setUserPayments(userPayments => userPayments.filter(payment => payment._id !== props.pid));
           })
           .catch((err) => console.log(err));
 
