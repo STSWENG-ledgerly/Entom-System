@@ -22,7 +22,8 @@ export const ConfigProvider = ({ children }) => {
   }, []); 
 
   const [password, setPassword] = useState("123");
-
+  const [username, setUsername] = useState("Admin");
+  
   //payroll configs
   const [userPayroll, setUserPayroll] = useState({
     payrollInfo: {
@@ -91,7 +92,7 @@ export const ConfigProvider = ({ children }) => {
       config, setConfig,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
-      password, setPassword
+      password, setPassword, username, setUsername
     }}>
       {children}
     </ConfigContext.Provider>
