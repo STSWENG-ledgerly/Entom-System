@@ -6,7 +6,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-image: url('bruh.jpg');
+    background-image: url('bg.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -104,17 +104,18 @@
     border: none;
     height: 50px;
     color:white;
-    background-color: #0088ca;
+    background-color: #55A9CB;
     font-family: 'JetBrains Mono';
     text-align: center;
     font-size: 24px;
     border-radius: 20px;
     width: 250px;
     cursor: pointer;
+    transition: background-color 0.4s ease;
 }
 
 .submitButton:hover {
-    background-color: #accbe0;
+    background-color: #26647D;
 }
 
 .errMessage {
