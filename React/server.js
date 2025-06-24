@@ -2,7 +2,8 @@ const SERVER_PORT = 8000;
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-
+const connectToMongo = require('./src/scripts/conn.js'); // Import function to connect to MongoDB
+require('dotenv').config();
 const app = express();
 
 app.use(cors());
@@ -183,8 +184,18 @@ app.post('/addPayment', (req, res) => {
     });
 });
 
+async function database() {
+    try {
+        await connectToMongo();
+        // await populateDatabase();
+    } catch (error) {
+        console.error('Server: Failed to connect to MongoDB', error);
+    }
+}
 
+var port = process.env.PORT || 3000;
 
-app.listen(SERVER_PORT, ()=> {
-    console.log(`listening on ${SERVER_PORT}`);
-})
+server.listen(port, async function() {
+    await database(); 
+    console.log(`Server: Running on http://localhost:${port}`);
+});
