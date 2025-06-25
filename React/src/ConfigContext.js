@@ -15,21 +15,14 @@ export const ConfigProvider = ({ children }) => {
     fetch(`${BASE_URL}/getConfig`)
       .then((res) => res.json())
       .then((data) => {
-        if (data) {
-          setConfig({
-            rate: data.rate,
-            basic: data.basic,
-          });
-          if (data.password) {
-            setPassword(data.password); // Optional
-          }
-        } else {
-          console.warn("No config data returned from server");
-        }
+        setConfig({ rate: data[0].rate, basic: data[0].basic });
+        setPassword(data[0].password);
       })
-      .catch((err) => console.error("Failed to fetch config:", err));
+      .catch((err) => console.log(err));
   }, []);
+
   const [password, setPassword] = useState("123");
+  const [username, setUsername] = useState("Admin");
 
   //payroll configs
   const [userPayroll, setUserPayroll] = useState({
@@ -99,7 +92,7 @@ export const ConfigProvider = ({ children }) => {
       config, setConfig,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
-      password, setPassword
+      password, setPassword, username, setUsername
     }}>
       {children}
     </ConfigContext.Provider>
