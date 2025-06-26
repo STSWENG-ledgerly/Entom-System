@@ -15,6 +15,7 @@ mongoose.connect('mongodb://localhost:27017/payrollSystem', {
 }).then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+a
 app.get('/', (req, res) => {
   res.json("from backend side");
 });
