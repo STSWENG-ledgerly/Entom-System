@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './PayrollInfo.module.css'
+import styles from './PayrollInfo.module.css';
 
 const checkNumberInput = (e, setState, field) => {
     let value = Math.max(0, parseFloat(e.target.value).toFixed(2) || 0);
@@ -11,7 +11,6 @@ const checkNumberInput = (e, setState, field) => {
 
 const handleBlur = (e, setState, field) => {
     if (isNaN(parseFloat(e.target.value).toFixed(2))) {
-        console.log('pain');
         setState((prevState) => ({
             ...prevState,
             [field]: 0,
@@ -24,14 +23,16 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
         <div className={styles.formGroup}>
             <label>Date:</label>
             <input
-                type="date" value={payrollInfo.date}
+                type="date"
+                value={payrollInfo.date ?? ''}
                 onChange={(e) => setPayrollInfo({ ...payrollInfo, date: e.target.value })}
             />
         </div>
         <div className={styles.formGroup}>
             <label>Overtime (in Days):</label>
             <input
-                type="number" value={payrollInfo.ot}
+                type="number"
+                value={payrollInfo.ot ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "ot")}
                 onBlur={(e) => handleBlur(e, setPayrollInfo, "ot")}
             />
@@ -39,7 +40,8 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
         <div className={styles.formGroup}>
             <label>Salary Increase:</label>
             <input
-                type="number" value={payrollInfo.salaryIncrease}
+                type="number"
+                value={payrollInfo.salaryIncrease ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "salaryIncrease")}
                 onBlur={(e) => handleBlur(e, setPayrollInfo, "salaryIncrease")}
             />
@@ -47,7 +49,8 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
         <div className={styles.formGroup}>
             <label>Meal Allowance:</label>
             <input
-                type="number" value={payrollInfo.mealAllow}
+                type="number"
+                value={payrollInfo.mealAllow ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "mealAllow")}
                 onBlur={(e) => handleBlur(e, setPayrollInfo, "mealAllow")}
             />
@@ -55,7 +58,8 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
         <div className={styles.formGroup}>
             <label>Birthday Bonus:</label>
             <input
-                type="number" value={payrollInfo.bdayBonus}
+                type="number"
+                value={payrollInfo.bdayBonus ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "bdayBonus")}
                 onBlur={(e) => handleBlur(e, setPayrollInfo, "bdayBonus")}
             />
@@ -63,7 +67,8 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
         <div className={styles.formGroup}>
             <label>Incentive:</label>
             <input
-                type="number" value={payrollInfo.incentive}
+                type="number"
+                value={payrollInfo.incentive ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "incentive")}
                 onBlur={(e) => handleBlur(e, setPayrollInfo, "incentive")}
             />
@@ -71,7 +76,8 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
         <div className={styles.formGroup}>
             <label>Others:</label>
             <input
-                type="number" value={payrollInfo.otherPayrollInfo}
+                type="number"
+                value={payrollInfo.otherPayrollInfo ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "otherPayrollInfo")}
                 onBlur={(e) => handleBlur(e, setPayrollInfo, "otherPayrollInfo")}
             />

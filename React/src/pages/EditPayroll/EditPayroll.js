@@ -14,10 +14,29 @@ const EditPayroll = () => {
   const navigate = useNavigate();
   const { id, payment_id, fname, lname } = useParams();  // params passed from previous pages
   const { config } = useContext(ConfigContext);
-  const { getUserPayment, saveUserPayment } = useContext(ConfigContext);
-  const userSavedPayment = getUserPayment(id, payment_id) || { payrollInfo: {}, deductions: {} };
-  const [payrollInfo, setPayrollInfo] = useState(userSavedPayment.payrollInfo);
-  const [deductions, setDeductions] = useState(userSavedPayment.deductions);
+  const defaultPayrollInfo = {
+    date: '',
+    ot: 0,
+    salaryIncrease: 0,
+    mealAllow: 0,
+    bdayBonus: 0,
+    incentive: 0,
+    otherPayrollInfo: 0
+  };
+
+  const defaultDeductions = {
+    sss: 0,
+    philhealth: 0,
+    pagibig: 0,
+    cashAdvance: 0,
+    healthCard: 0,
+    absences: 0,
+    otherDeductions: 0
+  };
+
+  const [payrollInfo, setPayrollInfo] = useState(defaultPayrollInfo);
+  const [deductions, setDeductions] = useState(defaultDeductions);
+
   const [results, setResults] = useState(calculatePayroll(payrollInfo, deductions, config));
   const [defaults, setDefaults] = useState(config);
   const [savedStatus, setSavedStatus] = useState("Saved to Database!");
@@ -54,45 +73,52 @@ const EditPayroll = () => {
   };
 
   // setup prev values into input boxes
-  useEffect (()=>{
+  useEffect(() => {
+    if (!payment_id) {
+      console.error("Missing payment_id");
+      return;
+    }
+
     fetch(`${BASE_URL}/getPayment/${payment_id}`)
-    .then(res => res.json())
-    .then(data => {
-      const prevPayroll = {
-        date: data[0].formatted_date,
-        ot: data[0].overtimeDays,
-        salaryIncrease: data[0].salaryIncrease,
-        mealAllow: data[0].mealAllowance, 
-        bdayBonus: data[0].birthdayBonus,
-        incentive: data[0].incentive,
-        otherPayrollInfo: data[0].otherAdditions
-      }
-      const prevDeductions = {
-        sss: data[0].sss,
-        philhealth: data[0].philHealth,
-        pagibig: data[0].pagIbig,
-        cashAdvance: data[0].cashAdvance,
-        healthCard: data[0].healthCard, 
-        absences: data[0].lateAbsent,
-        otherDeductions: data[0].otherDeductions
-      }
-      const results = {
-        payroll: data[0].payroll,
-        deductions: data[0].deductions,
-        total: data[0].total
-      }
-      const defaults = {
-        rate: data[0].rate,
-        basic: data[0].basic
-      }
-      setPayrollInfo(prevPayroll);
-      setDeductions(prevDeductions);
-      setResults(results);
-      setDefaults(defaults);
-      console.log(data);
-    })
-    .catch(err => console.log(err));
-  }, [])
+      .then(res => res.json())
+      .then(data => {
+        console.log("Payment data:", data); 
+
+        const prevPayroll = {
+          date: new Date(data.formatted_date || data.payDate).toISOString().slice(0, 10),
+          ot: data.overtimeDays,
+          salaryIncrease: data.salaryIncrease,
+          mealAllow: data.mealAllowance,
+          bdayBonus: data.birthdayBonus,
+          incentive: data.incentive,
+          otherPayrollInfo: data.otherAdditions
+        };
+        const prevDeductions = {
+          sss: data.sss,
+          philhealth: data.philHealth,
+          pagibig: data.pagIbig,
+          cashAdvance: data.cashAdvance,
+          healthCard: data.healthCard,
+          absences: data.lateAbsent,
+          otherDeductions: data.otherDeductions
+        };
+        const results = {
+          payroll: data.payroll,
+          deductions: data.deductions,
+          total: data.total
+        };
+        const defaults = {
+          rate: data.rate,
+          basic: data.basic
+        };
+
+        setPayrollInfo(prevPayroll);
+        setDeductions(prevDeductions);
+        setResults(results);
+        setDefaults(defaults);
+      })
+      .catch(err => console.error("Error fetching payment:", err));
+  }, [payment_id]);
 
 
   const handleFadeOut = () => {

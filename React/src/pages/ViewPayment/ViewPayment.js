@@ -32,7 +32,7 @@ const ViewPayment = () => {
     .then(data => {
       const sortedData = data.sort((a, b) => new Date(b.formatted_date) - new Date(a.formatted_date));
       setUserPayments(sortedData);
-      console.log(data[0]);
+      console.log(data);
     })
     .catch(err => console.log(err));
   }, [])
@@ -56,11 +56,11 @@ const ViewPayment = () => {
               <table>
                 <tbody>
                   {userPayments?.map(payment => (
-                    <tr key={payment.payment_id}>
-                      <td className={styles.date}> {payment.formatted_date}</td>
+                    <tr key={payment._id}>
+                      <td className={styles.date}> {new Date(payment.payDate).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric', })} </td>
                       <td className={styles.total}>P {parseFloat(payment.total).toFixed(2)}</td>
-                      <td className={styles.edit}> <button onClick={() => handleEdit(payment.payment_id)}>EDIT</button>  </td>
-                      <td className={styles.delete}> <button onClick={() => handleDelete(payment.payment_id)}>DELETE</button> </td>
+                      <td className={styles.edit}> <button onClick={() => handleEdit(payment._id)}>EDIT</button>  </td>
+                      <td className={styles.delete}> <button onClick={() => handleDelete(payment._id)}>DELETE</button> </td>
                     </tr>
                   ))}
                 </tbody>
