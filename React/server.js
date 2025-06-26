@@ -1,201 +1,189 @@
 const SERVER_PORT = 8000;
 const express = require('express');
-const mysql = require('mysql2');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const connectToMongo = require('./src/scripts/conn.js'); // Import function to connect to MongoDB
-require('dotenv').config();
-const app = express();
+const { Employee, Payment, PayrollAppConfig } = require('./models/payrollSchema');
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-const db = mysql.createConnection({
-    host:'localhost',
-    user: 'root',
-    password:'', // replace w password to db
-    database: 'entompestcontrol'
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/payrollSystem', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-})
-
-app.get('/', (e, res)=> {
-    return res.json("from backend side");
-})
-
-app.get('/employee', (req, res) => {
-    console.log('get employee');
-    const sql = "SELECT * FROM employee";
-    db.query(sql, (err, data)=> {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
-})
-
-app.get('/payments/:employee_index_id', (req, res) => { 
-    const id = req.params.employee_index_id; 
-    console.log(`Get payment of employee ${id}`);
-    const sql = "SELECT *, DATE_FORMAT(payDate, '%Y-%m-%d') AS formatted_date FROM payments WHERE employee_index_id = ? AND isDeleted = 0";
-    
-    db.query(sql, [id], (err, data) => {
-        if (err) return res.json(err);
-        return res.json(data);
-    });
+app.get('/', (req, res) => {
+  res.json("from backend side");
 });
 
-app.post('/getEmail', (req, res) => {
-    const {employee_index_id} = req.body;
-    console.log(`getting email of employee ${employee_index_id}`);
-    const sql = "SELECT email FROM employee WHERE id = ?";
+app.get('/employee', async (req, res) => {
+  try {
+    const employees = await Employee.find();
+    res.json(employees);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch employees' });
+  }
+});
 
-    db.query(sql, [employee_index_id], (err, data) => {
-        if (err) return res.json(err);
-        return res.json(data);
-    });
+app.get('/payments/:employee_id', async (req, res) => {
+  const payments = await Payment.find({
+    employee_id: req.params.employee_id,
+    isDeleted: false
+  }).lean();
+
+  payments.forEach(p => {
+    p.formatted_date = new Date(p.payDate).toISOString().slice(0, 10);
+  });
+
+  res.json(payments);
 });
 
 
-app.get('/getPayment/:payment_id', (req, res) => {
-    const payment_id = req.params.payment_id; 
-    console.log(`get payment id ${payment_id}`);
-    const sql = "SELECT *, DATE_FORMAT(payDate, '%Y-%m-%d') AS formatted_date FROM payments WHERE payment_id = ?";
-
-    db.query(sql, [payment_id], (err, data)=> {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
+app.post("/getEmail", async (req, res) => {
+  try {
+    const employee = await Employee.findOne({ employee_id: req.body.employee_index_id });
+    if (!employee) return res.status(404).json({ error: "Employee not found" });
+    res.json([{ email: employee.email }]);
+  } catch (err) {
+    console.error("Error in /getEmail:", err);
+    res.status(500).json(err);
+  }
 });
 
-app.post('/deletePayment/:payment_id', (req, res) => {
-    const payment_id = req.params.payment_id; 
-    console.log(`delete payment id ${payment_id}`);
-    const sql = `UPDATE payments SET isDeleted = true WHERE payment_id = ?;`
-
-    db.query(sql, [payment_id], (err, data)=> {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
+app.get('/getPayment/:payment_id', async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.payment_id).lean();
+    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    payment.formatted_date = new Date(payment.payDate).toISOString().slice(0, 10);
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch payment' });
+  }
 });
 
-app.post('/saveConfig', (req, res) => {
-    const {rate, basic} = req.body;
-    console.log(`saving config`);
-    const sql = `UPDATE payroll_app_config SET rate = ?, basic = ?`;
-
-    db.query(sql, [rate, basic], (err, data)=> {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
+app.post('/deletePayment/:payment_id', async (req, res) => {
+  try {
+    await Payment.findByIdAndUpdate(req.params.payment_id, { isDeleted: true });
+    res.json({ message: 'Payment marked as deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete payment' });
+  }
 });
 
-app.get('/getConfig', (req, res) => {
-    console.log(`getting config`);
-    const sql = `SELECT * FROM payroll_app_config`;
-
-    db.query(sql, [], (err, data)=> {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
-});
-
-app.post('/savePassword', (req, res) => {
-    const {password} = req.body;
-    console.log(`update new password`);
-    const sql = `UPDATE payroll_app_config SET password = ?`;
-
-    db.query(sql, [password], (err, data)=> {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
-});
-
-app.post('/editPayment/:payment_id', (req, res) => {
-    const payment_id = req.params.payment_id; 
-    const { employee_index_id, rate, basic, payrollInfo, deductions, results } = req.body; 
-    console.log(`edit payment id ${payment_id}`);
-    const sql = `UPDATE payments 
-        SET payDate = ?, rate = ?, basic = ?, overtimeDays = ?, salaryIncrease = ?, 
-        mealAllowance = ?, birthdayBonus = ?, incentive = ?, otherAdditions = ?, sss = ?, 
-        philHealth = ?, pagIbig = ?, cashAdvance = ?, healthCard = ?, lateAbsent = ?, otherDeductions = ?, 
-        payroll = ?, deductions = ?, total = ?
-        WHERE payment_id = ?;`;
-
-    const values = [
-        payrollInfo.date, 
-        rate, 
-        basic, 
-        payrollInfo.ot, 
-        payrollInfo.salaryIncrease, 
-        payrollInfo.mealAllow, 
-        payrollInfo.bdayBonus, 
-        payrollInfo.incentive, 
-        payrollInfo.otherPayrollInfo, 
-        deductions.sss, 
-        deductions.philhealth, 
-        deductions.pagibig, 
-        deductions.cashAdvance, 
-        deductions.healthCard, 
-        deductions.absences, 
-        deductions.otherDeductions, 
-        results.payroll, 
-        results.deductions, 
-        results.total, 
-        payment_id
-    ];
-
-    db.query(sql, values, (err, data)=> {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
-});
-
-app.post('/addPayment', (req, res) => {
-    console.log('add payment');
-    const { employee_index_id, rate, basic, payrollInfo, deductions, results } = req.body; 
-    const sql = `INSERT INTO payments (employee_index_id, payDate, rate, basic, overtimeDays, salaryIncrease, 
-        mealAllowance, birthdayBonus, incentive, otherAdditions, sss, philHealth, pagIbig, 
-        cashAdvance, healthCard, lateAbsent, otherDeductions, payroll, deductions, total, isDeleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    
-    const values = [
-        employee_index_id,
-        payrollInfo.date, 
-        rate, 
-        basic, 
-        payrollInfo.ot, 
-        payrollInfo.salaryIncrease, 
-        payrollInfo.mealAllow, 
-        payrollInfo.bdayBonus, 
-        payrollInfo.incentive, 
-        payrollInfo.otherPayrollInfo, 
-        deductions.sss, 
-        deductions.philhealth, 
-        deductions.pagibig, 
-        deductions.cashAdvance, 
-        deductions.healthCard, 
-        deductions.absences, 
-        deductions.otherDeductions, 
-        results.payroll, 
-        results.deductions, 
-        results.total, 
-        false
-    ];
-
-    db.query(sql, values , (err, data) => {
-        if (err) return res.json(err);
-        return res.status(201).json({ message: "Payment added successfully", id: data.insertId });
-    });
-});
-
-async function database() {
-    try {
-        await connectToMongo();
-        // await populateDatabase();
-    } catch (error) {
-        console.error('Server: Failed to connect to MongoDB', error);
+app.post("/saveConfig", async (req, res) => {
+  try {
+    const { rate, basic } = req.body;
+    const config = await PayrollAppConfig.findOne();
+    if (config) {
+      config.rate = rate;
+      config.basic = basic;
+      await config.save();
+    } else {
+      await PayrollAppConfig.create({ rate, basic });
     }
-}
+    res.json({ message: "Configuration saved" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
-var port = process.env.PORT || 3000;
+app.get("/getConfig", async (req, res) => {
+  try {
+    const config = await PayrollAppConfig.findOne();
+    res.json(config);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
-server.listen(port, async function() {
-    await database(); 
-    console.log(`Server: Running on http://localhost:${port}`);
+app.post('/savePassword', async (req, res) => {
+  try {
+    const { password } = req.body;
+    await PayrollAppConfig.findOneAndUpdate({}, { password }, { upsert: true });
+    res.json({ message: 'Password saved' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save password' });
+  }
+});
+
+app.post('/editPayment/:payment_id', async (req, res) => {
+  try {
+    const {
+      employee_index_id, rate, basic, payrollInfo, deductions, results
+    } = req.body;
+
+    await Payment.findByIdAndUpdate(req.params.payment_id, {
+      employee_index_id,
+      payDate: new Date(payrollInfo.date),
+      rate,
+      basic,
+      overtimeDays: payrollInfo.ot,
+      salaryIncrease: payrollInfo.salaryIncrease,
+      mealAllowance: payrollInfo.mealAllow,
+      birthdayBonus: payrollInfo.bdayBonus,
+      incentive: payrollInfo.incentive,
+      otherAdditions: payrollInfo.otherPayrollInfo,
+      sss: deductions.sss,
+      philHealth: deductions.philhealth,
+      pagIbig: deductions.pagibig,
+      cashAdvance: deductions.cashAdvance,
+      healthCard: deductions.healthCard,
+      lateAbsent: deductions.absences,
+      otherDeductions: deductions.otherDeductions,
+      payroll: results.payroll,
+      deductions: results.deductions,
+      total: results.total
+    });
+
+    res.json({ message: 'Payment updated' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update payment' });
+  }
+});
+
+app.post('/addPayment', async (req, res) => {
+  try {
+    const {
+      employee_id, rate, basic, payrollInfo, deductions, results
+    } = req.body;
+
+    const newPayment = new Payment({
+      employee_id,
+      payDate: new Date(payrollInfo.date),
+      rate,
+      basic,
+      overtimeDays: payrollInfo.ot,
+      salaryIncrease: payrollInfo.salaryIncrease,
+      mealAllowance: payrollInfo.mealAllow,
+      birthdayBonus: payrollInfo.bdayBonus,
+      incentive: payrollInfo.incentive,
+      otherAdditions: payrollInfo.otherPayrollInfo,
+      sss: deductions.sss,
+      philHealth: deductions.philhealth,
+      pagIbig: deductions.pagibig,
+      cashAdvance: deductions.cashAdvance,
+      healthCard: deductions.healthCard,
+      lateAbsent: deductions.absences,
+      otherDeductions: deductions.otherDeductions,
+      payroll: results.payroll,
+      deductions: results.deductions,
+      total: results.total,
+      isDeleted: false
+    });
+
+    const saved = await newPayment.save();
+    res.status(201).json({ message: "Payment added successfully", id: saved._id });
+  } catch (err) {
+
+    res.status(500).json({ error: 'Failed to add payment', details: err.message });
+  }
+});
+
+
+
+app.listen(SERVER_PORT, () => {
+  console.log(`Listening on port ${SERVER_PORT}`);
 });
