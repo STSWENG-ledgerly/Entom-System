@@ -1,21 +1,33 @@
-const SERVER_PORT = 8000;
+// const SERVER_PORT = 8000;
+var port = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { Employee, Payment, PayrollAppConfig } = require('./models/payrollSchema');
+const connectToMongo = require('./src/scripts/conn.js'); // Import function to connect to MongoDBAdd commentMore actions
+const populateDatabase = require("./models/populatePayroll.js");
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/payrollSystem', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+// mongoose.connect('mongodb://localhost:27017/payrollSystem', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// }).then(() => console.log("Connected to MongoDB"))
+//   .catch((err) => console.error("MongoDB connection error:", err));
 
-a
+async function database() {
+    try {
+        await connectToMongo();
+        await populateDatabase();
+    } catch (error) {
+        console.error('Server: Failed to start server', error);
+    }
+}
+
 app.get('/', (req, res) => {
   res.json("from backend side");
 });
@@ -185,6 +197,11 @@ app.post('/addPayment', async (req, res) => {
 
 
 
-app.listen(SERVER_PORT, () => {
-  console.log(`Listening on port ${SERVER_PORT}`);
+// app.listen(SERVER_PORT, () => {
+//   console.log(`Listening on port ${SERVER_PORT}`);
+// });
+
+app.listen(port, async function() {
+    await database(); 
+    console.log(`Server: Running on http://localhost:${port}`);
 });
