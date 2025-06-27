@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-export const SERVER_PORT = 8000;
+export const SERVER_PORT = 3001;
 export const BASE_URL = `http://localhost:${SERVER_PORT}`;
 
 

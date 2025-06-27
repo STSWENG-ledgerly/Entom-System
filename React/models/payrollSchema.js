@@ -48,14 +48,23 @@ const payrollAppConfigSchema = new Schema({
   basic: { type: Number, required: true }
 });
 
+const account = new Schema({
+  username: { type: String, required: true },
+  password: { type: Number, required: true },
+  isDeleted: { type: Boolean, required: true }
+});
+
 // Models
 const Employee = mongoose.model("Employee", employeeSchema);
 const Payment = mongoose.model("Payment", paymentSchema);
 const PayrollAppConfig = mongoose.model("PayrollAppConfig", payrollAppConfigSchema);
+const Account = mongoose.model("Account", account);
+
 
 // Export all models
 module.exports = {
   Employee,
   Payment,
-  PayrollAppConfig
+  PayrollAppConfig,
+  Account
 };

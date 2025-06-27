@@ -1,12 +1,13 @@
 // const SERVER_PORT = 8000;
-var port = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { Employee, Payment, PayrollAppConfig } = require('./models/payrollSchema');
-const connectToMongo = require('./src/scripts/conn.js'); // Import function to connect to MongoDBAdd commentMore actions
+const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
+
+var port = process.env.PORT;
 
 const app = express();
 app.use(cors());
@@ -94,6 +95,7 @@ app.post("/saveConfig", async (req, res) => {
       config.rate = rate;
       config.basic = basic;
       await config.save();
+      res.status(200).json({ message: "Configuration updated", config });
     } else {
       await PayrollAppConfig.create({ rate, basic });
     }

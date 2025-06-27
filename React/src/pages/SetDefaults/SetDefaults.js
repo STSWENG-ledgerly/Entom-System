@@ -39,24 +39,32 @@ const SetDefaults = () => {
       setTimeout(() => setIsVisible(true)); 
     };
 
-    const saveToDB = (rate, basic) => {
-      console.log(config);
+  const saveToDB = async (rate, basic) => {
+    const nc = { rate, basic };
 
-      const nc = {
-        rate: rate, 
-        basic: basic
+    try {
+        const response = await fetch(`/saveConfig`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nc),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Error saving config:', errorData);
+          alert('Failed to save configuration. Please try again.');
+          return;
+        }
+
+        const data = await response.json();
+        console.log(data); // You can display this data in the UI as needed
+        alert('Configuration saved successfully!'); // Show success message
+      } catch (err) {
+        console.error('Error in fetch request:', err);
+        alert('An error occurred while saving the configuration. Please try again.');
       }
-      fetch(`${BASE_URL}/saveConfig`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(nc)
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => console.log(err));
-    }
+  };
+
 
     return (
       <div className={global.wrapper}>
