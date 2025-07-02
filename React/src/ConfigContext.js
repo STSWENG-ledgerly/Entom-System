@@ -1,28 +1,40 @@
 import React, { createContext, useState, useEffect } from 'react';
-export const SERVER_PORT = 3001;
-export const BASE_URL = `http://localhost:${SERVER_PORT}`;
+export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-
+// Context setup
 export const ConfigContext = createContext();
 
 export const ConfigProvider = ({ children }) => {
-  const [config, setConfig] = useState({
-    rate: '',
-    basic: '',
-  });
+  const [config, setConfig] = useState({ rate: '', basic: '' });
+  const [passwordHash, setPassword] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     fetch(`${BASE_URL}/getConfig`)
       .then((res) => res.json())
       .then((data) => {
-        setConfig({ rate: data[0].rate, basic: data[0].basic });
-        setPassword(data[0].password);
+        if (data && data.length > 0) {
+          setConfig({ rate: data[0].rate, basic: data[0].basic });
+        } else {
+          console.warn("No config data found from /getConfig");
+        }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error("Error fetching config:", err));
   }, []);
 
-  const [password, setPassword] = useState("123");
-  const [username, setUsername] = useState("Admin");
+  useEffect(() => {
+  fetch(`${BASE_URL}/getAdminAccount`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data && data.username && data.password) {
+        setUsername(data.username);
+        setPassword(data.password); // This assumes your backend returns passwordHash as `password`
+      } else {
+        console.warn("No admin credentials returned from /getAdminAccount");
+      }
+    })
+    .catch((err) => console.error("Error fetching admin credentials:", err));
+  }, []);
 
   //payroll configs
   const [userPayroll, setUserPayroll] = useState({
@@ -92,7 +104,7 @@ export const ConfigProvider = ({ children }) => {
       config, setConfig,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
-      password, setPassword, username, setUsername
+      passwordHash, setPassword, username, setUsername
     }}>
       {children}
     </ConfigContext.Provider>

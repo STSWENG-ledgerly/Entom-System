@@ -3,9 +3,10 @@ require('dotenv').config();
 
 const {
   Employee,
-  Payment,
-  PayrollAppConfig,
-  Account
+  Attendance,
+  Payroll,
+  Account,
+  Config
 } = require("../models/payrollSchema");
 
 async function dropDatabase() {
@@ -17,57 +18,147 @@ async function dropDatabase() {
     }
 }
 
-
-
 async function populateDatabase() {
     try {
-      
       await dropDatabase();
 
       const employeesData = [
-        { employee_id: "111", status: true, fname: "John", mname: "A", lname: "Doe", phone: "09100000000", email: "jdoe@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "112", status: true, fname: "Iker", mname: "A", lname: "Ventura", phone: "09100000000", email: "iventura@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "113", status: true, fname: "Zora", mname: "A", lname: "Scott", phone: "09100000000", email: "zscott@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "114", status: true, fname: "Alice", mname: "A", lname: "Johnson", phone: "09100000000", email: "ajohnson@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "115", status: true, fname: "Bob", mname: "A", lname: "Smith", phone: "09100000000", email: "bsmith@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "116", status: true, fname: "Charlie", mname: "A", lname: "Brown", phone: "09100000000", email: "cbrown@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "117", status: true, fname: "David", mname: "A", lname: "Wilson", phone: "09100000000", email: "dwilson@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "118", status: true, fname: "Eva", mname: "A", lname: "Martinez", phone: "09100000000", email: "emartinez@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "119", status: true, fname: "Frank", mname: "A", lname: "Garcia", phone: "09100000000", email: "fgarcia@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "1110", status: true, fname: "Grace", mname: "A", lname: "Lee", phone: "09100000000", email: "glee@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "1111", status: true, fname: "Hannah", mname: "A", lname: "Walker", phone: "09100000000", email: "hwalker@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "1112", status: true, fname: "Ian", mname: "A", lname: "Hall", phone: "09100000000", email: "ihall@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "1113", status: true, fname: "Jack", mname: "A", lname: "Young", phone: "09100000000", email: "jyoung@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "1114", status: true, fname: "Karen", mname: "A", lname: "King", phone: "09100000000", email: "kking@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 },
-        { employee_id: "1115", status: true, fname: "Liam", mname: "A", lname: "Wright", phone: "09100000000", email: "lwright@gmail.com", designation: "designation", position: "position", date_hired: new Date("2001-10-10"), rbacProfile: 1 }
+        {
+          employeeId: "admin01",
+          status: "Active",
+          firstName: "Admin",
+          middleName: "A",
+          lastName: "User",
+          department: "HR",
+          position: "System Administrator",
+          designation: "Administrator",
+          basicSalary: 100000,
+          bankAccount: {
+            bankName: "BDO",
+            accountNumber: "0000000001",
+            branch: "Main"
+          },
+          dateHired: new Date("2020-01-01"),
+          phone: "09100000000",
+          email: "admin@example.com",
+          rbacProfile: 0
+        },
+        {
+          employeeId: "111",
+          status: "Active",
+          firstName: "John",
+          middleName: "A",
+          lastName: "Doe",
+          department: "IT",
+          position: "Developer",
+          designation: "Software Engineer",
+          basicSalary: 8385,
+          bankAccount: {
+            bankName: "BDO",
+            accountNumber: "0000000111",
+            branch: "Quezon City"
+          },
+          dateHired: new Date("2001-10-10"),
+          phone: "09100000000",
+          email: "jdoe@gmail.com",
+          rbacProfile: 1
+        },
+        {
+          employeeId: "112",
+          status: "Active",
+          firstName: "Iker",
+          middleName: "A",
+          lastName: "Ventura",
+          department: "Marketing",
+          position: "Assistant",
+          designation: "Marketing Assistant",
+          basicSalary: 8385,
+          bankAccount: {
+            bankName: "BPI",
+            accountNumber: "0000000112",
+            branch: "Manila"
+          },
+          dateHired: new Date("2001-10-10"),
+          phone: "09100000000",
+          email: "iventura@gmail.com",
+          rbacProfile: 1
+        },
+        {
+          employeeId: "113",
+          status: "Active",
+          firstName: "Zora",
+          middleName: "A",
+          lastName: "Scott",
+          department: "Finance",
+          position: "Clerk",
+          designation: "Finance Staff",
+          basicSalary: 8385,
+          bankAccount: {
+            bankName: "Landbank",
+            accountNumber: "0000000113",
+            branch: "Cebu"
+          },
+          dateHired: new Date("2001-10-10"),
+          phone: "09100000000",
+          email: "zscott@gmail.com",
+          rbacProfile: 1
+        }
       ];
 
       await Employee.insertMany(employeesData);
       console.log(`Database: Inserted ${employeesData.length} employees.`);
 
-      const paymentsData = [
-        { employee_id: "111", payDate: new Date("2024-10-16"), rate: 645, basic: 8385, overtimeDays: 0, salaryIncrease: 0, mealAllowance: 0, birthdayBonus: 0, incentive: 0, otherAdditions: 0, sss: 0, philHealth: 0, pagIbig: 0, cashAdvance: 0, healthCard: 0, lateAbsent: 0, otherDeductions: 0, payroll: 8385, deductions: 0, total: 8385, isDeleted: false },
-        { employee_id: "112", payDate: new Date("2024-11-16"), rate: 645, basic: 8385, overtimeDays: 5, salaryIncrease: 0, mealAllowance: 0, birthdayBonus: 0, incentive: 0, otherAdditions: 0, sss: 0, philHealth: 0, pagIbig: 0, cashAdvance: 0, healthCard: 0, lateAbsent: 0, otherDeductions: 0, payroll: 11610, deductions: 0, total: 11610, isDeleted: false },
-        { employee_id: "113", payDate: new Date("2024-12-16"), rate: 645, basic: 8385, overtimeDays: 5, salaryIncrease: 0, mealAllowance: 0, birthdayBonus: 0, incentive: 0, otherAdditions: 0, sss: 0, philHealth: 0, pagIbig: 0, cashAdvance: 0, healthCard: 0, lateAbsent: 0, otherDeductions: 0, payroll: 11610, deductions: 0, total: 11610, isDeleted: false },
+      const payrollData = [
+        {
+          employee: null, // to be updated after insertion
+          payDate: new Date("2024-10-16"),
+          payrollTimeframe: "Monthly",
+          allowances: {
+            mealAllowance: 0,
+            birthdayBonus: 0,
+            incentives: 0,
+            otherAdditions: 0
+          },
+          overtimeDetails: [],
+          grossSalary: 8385,
+          deductions: {
+            tax: 0,
+            sss: 0,
+            philHealth: 0,
+            pagIbig: 0,
+            healthCard: 0,
+            cashAdvance: 0,
+            lateAbsent: 0,
+            otherDeductions: 0
+          },
+          totalDeductions: 0,
+          netPay: 8385,
+          paymentMode: "Bank Transfer",
+          payslipId: "PS111-20241016",
+          isApproved: true,
+          dateGenerated: new Date("2024-10-16")
+        }
       ];
 
-      await Payment.insertMany(paymentsData);
-      console.log(`Database: Inserted ${paymentsData.length} payment data.`);
+      const employees = await Employee.find({ employeeId: { $in: ["111"] } });
+      payrollData[0].employee = employees[0]._id;
+      await Payroll.insertMany(payrollData);
+      console.log(`Database: Inserted ${payrollData.length} payroll entries.`);
 
-
-      await PayrollAppConfig.create({
-      password: "123",
-      rate: 645,
-      basic: 8385
+      await Config.create({
+        standardRate: 645,
+        holidayRate: 800,
+        weekendRate: 700
       });
-      console.log("Database: Inserted payroll app config.");
+      console.log("Database: Inserted payroll config.");
 
       await Account.create({
-      username: "admin",
-      password: "123",
-      isDeleted: false
+        username: "admin",
+        passwordHash: "123", // Ideally, this should be hashed
+        role: "Administrator",
+        isDeleted: false
       });
-      console.log(`Database: Inserted 1 account data.`);
+      console.log(`Database: Inserted 1 admin account.`);
 
       console.log('Database: Population function completed');
     } catch (error) {
@@ -75,5 +166,10 @@ async function populateDatabase() {
     }
 }
 
-
 module.exports = populateDatabase;
+
+
+if (require.main === module) {
+  const connectToMongo = require('../src/scripts/conn');
+  connectToMongo().then(() => populateDatabase());
+}

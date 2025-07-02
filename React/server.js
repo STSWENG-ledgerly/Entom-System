@@ -2,12 +2,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { Employee, Payment, PayrollAppConfig } = require('./models/payrollSchema');
+const { Employee, Attendance, Payroll, Account, Config } = require('./models/payrollSchema');
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
 
-var port = process.env.PORT;
+const port = process.env.SERVER_PORT || 4000;
 
 const app = express();
 app.use(cors());
@@ -23,7 +23,6 @@ app.use(express.json());
 async function database() {
     try {
         await connectToMongo();
-        await populateDatabase();
     } catch (error) {
         console.error('Server: Failed to start server', error);
     }
@@ -105,12 +104,16 @@ app.post("/saveConfig", async (req, res) => {
   }
 });
 
-app.get("/getConfig", async (req, res) => {
+app.get('/getConfig', async (req, res) => {
   try {
-    const config = await PayrollAppConfig.findOne();
+    const config = await Config.find({});
+    if (!config || config.length === 0) {
+      return res.status(404).json({ error: 'Config not found' });
+    }
     res.json(config);
-  } catch (err) {
-    res.status(500).json(err);
+  } catch (error) {
+    console.error("Server: Error fetching config", error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -197,6 +200,20 @@ app.post('/addPayment', async (req, res) => {
   }
 });
 
+
+// Added new Routes
+
+app.get('/getAdminAccount', async (req, res) => {
+  try {
+    const admin = await Account.findOne({ role: 'Administrator', isDeleted: false });
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+
+    res.json({ username: admin.username, password: admin.passwordHash });
+  } catch (error) {
+    console.error("Server: Error fetching admin account", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 // app.listen(SERVER_PORT, () => {

@@ -1,39 +1,38 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
-import { ConfigContext } from '../../ConfigContext';
+import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import officeImage from '../Login/office.jpg';
 
 
 const Login = () => {
-  const [userName, setUsername] = useState('');
+  const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [errMessage, setErrMessage] = useState('');
   const navigate = useNavigate();
 
-
-  const { password } = useContext(ConfigContext);
-  const { username } = useContext(ConfigContext);
-
-
+  // Use admin credentials from context
+const { username, passwordHash } = useContext(ConfigContext);
 
   useEffect(() => {
     sessionStorage.removeItem('userValid');
-  }, [])
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (userPassword === password & userName === username) {
+
+      if (userName === username && userPassword === passwordHash) {
       sessionStorage.setItem('userValid', true);
       navigate('/MainMenu');
-    } else {
-      if (userPassword !== password) {
-        setErrMessage("Password is incorrect");
+      } else {
+        if (userName !== username) {
+          setErrMessage('Username not found');
+        } else if (userPassword !== passwordHash) {
+          setErrMessage('Password is incorrect');
+        } else {
+          setErrMessage('Invalid login');
+        }
       }
-      if (userName !== username) {
-        setErrMessage("Username not found");
-      }
-    }
   };
 
 
@@ -49,7 +48,7 @@ const Login = () => {
             <input className={styles.usernameHolder}
               type="text"
               value={userName}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUserName(e.target.value)}
               placeholder="Username"
             />
             <input className={styles.passwordHolder}

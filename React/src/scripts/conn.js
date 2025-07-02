@@ -10,6 +10,7 @@ async function connectToMongo(dbName = process.env.DB_NAME) {
     } catch (error) {
         console.error('Database: Error connecting to MongoDB', error);
     }
+    console.log('ENV Mongo URI:', process.env.MONGODB_URI);
 };
 function signalHandler() {
     console.log("Database: Closing MongoDB connection...");
