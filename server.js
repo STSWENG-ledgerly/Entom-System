@@ -33,8 +33,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/employee', async (req, res) => {
+  const { company } = req.query;
   try {
-    const employees = await Employee.find();
+    const employees = await Employee.find({ company });
     res.json(employees);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch employees' });
@@ -205,10 +206,12 @@ app.post('/addPayment', async (req, res) => {
 
 app.get('/getAdminAccount', async (req, res) => {
   try {
-    const admin = await Account.findOne({ role: 'Administrator', isDeleted: false });
+    const { username } = req.query;
+    
+    const admin = await Account.findOne({ username, role: 'Administrator', isDeleted: false });
     if (!admin) return res.status(404).json({ error: 'Admin not found' });
 
-    res.json({ username: admin.username, password: admin.passwordHash });
+    res.json({ username: admin.username, password: admin.passwordHash, company: admin.company});
   } catch (error) {
     console.error("Server: Error fetching admin account", error);
     res.status(500).json({ error: 'Internal server error' });

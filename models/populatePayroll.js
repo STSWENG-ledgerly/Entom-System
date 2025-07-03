@@ -181,12 +181,56 @@ async function populateDatabase() {
     } catch (error) {
       console.error('Database: Error populating database', error);
     }
-}
+
+    // --- Create second company ---
+const secondCompany = await Company.create({
+  name: "OpenAI",
+  address: "Silicon Valley",
+  industry: "Technology"
+});
+console.log("Database: Inserted company TechNova Solutions.");
+
+
+// --- Create employee for second company ---
+const newEmployee = await Employee.create({
+  employee_id: "210",
+  company: secondCompany._id,
+  status: "Active",
+  fname: "Alice",
+  middleName: "B",
+  lname: "Tan",
+  department: "Engineering",
+  position: "QA Analyst",
+  designation: "Software QA",
+  basicSalary: 70000,
+  bankAccount: {
+    bankName: "BPI",
+    accountNumber: "0000000210",
+    branch: "Makati"
+  },
+  dateHired: new Date("2022-06-15"),
+  phone: "09181234567",
+  email: "alice.tan@technova.com",
+  rbacProfile: 1
+});
+console.log("Database: Inserted employee Alice Tan.");
+
+
+  // --- Create admin account for second company ---
+  await Account.create({
+    username: "admin2",
+    passwordHash: "123", // Hashing recommended in production
+    role: "Administrator",
+    company: secondCompany._id,
+    isDeleted: false
+  });
+  console.log("Database: Inserted 1 admin account for OpenAI.");
+  }
 
 module.exports = populateDatabase;
 
 
-if (require.main === module) {
-  const connectToMongo = require('../src/scripts/conn');
-  connectToMongo().then(() => populateDatabase());
-}
+  if (require.main === module) {
+    const connectToMongo = require('../src/scripts/conn');
+    connectToMongo().then(() => populateDatabase());
+  }
