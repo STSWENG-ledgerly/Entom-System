@@ -97,8 +97,8 @@
 
 .imageSwapContainer {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 128px;
+  height: 128px;
   margin-bottom: 12px;
 }
 
@@ -107,8 +107,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 64px;
-  height: 64px;
+  width: 128px;
+  height: 128px;
   transition: opacity 0.3s ease;
 }
 
