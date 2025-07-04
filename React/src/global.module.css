@@ -15,8 +15,13 @@
     width: 100vw;       
     min-height: 100vh;      
     z-index: -2;
-}
 
+}
+body {
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
 .title {
     font-family: 'JetBrains Mono';
     background-color: #015FA9;
@@ -26,7 +31,7 @@
     color:white;
     font-weight:lighter;
     box-shadow: 0px 3px 2px rgb(124, 151, 169);
-
+    margin: 0;
 }
 
 .fadeOut {

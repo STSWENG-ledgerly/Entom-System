@@ -1,26 +1,125 @@
-.links {
-    display: flex;
-    flex-direction: column;
-    width: 500px;
+/* .elementColumn { */
+/*   display: flex; */
+/*   flex: 1; */
+/*   justify-content: center; */
+/*   align-items: center; */
+/* } */
+/**/
+/* .links { */
+/*   display: grid; */
+/*   grid-template-columns: 1fr; */
+/*   grid-template-rows: 1fr; */
+/*   gap: 20px; */
+/*   width: 100%; */
+/*   height: 60vh; /* adjust if needed */ 
+/*   padding: 20px; */
+/* } */
+/**/
+/* .links a { */
+/*   display: flex; /* <-- for centering */ 
+/*   justify-content: center; */
+/*   align-items: center; */
+/*   text-align: center; */
+/**/
+/*   text-decoration: none; */
+/*   color: black; */
+/*   background-color: white; */
+/**/
+/*   font-size: 28px; */
+/*   border-radius: 10px; */
+/*   box-shadow: 0px 3px 2px rgb(124, 151, 169); */
+/*   transition: all 0.2s ease-in-out; */
+/**/
+/*   /* remove fixed size and use relative sizing */
+/*   width: 100%; */
+/*   height: 100%; */
+/* } */
+/**/
+/* .links a:hover { */
+/*   border: 2px solid black; */
+/*   transform: scale(1.03); */
+/* } */
+
+
+.menuWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-left: 20px;
+  padding-bottom: 20px;
+  width:95%;
+  height: calc(100vh - 200px); /* adjust based on your header/sidebar */
+  overflow: hidden; /* prevent spill */
+  box-sizing: border-box;
 }
 
-.links a {
-    text-decoration:none;
-    color: black;
-    background-color: white;
-    line-height: 70px;
-    padding-left: 20px;
-    font-size: 28px;
-    width: 500px;
-    border-radius: 10px;
-    box-shadow: 0px 3px 2px rgb(124, 151, 169);
-
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%; /* optional: limits horizontal stretch */
+  height: 90%;
 }
 
-.links a:hover {
-    border-width: 2px;
-    border-color: black;
-    border-style:solid;
+.gridContainer a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  text-decoration: none;
+  color: black;
+  background-color: white;
+
+  font-size: 28px;
+  border-radius: 10px;
+  box-shadow: 0px 3px 2px rgb(124, 151, 169);
+  transition: all 0.2s ease-in-out;
+
+  width: 100%;
+  height: 100%;
+}
+
+.gridContainer a:hover {
+  border: 2px solid black;
+  transform: scale(1.015);
+}
+.gridContainer a:hover {
+    font-weight: 700; /* Makes text bold on hover */
+    transform: scale(1.02); /* Optional: small scale effect */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Optional: adds depth */
 }
 
 
+.imageSwapContainer {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+}
+
+.imageGray,
+.imageColor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  transition: opacity 0.3s ease;
+}
+
+.imageColor {
+  opacity: 0;
+}
+
+.gridContainer a:hover .imageGray {
+  opacity: 0;
+}
+
+.gridContainer a:hover .imageColor {
+  opacity: 1;
+}
