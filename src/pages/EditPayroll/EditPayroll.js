@@ -30,7 +30,8 @@ const EditPayroll = () => {
     pagIbig: 0,
     cashAdvance: 0,
     healthCard: 0,
-    lateAbsent: 0,
+    lateHours: 0,
+    absentDays: 0,
     otherDeductions: 0
   };
 
@@ -75,7 +76,8 @@ const EditPayroll = () => {
       pagIbig:       deductions.pagIbig,
       healthCard:    deductions.healthCard,
       cashAdvance:   deductions.cashAdvance,
-      lateAbsent:    deductions.lateAbsent,
+      lateHours:    deductions.lateHours,
+      absentDays:     deductions.absentDays,
       otherDeductions: deductions.otherDeductions
     },
 
@@ -124,7 +126,8 @@ const EditPayroll = () => {
           pagIbig: data.deductions?.pagIbig ?? 0,
           cashAdvance: data.deductions?.cashAdvance ?? 0,
           healthCard: data.deductions?.healthCard ?? 0,
-          lateAbsent: data.deductions?.lateAbsent ?? 0,
+          lateHours: data.deductions?.lateHours ?? 0,
+          absentDays: data.deductions?.absentDays ?? 0,
           otherDeductions: data.deductions?.otherDeductions ?? 0,
         };
 

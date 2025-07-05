@@ -51,7 +51,8 @@ export const ConfigProvider = ({ children }) => {
       pagibig: 0,
       cashAdvance: 0,
       healthCard: 0,
-      lateAbsent: 0,
+      lateHours: 0,
+      absentDays: 0,
       otherDeductions: 0,
     },
   });

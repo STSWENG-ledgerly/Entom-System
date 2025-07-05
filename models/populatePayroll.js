@@ -170,7 +170,8 @@ async function populateDatabase() {
         pagIbig: randomInt(100, 500),
         healthCard: randomInt(50, 200),
         cashAdvance: randomInt(0, 1000),
-        lateAbsent: randomInt(0, 300),
+        lateHours: randomInt(0, 300),
+        absentDays: randomInt(0, 300),
         otherDeductions: randomInt(0, 300)
       };
       const totalDeductions = Object.values(deductions).reduce((a, b) => a + b, 0);

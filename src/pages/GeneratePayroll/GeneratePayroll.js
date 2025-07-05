@@ -65,7 +65,8 @@ const GeneratePayroll = () => {
         pagIbig: 0,
         cashAdvance: 0,
         healthCard: 0,
-        lateAbsent: 0,
+        lateHours: 0,
+        absentDays: 0,
         otherDeductions: 0
     });
     const [results, setResults] = useState({
@@ -130,7 +131,8 @@ const GeneratePayroll = () => {
             `Pag-IBIG: ${deductions.pagIbig}`,
             `Cash Advance: ${deductions.cashAdvance}`,
             `Health Card: ${deductions.healthCard}`,
-            `lateAbsent: ${deductions.lateAbsent}`,
+            `lateHours: ${deductions.lateHours}`,
+            `absentDays: ${deductions.absentDays}`,
             `Other Deductions: ${deductions.otherDeductions}`
         ];
 
@@ -229,7 +231,8 @@ const GeneratePayroll = () => {
         pagIbig:         deductions.pagIbig,
         healthCard:      deductions.healthCard,
         cashAdvance:     deductions.cashAdvance,
-        lateAbsent:      deductions.lateAbsent,
+        lateHours:      deductions.lateHours,
+        absentDays:     deductions.absentDays,
         otherDeductions: deductions.otherDeductions
     };
 

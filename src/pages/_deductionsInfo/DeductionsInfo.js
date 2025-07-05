@@ -67,12 +67,21 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Late/Absent:</label>
+            <label>Late (in Hours):</label>
             <input
                 type="number"
-                value={deductions.lateAbsent ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "lateAbsent")}
-                onBlur={(e) => handleBlur(e, setDeductions, "lateAbsent")}
+                value={deductions.lateHours ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "lateHours")}
+                onBlur={(e) => handleBlur(e, setDeductions, "lateHours")}
+            />
+        </div>
+        <div className={styles.formGroup}>
+            <label>Absences (per Day):</label>
+            <input
+                type="number"
+                value={deductions.absentDays ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "absentDays")}
+                onBlur={(e) => handleBlur(e, setDeductions, "absentDays")}
             />
         </div>
         <div className={styles.formGroup}>

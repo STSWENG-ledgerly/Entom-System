@@ -56,7 +56,8 @@ const payrollSchema = new Schema({
     pagIbig: { type: Number, default: 0 },
     healthCard: { type: Number, default: 0 },
     cashAdvance: { type: Number, default: 0 },
-    lateAbsent: { type: Number, default: 0 },
+    lateHours: { type: Number, default: 0 },
+    absentDays:     { type: Number, default: 0 },
     otherDeductions: { type: Number, default: 0 }
   },
   totalDeductions: { type: Number, required: true },
@@ -83,6 +84,9 @@ const companySchema = new Schema({
   name: { type: String, required: true },
   address: { type: String },
   industry: { type: String },
+  overtimeMultiplier: { type: Number, default: 1.25 },    
+  workHoursPerDay: { type: Number, default: 8 },          
+  workingDaysPerMonth: { type: Number, default: 22 },    
   isDeleted: { type: Boolean, default: false }
 });
 

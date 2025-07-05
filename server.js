@@ -198,7 +198,8 @@ app.post('/editPayment/:payment_id', async (req, res) => {
           pagIbig:        deductions.pagIbig,
           healthCard:     deductions.healthCard,
           cashAdvance:    deductions.cashAdvance,
-          lateAbsent:     deductions.laetAbsent,
+          lateHours:     deductions.lateHours,
+          absentDays:     deductions.absentDays,
           otherDeductions: deductions.otherDeductions
         },
         totalDeductions, 
@@ -243,7 +244,7 @@ app.post('/addPayment', async (req, res) => {
       return res.status(400).json({ error: 'Missing company in request' });
     }
     
-     const emp = await Employee.findOne({ employee_id: employee,  company});
+    const emp = await Employee.findOne({ employee_id: employee, company }).lean();
     if (!emp) {
       return res.status(400).json({ error: `Employee ${employee} not found in company ${company}` });
     }
@@ -340,7 +341,73 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
   }
 });
 
+app.post('/addEmployee', async (req, res) => {
+  try {
+    const {
+      employee_id,
+      company,
+      status = 'Active',
+      fname,
+      middleName = '',
+      lname,
+      department,
+      position,
+      designation,
+      basicSalary,
+      bankAccount: {
+        bankName,
+        accountNumber,
+        branch = ''
+      },
+      dateHired,
+      phone,
+      email,
+      rbacProfile
+    } = req.body;
 
+    // validate company _id
+    if (!mongoose.Types.ObjectId.isValid(company)) {
+      return res.status(400).json({ error: 'Invalid company ID' });
+    }
+
+    const workingDaysInMonth = 22;      // adjust to your policy
+    const workHoursPerDay    = 8;     
+    const overtimeMultiplier = 1.25;   
+
+    const dailyRate    = basicSalary / workingDaysInMonth;
+    const hourlyRate   = dailyRate / workHoursPerDay;
+    const overtimeRate = hourlyRate * overtimeMultiplier;
+
+    const newEmployee = new Employee({
+      employee_id,                           
+      company:        mongoose.Types.ObjectId(company), 
+      status,                                
+      fname,
+      middleName,
+      lname,
+      department,
+      position,
+      designation,
+      basicSalary,                         
+      overtimeRate,                          
+      bankAccount: {                          
+        bankName,
+        accountNumber,
+        branch
+      },
+      dateHired:      new Date(dateHired),      
+      phone,
+      email,
+      rbacProfile                    
+    });
+
+    const saved = await newEmployee.save();
+    res.status(201).json({ message: 'Employee added successfully', id: saved._id });
+  } catch (err) {
+    console.error('Error in POST /addEmployee:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 // app.listen(SERVER_PORT, () => {
 //   console.log(`Listening on port ${SERVER_PORT}`);
 // });
