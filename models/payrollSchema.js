@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 // Employee Schema
 const employeeSchema = new Schema({
-  employee_id: { type: String, required: true, unique: true },
+  employee_id: { type: String, required: true },
   company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
   fname: { type: String, required: true },
@@ -25,6 +25,10 @@ const employeeSchema = new Schema({
   rbacProfile: { type: Number, required: true },
 }, { timestamps: true });
 
+employeeSchema.index(
+  { company: 1, employee_id: 1 },
+  { unique: true }
+);
 
 // Payroll Schema
 const payrollSchema = new Schema({

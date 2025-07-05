@@ -233,7 +233,7 @@ console.log("Database: Inserted company TechNova Solutions.");
 
 // --- Create employee for second company ---
 const newEmployee = await Employee.create({
-  employee_id: "210",
+  employee_id: "110",
   company: secondCompany._id,
   status: "Active",
   fname: "Alice",

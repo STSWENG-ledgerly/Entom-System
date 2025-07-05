@@ -26,27 +26,6 @@ export const calculatePayroll = (payrollInfo = {}, deductions = {}, config = {})
 
   const total = payroll_total - deductions_total;
 
-  // Debug logs
-  console.log("🧾 Overtime Pay:", otPay);
-  console.log("🧾 Meal Allowance:", meal);
-  console.log("🧾 Birthday Bonus:", bday);
-  console.log("🧾 Incentive:", incent);
-  console.log("🧾 Other Additions:", otherAdd);
-  console.log("🧾 Basic Salary:", basic);
-  console.log("✅ Payroll Total:", payroll_total);
-
-  console.log("➖ Tax:", tax);
-  console.log("➖ SSS:", sss);
-  console.log("➖ PhilHealth:", philHealth);
-  console.log("➖ Pag-IBIG:", pagIbig);
-  console.log("➖ Cash Advance:", cashAdvance);
-  console.log("➖ Health Card:", healthCard);
-  console.log("➖ Late/Absent:", lateAbsent);
-  console.log("➖ Other Deductions:", otherDeductions);
-  console.log("✅ Deductions Total:", deductions_total);
-
-  console.log("💰 Net Total:", total);
-
   return {
     payroll: payroll_total,
     deductions: deductions_total,

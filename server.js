@@ -1,5 +1,6 @@
 // const SERVER_PORT = 8000;
 const express = require('express');
+const bcrypt  = require('bcrypt');  
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { Employee, Payroll, Account, Company, Config } = require('./models/payrollSchema');
@@ -47,9 +48,14 @@ app.get('/payments/:employee_id', async (req, res) => {
   try {
     const { company } = req.query;
 
-    console.log(company)
-    // 1) find the employee document by your custom ID
-    const employee = await Employee.findOne({ employee_id: req.params.employee_id });
+    if (!company) {
+      return res.status(400).json({ error: 'Missing company parameter' });
+    }
+
+    const employee = await Employee.findOne({
+      employee_id: req.params.employee_id,
+      company                
+    });
     if (!employee) {
       return res.status(404).json({ error: 'Employee not found' });
     }
@@ -75,22 +81,57 @@ app.get('/payments/:employee_id', async (req, res) => {
 
 app.get('/getPayment/:payment_id', async (req, res) => {
   try {
+    const { company } = req.query;
+
     const payment = await Payroll.findById(req.params.payment_id).lean();
-    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    // Ensure the payment belongs to an employee in the same company
+    const employeeBelongs = await Employee.exists({
+      _id: payment.employee,
+      company: company
+    });
+
+    if (!employeeBelongs) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
     payment.formatted_date = new Date(payment.payDate).toISOString().slice(0, 10);
     res.json(payment);
   } catch (err) {
+    console.error("Error in GET /getPayment/:payment_id:", err);
     res.status(500).json({ error: 'Failed to fetch payment' });
   }
 });
 
 app.post('/deletePayment/:payment_id', async (req, res) => {
   try {
+     const { company } = req.query;
+    if (!company) {
+      return res.status(400).json({ error: 'Missing company parameter' });
+    }
+
+    const payment = await Payroll.findById(req.params.payment_id).lean();
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    const employeeBelongs = await Employee.exists({
+      _id: payment.employee,
+      company: company
+    });
+    if (!employeeBelongs) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
     await Payroll.findByIdAndUpdate(req.params.payment_id, { isDeleted: true });
     res.json({ message: 'Payment marked as deleted' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to delete payment' });
-  }
+    } catch (err) {
+      console.error("Error in POST /deletePayment/:payment_id:", err);
+      res.status(500).json({ error: 'Failed to delete payment' });
+    }
 });
 
 app.post("/getEmail", async (req, res) => {
@@ -194,12 +235,17 @@ app.post('/addPayment', async (req, res) => {
       overtimeDetails = {},
       allowances, deductions, grossSalary,
       totalDeductions, total, paymentMode,
-      payslipId, isApproved, isDeleted, dateGenerated
+      payslipId, isApproved, isDeleted, dateGenerated,
+      company
     } = req.body;
 
-    const emp = await Employee.findOne({ employee_id: employee });
+    if (!company) {
+      return res.status(400).json({ error: 'Missing company in request' });
+    }
+    
+     const emp = await Employee.findOne({ employee_id: employee,  company});
     if (!emp) {
-      return res.status(400).json({ error: "Employee not found for employee_id: " + employee });
+      return res.status(400).json({ error: `Employee ${employee} not found in company ${company}` });
     }
 
     // Duplication check
@@ -237,16 +283,32 @@ app.post('/addPayment', async (req, res) => {
 
 // Added new Routes
 
-app.get('/getAdminAccount', async (req, res) => {
+app.post('/admin/login', async (req, res) => {
   try {
-    const { username } = req.query;
-    
-    const admin = await Account.findOne({ username, role: 'Administrator', isDeleted: false });
-    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+    const { username, password } = req.body;
 
-    res.json({ username: admin.username, password: admin.passwordHash, company: admin.company});
-  } catch (error) {
-    console.error("Server: Error fetching admin account", error);
+    const admin = await Account.findOne({
+      username,
+      role: 'Administrator',
+      isDeleted: false
+    });
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Hashing
+    // const isMatch = await bcrypt.compare(password, admin.passwordHash);
+    // if (!isMatch) {
+    //   return res.status(401).json({ error: 'Invalid credentials' });
+    // }
+
+    if (password !== admin.passwordHash) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    res.json({ username: admin.username, company: admin.company });
+  } catch (err) {
+    console.error("Error in POST /admin/login:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

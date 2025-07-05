@@ -256,7 +256,8 @@ const GeneratePayroll = () => {
         payslipId,
         isApproved:       true,                  // default approval
         dateGenerated:    payrollInfo.date,
-        isDeleted:        false
+        isDeleted:        false,
+        company: sessionStorage.getItem('company')
     };
 
     console.log("📤 POST payload:", payload);

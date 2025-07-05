@@ -103,7 +103,9 @@ const EditPayroll = () => {
   useEffect(() => {
     if (!payment_id) return;
     
-    fetch(`${BASE_URL}/getPayment/${payment_id}`)
+    const company = sessionStorage.getItem('company');
+
+    fetch(`${BASE_URL}/getPayment/${payment_id}?company=${encodeURIComponent(company)}`)
       .then(res => res.json())
       .then(data => {
         const prevPayroll = {

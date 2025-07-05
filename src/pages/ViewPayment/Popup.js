@@ -10,14 +10,20 @@ function Popup (props)  {
     }
 
     const handleDelete = () => {
-        fetch(`${BASE_URL}/deletePayment/${props.pid}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-          })
+       const company = sessionStorage.getItem('company');
+       console.log('→ Deleting with company:', company);
+       
+        fetch(
+              `${BASE_URL}/deletePayment/${props.pid}?company=${encodeURIComponent(company)}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+              }
+            )
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
-            props.setUserPayments(userPayments => userPayments.filter(payment => payment._id !== props.pid));
+            props.setUserPayments(up => up.filter(p => p._id !== props.pid));
           })
           .catch((err) => console.log(err));
 

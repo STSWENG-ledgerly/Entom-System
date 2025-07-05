@@ -1,8 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import officeImage from '../Login/office.jpg';
+
 
 
   const Login = () => {
@@ -11,32 +12,31 @@ import officeImage from '../Login/office.jpg';
     const [errMessage, setErrMessage] = useState('');
     const navigate = useNavigate();
 
-    // Use admin credentials from context
-  const { username, passwordHash } = useContext(ConfigContext);
-
     useEffect(() => {
       sessionStorage.removeItem('userValid');
+      sessionStorage.removeItem('company');
+      sessionStorage.removeItem('username');
     }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await fetch(`${BASE_URL}/getAdminAccount?username=${userName}`);
-      if (!res.ok) {
-        setErrMessage('Username not found');
-        return;
-      }
+      const res = await fetch(`${BASE_URL}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: userName, password: userPassword })
+      });
 
-      const data = await res.json();
-
-      if (userPassword === data.password) {
-        sessionStorage.setItem('userValid', true);
-        sessionStorage.setItem('company', data.company); 
-        sessionStorage.setItem('username', data.username); 
+      if (res.ok) {
+        const { username, company } = await res.json();
+        sessionStorage.setItem('userValid', 'true');
+        sessionStorage.setItem('company', company);
+        sessionStorage.setItem('username', username);
         navigate('/MainMenu');
+      } else if (res.status === 401) {
+        setErrMessage('Invalid username or password');
       } else {
-        setErrMessage('Password is incorrect');
+        setErrMessage('Login failed. Please try again.');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -63,7 +63,7 @@ import officeImage from '../Login/office.jpg';
               type="password"
               value={userPassword}
               onChange={(e) => setUserPassword(e.target.value)}
-              placeholder="Admin Password"
+              placeholder="Password"
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
             <button className={styles.submitButton} type="submit">LOGIN</button>
