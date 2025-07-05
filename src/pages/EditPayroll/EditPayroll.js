@@ -26,98 +26,134 @@ const EditPayroll = () => {
 
   const defaultDeductions = {
     sss: 0,
-    philhealth: 0,
-    pagibig: 0,
+    philHealth: 0,
+    pagIbig: 0,
     cashAdvance: 0,
     healthCard: 0,
-    absences: 0,
+    lateAbsent: 0,
     otherDeductions: 0
   };
 
   const [payrollInfo, setPayrollInfo] = useState(defaultPayrollInfo);
   const [deductions, setDeductions] = useState(defaultDeductions);
 
-  const [results, setResults] = useState(calculatePayroll(payrollInfo, deductions, config));
+  const [results, setResults] = useState({ payroll: 0, deductions: 0, total: 0 });
   const [defaults, setDefaults] = useState(config);
   const [savedStatus, setSavedStatus] = useState("Saved to Database!");
   const [isVisible, setIsVisible] = useState(false);
 
+  const otHours = parseFloat(payrollInfo.ot) || 0;
+  const otRate = parseFloat(defaults.rate) || 0;
+  const otTotal = otHours * otRate;
+
   // save new values to DB
   const saveUserPayrollData = () => {
-    // show results on UI
-    const newResults = calculatePayroll(payrollInfo, deductions, defaults);
-    setResults(newResults);
+  const newResults = calculatePayroll(payrollInfo, deductions, defaults);
+  setResults(newResults);
 
-    // save to DB
-    const editedPayment = {
-      employee_index_id: id,
-      rate: defaults.rate,
-      basic: defaults.basic,
-      payrollInfo, 
-      deductions,
-      results: newResults
-    };
-    fetch(`${BASE_URL}/editPayment/${payment_id}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editedPayment),
-    })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((err) => console.log(err));
+  const editedPayment = {
+    payDate: payrollInfo.date,    
+    allowances: {
+        overtimePay: otTotal,
+        mealAllowance: payrollInfo.mealAllow,
+        birthdayBonus: payrollInfo.bdayBonus,
+        incentives: payrollInfo.incentive,
+        otherAdditions: payrollInfo.otherPayrollInfo
+      },
+      overtimeDetails: {
+        hours: otHours,
+        rate: otRate,
+        total: otTotal
+      },
+    grossSalary:    newResults.payroll,
+    totalDeductions:newResults.deductions,
 
-    handleFadeOut();
+    deductions: {
+      tax:           0,               
+      sss:           deductions.sss,
+      philHealth:    deductions.philHealth,
+      pagIbig:       deductions.pagIbig,
+      healthCard:    deductions.healthCard,
+      cashAdvance:   deductions.cashAdvance,
+      lateAbsent:    deductions.lateAbsent,
+      otherDeductions: deductions.otherDeductions
+    },
 
+    total:         newResults.total,    
+    paymentMode:   defaults.paymentMode || 'Bank Transfer',
+    isApproved:    true,
+
+    payrollInfo,
+    deductions
   };
+
+  fetch(`${BASE_URL}/editPayment/${payment_id}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(editedPayment)
+  })
+  .then(res => res.json())
+  .then(console.log)
+  .catch(console.error);
+
+  handleFadeOut();
+};
 
   // setup prev values into input boxes
   useEffect(() => {
-    if (!payment_id) {
-      console.error("Missing payment_id");
-      return;
-    }
-
+    if (!payment_id) return;
+    
     fetch(`${BASE_URL}/getPayment/${payment_id}`)
       .then(res => res.json())
       .then(data => {
-        console.log("Payment data:", data); 
-
         const prevPayroll = {
-          date: new Date(data.formatted_date || data.payDate).toISOString().slice(0, 10),
-          ot: data.overtimeDays,
-          salaryIncrease: data.salaryIncrease,
-          mealAllow: data.mealAllowance,
-          bdayBonus: data.birthdayBonus,
-          incentive: data.incentive,
-          otherPayrollInfo: data.otherAdditions
+          date: new Date(data.payDate).toISOString().slice(0,10),
+          ot: data.overtimeDetails?.hours ?? 0,
+          salaryIncrease: data.salaryIncrease ?? 0,
+          mealAllow: data.allowances?.mealAllowance ?? 0,
+          bdayBonus: data.allowances?.birthdayBonus ?? 0,
+          incentive: data.allowances?.incentives ?? 0,
+          otherPayrollInfo: data.allowances?.otherAdditions ?? 0,
         };
+
         const prevDeductions = {
-          sss: data.sss,
-          philhealth: data.philHealth,
-          pagibig: data.pagIbig,
-          cashAdvance: data.cashAdvance,
-          healthCard: data.healthCard,
-          absences: data.lateAbsent,
-          otherDeductions: data.otherDeductions
+          sss: data.deductions?.sss ?? 0,
+          philHealth: data.deductions?.philHealth ?? 0,
+          pagIbig: data.deductions?.pagIbig ?? 0,
+          cashAdvance: data.deductions?.cashAdvance ?? 0,
+          healthCard: data.deductions?.healthCard ?? 0,
+          lateAbsent: data.deductions?.lateAbsent ?? 0,
+          otherDeductions: data.deductions?.otherDeductions ?? 0,
         };
+
         const results = {
-          payroll: data.payroll,
-          deductions: data.deductions,
-          total: data.total
-        };
-        const defaults = {
-          rate: data.rate,
-          basic: data.basic
+          payroll: data.grossSalary ?? 0,
+          deductions: data.totalDeductions ?? 0,
+          total: data.total ?? 0,
         };
 
         setPayrollInfo(prevPayroll);
         setDeductions(prevDeductions);
         setResults(results);
-        setDefaults(defaults);
+
+        // ✅ Fetch the employee's current config using `data.employee`
+        if (data.employee) {
+          fetch(`${BASE_URL}/getEmployeeDetails/${data.employee}`)
+            .then(res => res.json())
+            .then(emp => {
+              setDefaults({
+                rate: emp.overtimeRate ?? 0,
+                basic: emp.basicSalary ?? 0,
+              });
+            })
+            .catch(err => {
+              console.error("❌ Error fetching employee config during edit:", err.message);
+            });
+        } else {
+          console.warn("⚠️ No employee ID found in payment record");
+        }
       })
-      .catch(err => console.error("Error fetching payment:", err));
+      .catch(err => console.error("❌ Error fetching payment:", err));
   }, [payment_id]);
 
 

@@ -31,7 +31,7 @@ import officeImage from '../Login/office.jpg';
       const data = await res.json();
 
       if (userPassword === data.password) {
-          sessionStorage.setItem('userValid', true);
+        sessionStorage.setItem('userValid', true);
         sessionStorage.setItem('company', data.company); 
         sessionStorage.setItem('username', data.username); 
         navigate('/MainMenu');
@@ -51,7 +51,7 @@ import officeImage from '../Login/office.jpg';
           <img src={officeImage} alt='bruh'></img>
         </div>
         <div className={styles.rightrect}>
-          <text className={styles.prompt}>Login to your system</text>
+          <span className={styles.prompt}>Login to your system</span>
           <form className={styles.formSection} onSubmit={handleSubmit}>
             <input className={styles.usernameHolder}
               type="text"

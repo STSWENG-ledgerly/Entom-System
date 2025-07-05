@@ -3,11 +3,9 @@ require('dotenv').config();
 
 const {
   Employee,
-  Attendance,
   Payroll,
   Account,
   Company,
-  Config
 } = require("../models/payrollSchema");
 
 
@@ -45,6 +43,7 @@ async function populateDatabase() {
           position: "Professor",
           designation: "CCS",
           basicSalary: 100000,
+          overtimeRate: 200,
           bankAccount: {
             bankName: "BDO",
             accountNumber: "0000000001",
@@ -66,6 +65,7 @@ async function populateDatabase() {
           position: "Developer",
           designation: "Software Engineer",
           basicSalary: 8385,
+          overtimeRate: 200,
           bankAccount: {
             bankName: "BDO",
             accountNumber: "0000000111",
@@ -86,7 +86,8 @@ async function populateDatabase() {
           department: "Marketing",
           position: "Assistant",
           designation: "Marketing Assistant",
-          basicSalary: 8385,
+          basicSalary: 9385,
+          overtimeRate: 200,
           bankAccount: {
             bankName: "BPI",
             accountNumber: "0000000112",
@@ -107,7 +108,8 @@ async function populateDatabase() {
           department: "Finance",
           position: "Clerk",
           designation: "Finance Staff",
-          basicSalary: 8385,
+          basicSalary: 11485,
+          overtimeRate: 200,
           bankAccount: {
             bankName: "Landbank",
             accountNumber: "0000000113",
@@ -123,50 +125,88 @@ async function populateDatabase() {
       await Employee.insertMany(employeesData);
       console.log(`Database: Inserted ${employeesData.length} employees.`);
 
-      const payrollData = [
-        {
-          employee: null, // to be updated after insertion
-          payDate: new Date("2024-10-16"),
-          payrollTimeframe: "Monthly",
-          allowances: {
-            mealAllowance: 0,
-            birthdayBonus: 0,
-            incentives: 0,
-            otherAdditions: 0
-          },
-          overtimeDetails: [],
-          grossSalary: 8385,
-          deductions: {
-            tax: 0,
-            sss: 0,
-            philHealth: 0,
-            pagIbig: 0,
-            healthCard: 0,
-            cashAdvance: 0,
-            lateAbsent: 0,
-            otherDeductions: 0
-          },
-          totalDeductions: 0,
-          netPay: 8385,
-          paymentMode: "Bank Transfer",
-          payslipId: "PS111-20241016",
-          isApproved: true,
-          dateGenerated: new Date("2024-10-16")
-        }
-      ];
+  // at the top of your file
+  const PAYROLL_TIMEFRAMES = ['Weekly','Bi-Monthly','Monthly'];
 
-      const employees = await Employee.find({ employee_id: { $in: ["111"] } });
-      payrollData[0].employee = employees[0]._id;
-      await Payroll.insertMany(payrollData);
-      console.log(`Database: Inserted ${payrollData.length} payroll entries.`);
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 
+  // pick a random date in October 2024
+  function randomPayDate() {
+    // month is zero-based: 9 = October
+    const day = randomInt(1, 28);
+    return new Date(2024, 9, day);
+  }
 
-      await Config.create({
-        standardRate: 645,
-        holidayRate: 800,
-        weekendRate: 700
-      });
-      console.log("Database: Inserted payroll config.");
+  // main routine
+  async function seedPayroll() {
+    const employees = await Employee.find({ company: company._id }).lean();
+
+    const payrollData = employees.map(emp => {
+      // 1) pick timeframe & payDate
+      const payrollTimeframe = PAYROLL_TIMEFRAMES[randomInt(0, PAYROLL_TIMEFRAMES.length - 1)];
+      const payDate = randomPayDate();
+
+      // 2) random allowances
+      const allowances = {
+        overtimePay: randomInt(100, 500),
+        mealAllowance: randomInt(100, 500),
+        birthdayBonus: randomInt(0, 1000),
+        incentives: randomInt(0, 2000),
+        otherAdditions: randomInt(0, 500)
+      };
+
+      // 3) compute gross = base + allowances + OT
+      const grossSalary = emp.basicSalary + allowances.mealAllowance
+        + allowances.birthdayBonus + allowances.incentives
+        + allowances.otherAdditions;
+
+      // 4) random deductions
+      const deductions = {
+        tax: +(grossSalary * (randomInt(10, 20) / 100)).toFixed(2),
+        sss: randomInt(200, 800),
+        philHealth: randomInt(200, 800),
+        pagIbig: randomInt(100, 500),
+        healthCard: randomInt(50, 200),
+        cashAdvance: randomInt(0, 1000),
+        lateAbsent: randomInt(0, 300),
+        otherDeductions: randomInt(0, 300)
+      };
+      const totalDeductions = Object.values(deductions).reduce((a, b) => a + b, 0);
+      const total = +(grossSalary - totalDeductions).toFixed(2);
+
+      return {
+        employee: emp._id,
+        payDate,
+        payrollTimeframe,
+        allowances,
+        grossSalary: +grossSalary.toFixed(2),
+        deductions,
+        totalDeductions,
+        total,
+        paymentMode: ['Bank Transfer','Cash','Check'][randomInt(0,2)],
+        payslipId: `PS${emp.employee_id}-${payDate.toISOString().slice(0,10)}`,
+        isApproved: Math.random() < 0.8,  // 80% chance approved
+        dateGenerated: payDate,
+        isDeleted: false
+      };
+    });
+
+    try {
+      const result = await Payroll.insertMany(payrollData, { ordered: false });
+      console.log(`Inserted ${result.length} payroll entries.`);
+    } catch (err) {
+      console.error("Insert error:", err);
+      if (err.writeErrors) {
+        err.writeErrors.forEach(e => console.error(e.errmsg));
+      }
+    }
+  }
+
+  // run it
+  seedPayroll().catch(console.error);
+
 
       await Account.create({
         username: "admin",
@@ -203,6 +243,7 @@ const newEmployee = await Employee.create({
   position: "QA Analyst",
   designation: "Software QA",
   basicSalary: 70000,
+  overtimeRate: 200,
   bankAccount: {
     bankName: "BPI",
     accountNumber: "0000000210",
