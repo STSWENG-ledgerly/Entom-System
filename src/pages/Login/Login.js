@@ -5,36 +5,44 @@ import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import officeImage from '../Login/office.jpg';
 
 
-const Login = () => {
-  const [userName, setUserName] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [errMessage, setErrMessage] = useState('');
-  const navigate = useNavigate();
+  const Login = () => {
+    const [userName, setUserName] = useState('');
+    const [userPassword, setUserPassword] = useState('');
+    const [errMessage, setErrMessage] = useState('');
+    const navigate = useNavigate();
 
-  // Use admin credentials from context
-const { username, passwordHash } = useContext(ConfigContext);
+    // Use admin credentials from context
+  const { username, passwordHash } = useContext(ConfigContext);
 
-  useEffect(() => {
-    sessionStorage.removeItem('userValid');
-  }, []);
+    useEffect(() => {
+      sessionStorage.removeItem('userValid');
+    }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-      if (userName === username && userPassword === passwordHash) {
-      sessionStorage.setItem('userValid', true);
-      navigate('/MainMenu');
-      } else {
-        if (userName !== username) {
-          setErrMessage('Username not found');
-        } else if (userPassword !== passwordHash) {
-          setErrMessage('Password is incorrect');
-        } else {
-          setErrMessage('Invalid login');
-        }
+    try {
+      const res = await fetch(`${BASE_URL}/getAdminAccount?username=${userName}`);
+      if (!res.ok) {
+        setErrMessage('Username not found');
+        return;
       }
-  };
 
+      const data = await res.json();
+
+      if (userPassword === data.password) {
+          sessionStorage.setItem('userValid', true);
+        sessionStorage.setItem('company', data.company); 
+        sessionStorage.setItem('username', data.username); 
+        navigate('/MainMenu');
+      } else {
+        setErrMessage('Password is incorrect');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setErrMessage('Something went wrong. Please try again.');
+    }
+  };
 
   return (
     <div className={styles.background}>

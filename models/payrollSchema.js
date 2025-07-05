@@ -3,11 +3,12 @@ const { Schema } = mongoose;
 
 // Employee Schema
 const employeeSchema = new Schema({
-  employeeId: { type: String, required: true, unique: true },
+  employee_id: { type: String, required: true, unique: true },
+  company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
-  firstName: { type: String, required: true },
+  fname: { type: String, required: true },
   middleName: { type: String },
-  lastName: { type: String, required: true },
+  lname: { type: String, required: true },
   department: { type: String, required: true },
   position: { type: String, required: true },
   designation: { type: String, required: true },
@@ -20,7 +21,7 @@ const employeeSchema = new Schema({
   dateHired: { type: Date, required: true },
   phone: { type: String, required: true },
   email: { type: String, required: true },
-  rbacProfile: { type: Number, required: true }
+  rbacProfile: { type: Number, required: true },
 }, { timestamps: true });
 
 // Attendance Schema
@@ -73,10 +74,18 @@ const payrollSchema = new Schema({
 const accountSchema = new Schema({
   username: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ['Administrator', 'Employee'], default: 'Employee' },
+  role: { type: String, default: 'Administrator' },
+  company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
   isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
+// Company Schema
+const companySchema = new Schema({
+  name: { type: String, required: true },
+  address: { type: String },
+  industry: { type: String },
+  isDeleted: { type: Boolean, default: false }
+});
 // Config Schema (for rate settings)
 const configSchema = new Schema({
   standardRate: { type: Number, default: 0 },
@@ -84,11 +93,14 @@ const configSchema = new Schema({
   weekendRate: { type: Number, default: 0 }
 });
 
+
+
 // Models
 const Employee = mongoose.model('Employee', employeeSchema);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 const Payroll = mongoose.model('Payroll', payrollSchema);
 const Account = mongoose.model('Account', accountSchema);
+const Company = mongoose.model('Company', companySchema);
 const Config = mongoose.model('Config', configSchema);
 
 module.exports = {
@@ -96,5 +108,6 @@ module.exports = {
   Attendance,
   Payroll,
   Account,
+  Company,
   Config
 };

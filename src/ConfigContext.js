@@ -22,20 +22,6 @@ export const ConfigProvider = ({ children }) => {
       .catch((err) => console.error("Error fetching config:", err));
   }, []);
 
-  useEffect(() => {
-  fetch(`${BASE_URL}/getAdminAccount`)
-    .then((res) => res.json())
-    .then((data) => {
-      if (data && data.username && data.password) {
-        setUsername(data.username);
-        setPassword(data.password); // This assumes your backend returns passwordHash as `password`
-      } else {
-        console.warn("No admin credentials returned from /getAdminAccount");
-      }
-    })
-    .catch((err) => console.error("Error fetching admin credentials:", err));
-  }, []);
-
   //payroll configs
   const [userPayroll, setUserPayroll] = useState({
     payrollInfo: {
