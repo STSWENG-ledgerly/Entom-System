@@ -60,20 +60,24 @@
 
 .iconGroup {
     display:flex;
+    flex-direction:row;
+    align-items: center;
+    text-align: center;
 }
 
 .label {
     font-family: 'JetBrains Mono';
     font-size:16px;
     opacity: 0;
-    margin-left: 60px;
+    margin-left: 50px;
     transition: ease-in-out all .2s;
     color:white;
     visibility:hidden;
     padding: 5px;
+    /* padding-left:2px; */
     border-radius:10px;
     text-align:left;
-    padding-top:20px;
+    /* padding-top:20px; */
     position:absolute;
     width:180px;
 }
@@ -86,4 +90,10 @@
     opacity: 1;
     visibility:visible; 
  
+}
+
+.label:hover{
+
+background-color: #F0B9A8;
+width: auto;
 }
