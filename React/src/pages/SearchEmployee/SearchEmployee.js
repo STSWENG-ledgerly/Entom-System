@@ -48,12 +48,14 @@ const SearchEmployee = () => {
     };
 
     const handleButton = (id, fname, lname) => {
-        searchType === 'ViewPayrollHistory' ? navigate(`../ViewPayment/${id}/${fname}/${lname}`) : navigate(`../GeneratePayroll/${id}/${fname}/${lname}`);
+    searchType === 'ViewPayrollHistory'
+      ? navigate(`../ViewPayment/${id}/${fname}/${lname}`)
+      : navigate(`../GeneratePayroll/${id}/${fname}/${lname}`);
     };
 
     const handleSearchButtonID = () => {
       const filtered = searchID
-        ? employees.filter(employee => employee.id.toString().includes(searchID))
+        ? employees.filter(employee => employee.employee_id.toString().includes(searchID))
         : employees;
   
       setFilteredEmployees(filtered);
@@ -134,13 +136,16 @@ const SearchEmployee = () => {
           </thead>
           <tbody>
             {filteredEmployees.map(employee => (
-              <tr key={employee.id}>
-                <td>{employee.id}</td>
+              <tr key={employee.employee_id}>
+                <td>{employee.employee_id}</td>
                 <td>{employee.fname}</td>
                 <td>{employee.lname}</td>
                 <td>{employee.email}</td>
                 <td>
-                  <button className={styles.actionButton} onClick={() => handleButton(employee.id, employee.fname, employee.lname)}>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => handleButton(employee.employee_id, employee.fname, employee.lname)}
+                  >
                     {buttonText}
                   </button>
                 </td>
