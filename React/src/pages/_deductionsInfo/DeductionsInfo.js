@@ -31,21 +31,21 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Philhealth:</label>
+            <label>philHealth:</label>
             <input
                 type="number"
-                value={deductions.philhealth ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "philhealth")}
-                onBlur={(e) => handleBlur(e, setDeductions, "philhealth")}
+                value={deductions.philHealth ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "philHealth")}
+                onBlur={(e) => handleBlur(e, setDeductions, "philHealth")}
             />
         </div>
         <div className={styles.formGroup}>
             <label>PAG-IBIG:</label>
             <input
                 type="number"
-                value={deductions.pagibig ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "pagibig")}
-                onBlur={(e) => handleBlur(e, setDeductions, "pagibig")}
+                value={deductions.pagIbig ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "pagIbig")}
+                onBlur={(e) => handleBlur(e, setDeductions, "pagIbig")}
             />
         </div>
         <div className={styles.formGroup}>
@@ -67,12 +67,21 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Late/Absent:</label>
+            <label>Late (in Hours):</label>
             <input
                 type="number"
-                value={deductions.absences ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "absences")}
-                onBlur={(e) => handleBlur(e, setDeductions, "absences")}
+                value={deductions.lateHours ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "lateHours")}
+                onBlur={(e) => handleBlur(e, setDeductions, "lateHours")}
+            />
+        </div>
+        <div className={styles.formGroup}>
+            <label>Absences (per Day):</label>
+            <input
+                type="number"
+                value={deductions.absentDays ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "absentDays")}
+                onBlur={(e) => handleBlur(e, setDeductions, "absentDays")}
             />
         </div>
         <div className={styles.formGroup}>

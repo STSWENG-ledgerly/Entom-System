@@ -24,19 +24,31 @@ const ViewPayment = () => {
     setPID(payment_id);
     setOpenBtn(true);
   };
+useEffect(() => {
+  const company = sessionStorage.getItem('company');
 
-  useEffect (()=>{
-    console.log("Fetching payment for ID:", id);
-    fetch(`${BASE_URL}/payments/${id}`, {
-    })
+  if (!company) {
+    console.warn("⚠️ No company found in sessionStorage.");
+    return;
+  }
+
+  fetch(`${BASE_URL}/payments/${id}?company=${encodeURIComponent(company)}`)
     .then(res => res.json())
     .then(data => {
-      const sortedData = data.sort((a, b) => new Date(b.formatted_date) - new Date(a.formatted_date));
+      if (!Array.isArray(data)) {
+        console.error("Expected an array, but got:", data);
+        return;
+      }
+
+      const sortedData = data.sort(
+        (a, b) => new Date(b.formatted_date) - new Date(a.formatted_date)
+      );
+
       setUserPayments(sortedData);
-      console.log(data);
+      console.log("✅ Payments fetched:", sortedData);
     })
-    .catch(err => console.log(err));
-  }, [id])
+    .catch(err => console.error("❌ Error fetching payments:", err));
+}, [id]);
 
 
   return (

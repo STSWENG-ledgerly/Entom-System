@@ -29,21 +29,12 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Overtime (in Days):</label>
+            <label>Overtime (in Hours):</label>
             <input
                 type="number"
                 value={payrollInfo.ot ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "ot")}
                 onBlur={(e) => handleBlur(e, setPayrollInfo, "ot")}
-            />
-        </div>
-        <div className={styles.formGroup}>
-            <label>Salary Increase:</label>
-            <input
-                type="number"
-                value={payrollInfo.salaryIncrease ?? 0}
-                onChange={(e) => checkNumberInput(e, setPayrollInfo, "salaryIncrease")}
-                onBlur={(e) => handleBlur(e, setPayrollInfo, "salaryIncrease")}
             />
         </div>
         <div className={styles.formGroup}>

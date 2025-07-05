@@ -27,6 +27,7 @@ const Header = () => {
 
     const handleLogout= () => {
         sessionStorage.removeItem('userValid');
+        sessionStorage.removeItem('company'); 
         navigate('/');
     };
 

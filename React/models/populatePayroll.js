@@ -3,11 +3,9 @@ require('dotenv').config();
 
 const {
   Employee,
-  Attendance,
   Payroll,
   Account,
   Company,
-  Config
 } = require("../models/payrollSchema");
 
 
@@ -152,6 +150,7 @@ async function populateDatabase() {
 
       // 2) random allowances
       const allowances = {
+        overtimePay: randomInt(100, 500),
         mealAllowance: randomInt(100, 500),
         birthdayBonus: randomInt(0, 1000),
         incentives: randomInt(0, 2000),
@@ -171,7 +170,8 @@ async function populateDatabase() {
         pagIbig: randomInt(100, 500),
         healthCard: randomInt(50, 200),
         cashAdvance: randomInt(0, 1000),
-        lateAbsent: randomInt(0, 300),
+        lateHours: randomInt(0, 300),
+        absentDays: randomInt(0, 300),
         otherDeductions: randomInt(0, 300)
       };
       const totalDeductions = Object.values(deductions).reduce((a, b) => a + b, 0);
@@ -209,14 +209,6 @@ async function populateDatabase() {
   seedPayroll().catch(console.error);
 
 
-
-      await Config.create({
-        standardRate: 645,
-        holidayRate: 800,
-        weekendRate: 700
-      });
-      console.log("Database: Inserted payroll config.");
-
       await Account.create({
         username: "admin",
         passwordHash: "123", // Ideally, this should be hashed
@@ -242,7 +234,7 @@ console.log("Database: Inserted company TechNova Solutions.");
 
 // --- Create employee for second company ---
 const newEmployee = await Employee.create({
-  employee_id: "210",
+  employee_id: "110",
   company: secondCompany._id,
   status: "Active",
   fname: "Alice",
