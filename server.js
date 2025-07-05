@@ -1,28 +1,21 @@
-// const SERVER_PORT = 8000;
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { Employee, Attendance, Payroll, Account, Company, Config } = require('./models/payrollSchema');
 const connectToMongo = require('./src/scripts/conn.js');
-const populateDatabase = require("./models/populatePayroll.js");
+const populateDatabase = require("./src/scripts/populatePayroll.js");
 require('dotenv').config();
 
-const port = process.env.SERVER_PORT || 4000;
+const port = process.env.SERVER_PORT;
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-// mongoose.connect('mongodb://localhost:27017/payrollSystem', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// }).then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
 async function database() {
     try {
         await connectToMongo();
+        await populateDatabase();
     } catch (error) {
         console.error('Server: Failed to start server', error);
     }
@@ -217,11 +210,6 @@ app.get('/getAdminAccount', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
-// app.listen(SERVER_PORT, () => {
-//   console.log(`Listening on port ${SERVER_PORT}`);
-// });
 
 app.listen(port, async function() {
     await database(); 
