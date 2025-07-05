@@ -75,136 +75,17 @@ const GeneratePayroll = () => {
         total: 0
     });
 
-    const generateEmail = () => {
-        const doc = new jsPDF();
 
-        // Can change payslip format and design here
-        // Title and Header
-        doc.setFontSize(22);
-        doc.setFont("helvetica", "bold");
-        doc.text("Payslip", 105, 15, { align: "center" });
-        doc.setLineWidth(0.5);
-        doc.line(10, 20, 200, 20);
-
-        // Employee Information
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Employee Name: ${fname} ${lname}`, 10, 30);
-        doc.text(`Date: ${payrollInfo.date}`, 150, 30);
-
-        // Payroll Information Section
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text("Payroll Information", 10, 40);
-        doc.setLineWidth(0.2);
-        doc.line(10, 42, 200, 42);
-
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        let yPosition = 50;
-        const payrollDetails = [
-            `Overtime Hours: ${otHours}`,
-            `Overtime Pay: ${otTotal.toFixed(2)}`,
-            `Meal Allowance: ${payrollInfo.mealAllow}`,
-            `Birthday Bonus: ${payrollInfo.bdayBonus}`,
-            `Incentive: ${payrollInfo.incentive}`,
-            `Other Payroll Info: ${payrollInfo.otherPayrollInfo}`
-        ];
-
-        payrollDetails.forEach(detail => {
-            doc.text(detail, 12, yPosition);
-            yPosition += 10;
-        });
-
-        // Deductions Section
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text("Deductions", 10, yPosition + 5);
-        doc.line(10, yPosition + 7, 200, yPosition + 7);
-
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        yPosition += 15;
-        const deductionDetails = [
-            `SSS: ${deductions.sss}`,
-            `philHealth: ${deductions.philHealth}`,
-            `Pag-IBIG: ${deductions.pagIbig}`,
-            `Cash Advance: ${deductions.cashAdvance}`,
-            `Health Card: ${deductions.healthCard}`,
-            `lateHours: ${deductions.lateHours}`,
-            `absentDays: ${deductions.absentDays}`,
-            `Other Deductions: ${deductions.otherDeductions}`
-        ];
-
-        deductionDetails.forEach(detail => {
-            doc.text(detail, 12, yPosition);
-            yPosition += 10;
-        });
-
-        // Summary Section
-        doc.setLineWidth(0.5);
-        doc.line(10, yPosition + 5, 200, yPosition + 5);
-
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text("Summary", 10, yPosition + 15);
-
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        yPosition += 25;
-        doc.text(`Total Payroll: ${results.payroll.toFixed(2)}`, 12, yPosition);
-        doc.text(`Total Deductions: ${results.deductions.toFixed(2)}`, 12, yPosition + 10);
-
-        doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        doc.text(`Net Pay: ${results.total.toFixed(2)}`, 12, yPosition + 25);
-
-        // Border around Net Pay
-        doc.setLineWidth(1);
-        doc.rect(10, yPosition + 15, 190, 20);
-
-        const pdfBlob = doc.output('blob');
-        const url = URL.createObjectURL(pdfBlob);
-        setPlaceholderFile(url);
-
-        // Show the download/email buttons
-        setShowDownloadButtons(true);
-    };
-
-    const sendEmail = () => {
-        const hardcodedEmail = email; // hardcoded for testing purposes, change if you want to try out
-        console.log(email);
-
-        const subject = "Payroll Slip";
-        const body = "Please see attached file";
-
-        const encodedEmail = encodeURIComponent(hardcodedEmail);
-        const encodedSubject = encodeURIComponent(subject);
-        const encodedBody = encodeURIComponent(body);
-
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedEmail}&su=${encodedSubject}&body=${encodedBody}`;
-        window.open(gmailUrl, '_blank');
-    };
-
-    const showPayrollResults = () => {
-        setResults(calculatePayroll(payrollInfo, deductions, config));
-        setShowResults(true);
-        setShowDownloadButtons(false); // Reset the visibility of download/email buttons
-        setSavedStatus('');
-    };
-
-    const createUserPaymentData = () => {
-        const newData = { payrollInfo, deductions };
-        createUserPayment(id, newData);
-        setSavedMessage(true);
-        setTimeout(() => {
-            setSavedMessage(false);
-        }, 5000);
-    };
     const otHours = parseFloat(payrollInfo.ot) || 0;
-    const otRate  = parseFloat(config.rate)     || 0;
-    const otTotal = otHours * otRate;
+    const basic = parseFloat(config.basic) || 0;
+    const workingDays = parseFloat(config.workingDaysPerMonth) || 22;
+    const workHoursPerDay = parseFloat(config.workHoursPerDay) || 8;
+    const multiplier = parseFloat(config.overtimeMultiplier) || 1.25;
 
+    const hourlyRate = basic / (workingDays * workHoursPerDay);
+    const otRate = hourlyRate * multiplier;
+    const otTotal = otHours * otRate;
+    
     const saveToDB = () => {
     console.log("💬 Saving payroll for employee:", id);
     console.log("💬 Current results:", results);
@@ -219,9 +100,11 @@ const GeneratePayroll = () => {
     };
 
     // 3) Pull your computed numbers out of `results`
-    const grossSalary     = results.payroll;    
+    const basicSalary    = parseFloat(config.basic)     || 0;
+    const additionsTotal = results.payroll - basicSalary;
+    const grossSalary     = results.payroll;
     const totalDeductions = results.deductions;
-    const total           = results.total;     
+    const total           = results.total;
 
     // 4) Build the nested deductions object
     const nestedDeductions = {
@@ -286,6 +169,154 @@ const GeneratePayroll = () => {
         });
     };
 
+        const generateEmail = () => {
+        const {
+        basic:        basicSalary,
+        additions:    additionsTotal,
+        payroll:      grossSalary,
+        deductions:   totalDeductions,
+        total,
+        hourlyRate,
+        dailyRate,
+        lateDeduction,
+        absentDeduction,
+        overtimeDetails
+        } = calculatePayroll(payrollInfo, deductions, config);
+        const doc = new jsPDF({
+            unit: 'mm', 
+            format: [216, 330], 
+            orientation: 'portrait'
+            });
+
+        // Can change payslip format and design here
+        // Title and Header
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text("Payslip", 105, 15, { align: "center" });
+        doc.setLineWidth(0.5);
+        doc.line(10, 20, 205, 20);
+
+        // Employee Information
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Employee Name: ${fname} ${lname}`, 10, 30);
+        doc.text(`Date: ${payrollInfo.date}`, 170, 30);
+
+        // Payroll Information Section
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Payroll Information", 10, 40);
+        doc.setLineWidth(0.2);
+        doc.line(10, 42, 205, 42);
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        let yPosition = 50;
+        const payrollDetails = [
+            `Overtime Hours: ${otHours}`,
+             `Overtime Pay: ${otTotal.toFixed(2)}`,
+            `Meal Allowance: ${parseFloat(payrollInfo.mealAllow).toFixed(2)}`,
+            `Birthday Bonus: ${parseFloat(payrollInfo.bdayBonus).toFixed(2)}`,
+            `Incentive: ${parseFloat(payrollInfo.incentive).toFixed(2)}`,
+            `Other Payroll Info: ${parseFloat(payrollInfo.otherPayrollInfo).toFixed(2)}`  
+        ];
+
+        payrollDetails.forEach(detail => {
+            doc.text(detail, 12, yPosition);
+            yPosition += 10;
+        });
+
+        // Deductions Section
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Deductions", 10, yPosition + 5);
+        doc.line(10, yPosition + 7, 205, yPosition + 7);
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        yPosition += 15;
+        const deductionDetails = [
+            `SSS: ${parseFloat(deductions.sss).toFixed(2)}`,
+            `philHealth: ${parseFloat(deductions.philHealth).toFixed(2)}`,
+            `Pag-IBIG: ${parseFloat(deductions.pagIbig).toFixed(2)}`,
+            `Cash Advance: ${parseFloat(deductions.cashAdvance).toFixed(2)}`,
+            `Health Card: ${parseFloat(deductions.healthCard).toFixed(2)}`,
+            `Late Hours: ${deductions.lateHours}`,
+            `Late Deduction: ${lateDeduction.toFixed(2)}`,
+            `Day Absents: ${deductions.absentDays}`,
+            `Absent Deduction ${absentDeduction.toFixed(2)}`,
+            `Other Deductions: ${parseFloat(deductions.otherDeductions).toFixed(2)}`
+        ];
+
+        deductionDetails.forEach(detail => {
+            doc.text(detail, 12, yPosition);
+            yPosition += 10;
+        });
+
+        // Summary Section
+        doc.setLineWidth(0.5);
+        doc.line(10, yPosition + 5, 205, yPosition + 5);
+
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Summary", 10, yPosition + 15);
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        yPosition += 25;
+        // UPDATED to use the computed values:
+        doc.text(`Basic Salary: ${basicSalary.toFixed(2)}`,         10, yPosition);
+        doc.text(`Additions / Allowances: ${additionsTotal.toFixed(2)}`, 10, yPosition + 10);
+        doc.text(`Gross Salary: ${grossSalary.toFixed(2)}`,         10, yPosition + 20);
+        doc.text(`Deductions: ${totalDeductions.toFixed(2)}`,       10, yPosition + 30);
+
+        // Highlight Net Pay
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Net Pay: ${total.toFixed(2)}`,                    157, yPosition + 57);
+
+        // Border around Net Pay
+        doc.setLineWidth(1);
+        doc.rect(10, yPosition + 40, 200, 30);
+
+        const pdfBlob = doc.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        setPlaceholderFile(url);
+
+        // Show the download/email buttons
+        setShowDownloadButtons(true);
+    };
+
+    const sendEmail = () => {
+        const hardcodedEmail = email; // hardcoded for testing purposes, change if you want to try out
+        console.log(email);
+
+        const subject = "Payroll Slip";
+        const body = "Please see attached file";
+
+        const encodedEmail = encodeURIComponent(hardcodedEmail);
+        const encodedSubject = encodeURIComponent(subject);
+        const encodedBody = encodeURIComponent(body);
+
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodedEmail}&su=${encodedSubject}&body=${encodedBody}`;
+        window.open(gmailUrl, '_blank');
+    };
+
+    const showPayrollResults = () => {
+        setResults(calculatePayroll(payrollInfo, deductions, config));
+        setShowResults(true);
+        setShowDownloadButtons(false); // Reset the visibility of download/email buttons
+        setSavedStatus('');
+    };
+
+    const createUserPaymentData = () => {
+        const newData = { payrollInfo, deductions };
+        createUserPayment(id, newData);
+        setSavedMessage(true);
+        setTimeout(() => {
+            setSavedMessage(false);
+        }, 5000);
+    };
     const handleFadeOut = () => {
         setIsVisible(false); 
         setTimeout(() => setIsVisible(true)); 

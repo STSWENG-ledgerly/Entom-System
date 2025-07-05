@@ -2,60 +2,61 @@ export const calculatePayroll = (payrollInfo = {}, deductions = {}, config = {})
   const toNumber = (val) => parseFloat(val) || 0;
 
   // Destructure config defaults
-  const basic = toNumber(config.basic);
-  const rate = toNumber(config.rate);
-  const workingDays = toNumber(config.workingDaysPerMonth) || 22;   // Default: 22 working days/month
-  const workHoursPerDay = toNumber(config.workHoursPerDay) || 8;    // Default: 8 hours/day
+  const basic           = toNumber(config.basic);
+  const workingDays     = toNumber(config.workingDaysPerMonth) || 22;
+  const workHoursPerDay = toNumber(config.workHoursPerDay)     || 8;
+  const otMultiplier    = toNumber(config.overtimeMultiplier)  || 1.25;
 
   // Derived rates
-  const hourlyRate = basic / (workingDays * workHoursPerDay);
-  const dailyRate = basic / workingDays;
+  const hourlyRate   = basic / (workingDays * workHoursPerDay);
+  const dailyRate    = basic / workingDays;
+  const overtimeRate = hourlyRate * otMultiplier;
 
-  // Allowances and Additions
-  const otPay = toNumber(payrollInfo.ot) * rate;
-  const meal = toNumber(payrollInfo.mealAllow);
-  const bday = toNumber(payrollInfo.bdayBonus);
-  const incent = toNumber(payrollInfo.incentive);
+  // Overtime
+  const otHours = toNumber(payrollInfo.ot);
+  const otPay   = otHours * overtimeRate;
+
+  // Allowances/Additions
+  const meal     = toNumber(payrollInfo.mealAllow);
+  const bday     = toNumber(payrollInfo.bdayBonus);
+  const incent   = toNumber(payrollInfo.incentive);
   const otherAdd = toNumber(payrollInfo.otherPayrollInfo);
 
-  const payroll_total = otPay + meal + bday + incent + otherAdd + basic;
+  const payroll_total = basic + otPay + meal + bday + incent + otherAdd;
 
-  // Deductions
-  const tax = toNumber(deductions.tax);
-  const sss = toNumber(deductions.sss);
-  const philHealth = toNumber(deductions.philHealth);
-  const pagIbig = toNumber(deductions.pagIbig);
-  const cashAdvance = toNumber(deductions.cashAdvance);
-  const healthCard = toNumber(deductions.healthCard);
-  const lateHours = toNumber(deductions.lateHours);
-  const absentDays = toNumber(deductions.absentDays);
-  const otherDeductions = toNumber(deductions.otherDeductions);
+  // Raw deductions
+  const tax           = toNumber(deductions.tax);
+  const sss           = toNumber(deductions.sss);
+  const philHealth    = toNumber(deductions.philHealth);
+  const pagIbig       = toNumber(deductions.pagIbig);
+  const cashAdvance   = toNumber(deductions.cashAdvance);
+  const healthCard    = toNumber(deductions.healthCard);
+  const lateHours     = toNumber(deductions.lateHours);
+  const absentDays    = toNumber(deductions.absentDays);
+  const otherDeducts  = toNumber(deductions.otherDeductions);
 
-  // Computed deductions for lateness and absence
-  const lateDeduction = lateHours * hourlyRate;
+  // Money‐amount deductions
+  const lateDeduction   = lateHours  * hourlyRate;
   const absentDeduction = absentDays * dailyRate;
 
   const deductions_total =
-    tax +
-    sss +
-    philHealth +
-    pagIbig +
-    cashAdvance +
-    healthCard +
-    lateDeduction +
-    absentDeduction +
-    otherDeductions;
+    tax + sss + philHealth + pagIbig +
+    cashAdvance + healthCard +
+    lateDeduction + absentDeduction +
+    otherDeducts;
 
   const total = payroll_total - deductions_total;
 
   return {
+    basic,                             
+    additions: payroll_total - basic,   
     payroll: payroll_total,
     deductions: deductions_total,
-    total: total,
-    overtimeDetails: {
-      hours: toNumber(payrollInfo.ot),
-      rate: rate,
-      total: otPay,
-    },
+    total,
+    overtimeDetails: { hours: otHours, rate: overtimeRate, total: otPay },
+    hourlyRate,                       
+    dailyRate,                     
+    lateDeduction,                   
+    absentDeduction                 
   };
 };
