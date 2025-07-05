@@ -1,29 +1,41 @@
 import React, { createContext, useState, useEffect } from 'react';
-export const SERVER_PORT = 8000;
-export const BASE_URL = `http://localhost:${SERVER_PORT}`;
+export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-
+// Context setup
 export const ConfigContext = createContext();
 
 export const ConfigProvider = ({ children }) => {
-  const [config, setConfig] = useState({
-    rate: '',
-    basic: '',
-  });
+  const [config, setConfig] = useState({ rate: '', basic: '' });
+  const [passwordHash, setPassword] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     fetch(`${BASE_URL}/getConfig`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.length > 0) {
+          setConfig({ rate: data[0].rate, basic: data[0].basic });
+        } else {
+          console.warn("No config data found from /getConfig");
+        }
+      })
+      .catch((err) => console.error("Error fetching config:", err));
+  }, []);
+
+  useEffect(() => {
+  fetch(`${BASE_URL}/getAdminAccount`)
     .then((res) => res.json())
     .then((data) => {
-      setConfig({ rate: data[0].rate, basic: data[0].basic });      
-      setPassword(data[0].password);
+      if (data && data.username && data.password) {
+        setUsername(data.username);
+        setPassword(data.password); // This assumes your backend returns passwordHash as `password`
+      } else {
+        console.warn("No admin credentials returned from /getAdminAccount");
+      }
     })
-    .catch((err) => console.log(err));
-  }, []); 
+    .catch((err) => console.error("Error fetching admin credentials:", err));
+  }, []);
 
-  const [password, setPassword] = useState("123");
-  const [username, setUsername] = useState("Admin");
-  
   //payroll configs
   const [userPayroll, setUserPayroll] = useState({
     payrollInfo: {
@@ -64,7 +76,7 @@ export const ConfigProvider = ({ children }) => {
   const getUserPayment = (userId, paymentId) => {
     const userPayments = getAllUserPayments(userId);
     console.log("All payments of", paymentId, userPayments);
-    const pay = userPayments.find(payment => { return payment.paymentId == paymentId; }) || null;
+    const pay = userPayments.find(payment => { return payment.paymentId === paymentId; }) || null;
     console.log("Found Payment:", pay);  //for debugging
     return pay;
   };
@@ -73,14 +85,14 @@ export const ConfigProvider = ({ children }) => {
     setUserPayroll((payroll) => ({
       ...payroll,
       [userId]: payroll[userId].map((payment) =>
-        payment.paymentId == paymentId ? { ...payment, ...newData } : payment
+        payment.paymentId === paymentId ? { ...payment, ...newData } : payment
       ),
     }));
   };
   const deleteUserPayment = (userId, paymentId) => {
     setUserPayroll((payroll) => ({
       ...payroll,
-      [userId]: payroll[userId].filter(payment => payment.paymentId != paymentId)
+      [userId]: payroll[userId].filter(payment => payment.paymentId !== paymentId)
     }));
     console.log("Deleted Payment", userId, paymentId);   //for debugging
   };
@@ -92,7 +104,7 @@ export const ConfigProvider = ({ children }) => {
       config, setConfig,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
-      password, setPassword, username, setUsername
+      passwordHash, setPassword, username, setUsername
     }}>
       {children}
     </ConfigContext.Provider>
