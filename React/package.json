@@ -38,7 +38,6 @@
     ]
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -49,11 +48,6 @@
     "jest": "^27.5.1",
     "jest-junit": "^16.0.0",
     "jest-silent-reporter": "^0.6.0",
-=======
-    "concurrently": "^9.2.0",
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
->>>>>>> 82f56cebc60141cc4c75c50db7eec4b7ceaa8dd7
     "jspdf": "^2.5.2",
     "mongoose": "^8.16.1",
     "mysql": "^2.18.1",

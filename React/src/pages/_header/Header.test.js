@@ -1,31 +1,28 @@
+import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import Header from './Header';
 
-// Mock the images // change based on if the images are changed
 jest.mock('./logo.svg', () => 'logo.svg');
 jest.mock('./setting.svg', () => 'setting.svg');
 
 jest.mock('./SettingsMenu', () => ({ trigger }) => (
-  <div>{trigger ? 'Settings Menu Open' : 'Settings Menu Closed'}</div>
+  <div data-testid="settings-menu">{trigger ? 'Settings Open' : 'Settings Closed'}</div>
 ));
 
 describe('Header', () => {
-  test('renders logo and settings icon', () => {
+  test('renders logo and setting icons', () => {
     render(<Header />);
-    const logo = screen.getByRole('img', { name: '' });
-    const settingsIcon = screen.getAllByRole('img')[1];
-
-    expect(logo).toBeInTheDocument();
-    expect(settingsIcon).toBeInTheDocument();
+    const imgs = screen.getAllByRole('img');
+    expect(imgs.length).toBe(2); // logo and setting icons
   });
 
-  test('opens settings menu when settings icon is clicked', () => {
+  test('opens settings menu when setting icon is clicked', () => {
     render(<Header />);
-    expect(screen.getByText('Settings Menu Closed')).toBeInTheDocument();
+    expect(screen.getByTestId('settings-menu')).toHaveTextContent('Settings Closed');
 
-    const settingsIcon = screen.getAllByRole('img')[1];
-    fireEvent.click(settingsIcon);
+    const settingIcon = screen.getAllByRole('img')[1]; // second image
+    fireEvent.click(settingIcon);
 
-    expect(screen.getByText('Settings Menu Open')).toBeInTheDocument();
+    expect(screen.getByTestId('settings-menu')).toHaveTextContent('Settings Open');
   });
 });
