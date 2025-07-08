@@ -76,7 +76,7 @@ describe('ViewPayment Component', () => {
       expect(screen.getByText(/Are you sure/i)).toBeInTheDocument();
     });
   });
-
+ 
   test('shows "no records" when payment list is empty', async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -88,3 +88,6 @@ describe('ViewPayment Component', () => {
     expect(await screen.findByText(/No payroll history records found/i)).toBeInTheDocument();
   });
 });
+
+
+// Testing here
