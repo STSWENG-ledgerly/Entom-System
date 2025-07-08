@@ -7,3 +7,6 @@ test('renders login button', () => {
   const loginBtn = screen.getByRole('button', { name: /login/i });
   expect(loginBtn).toBeInTheDocument();
 });
+
+
+// Test running YML
