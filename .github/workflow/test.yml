@@ -4,7 +4,7 @@ on:
   push:
     branches: [ qa-testing ]
   pull_request:
-    branches: [ main, qa-testing ]    # Runs when pulled to main or qa-testing
+    branches: [ main, qa-testing ]
 
 jobs:
   test:
@@ -19,16 +19,10 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm install
+        working-directory: React
 
       - name: Run tests
         run: npm test -- --watchAll=false
+        working-directory: React
