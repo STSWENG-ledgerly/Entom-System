@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect } from 'react';
 export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -108,4 +109,3 @@ export const ConfigProvider = ({ children }) => {
       {children}
     </ConfigContext.Provider>
   );
-};

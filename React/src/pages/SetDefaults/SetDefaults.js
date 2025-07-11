@@ -1,10 +1,9 @@
-import React, {useState, useContext, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { ConfigContext } from '../../ConfigContext';
 import global from '../../global.module.css';
 import TempHeader from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
-import styles from './SetDefaults.module.css'
-import {ConfigContext, BASE_URL} from '../../ConfigContext';
+import styles from './SetDefaults.module.css';
 
 const SetDefaults = () => {
     const {config, setConfig} = useContext(ConfigContext);

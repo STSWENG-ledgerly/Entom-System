@@ -1,3 +1,4 @@
+
 export const calculatePayroll = (payrollInfo = {}, deductions = {}, config = {}) => {
   const toNumber = (val) => parseFloat(val) || 0;
 
