@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
@@ -18,10 +19,13 @@ const SearchEmployee = () => {
     const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState(employees);
     
+    const adminCompany = sessionStorage.getItem('company'); // company
+
     useEffect (()=>{
-      fetch(`${BASE_URL}/employee`)
+      fetch(`${BASE_URL}/employee?company=${adminCompany}`)
       .then(res => res.json())
       .then(data => {
+        const filtered = data.filter(emp => emp.company === adminCompany);
         setEmployees(data)
         setFilteredEmployees(data);
       })
@@ -136,7 +140,7 @@ const SearchEmployee = () => {
           </thead>
           <tbody>
             {filteredEmployees.map(employee => (
-              <tr key={employee.employee_id}>
+              <tr key={employee._id}>
                 <td>{employee.employee_id}</td>
                 <td>{employee.fname}</td>
                 <td>{employee.lname}</td>
@@ -165,4 +169,3 @@ const SearchEmployee = () => {
     );
   };
   
-export default SearchEmployee;
