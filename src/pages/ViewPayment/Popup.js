@@ -1,4 +1,3 @@
-
 import React from 'react';
 import styles from './Popup.module.css';
 import {useState, useContext} from 'react';
@@ -46,3 +45,4 @@ function Popup (props)  {
     ) : "";
 };
   
+export default Popup;

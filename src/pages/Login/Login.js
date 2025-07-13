@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
@@ -76,3 +75,4 @@ import officeImage from '../Login/office.jpg';
   );
 };
 
+export default Login;
