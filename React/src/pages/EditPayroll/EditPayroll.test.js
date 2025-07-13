@@ -1,5 +1,4 @@
-// EditPayroll.test.js
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ConfigContext } from '../../ConfigContext';
 import EditPayroll from './EditPayroll';
@@ -14,22 +13,26 @@ beforeEach(() => {
     Promise.resolve({
       json: () =>
         Promise.resolve({
-          formatted_date: '2024-01-01',
-          overtimeDays: 5,
+          payDate: '2024-01-01',
+          overtimeDetails: [],
           salaryIncrease: 200,
-          mealAllowance: 100,
-          birthdayBonus: 300,
-          incentive: 150,
-          otherAdditions: 50,
-          sss: 100,
-          philHealth: 200,
-          pagIbig: 100,
-          cashAdvance: 50,
-          healthCard: 0,
-          lateAbsent: 0,
-          otherDeductions: 0,
-          payroll: 11000,
-          deductions: 450,
+          allowances: {
+            mealAllowance: 100,
+            birthdayBonus: 300,
+            incentives: 150,
+            otherAdditions: 50,
+          },
+          deductions: {
+            sss: 100,
+            philHealth: 200,
+            pagIbig: 100,
+            cashAdvance: 50,
+            healthCard: 0,
+            lateAbsent: 0,
+            otherDeductions: 0,
+          },
+          grossSalary: 11000,
+          totalDeductions: 450,
           total: 10550,
           rate: 100,
           basic: 10000,
@@ -42,7 +45,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('renders EditPayroll and displays heading with employee name', async () => {
+test('renders EditPayroll with employee name and loads data', async () => {
   render(
     <ConfigContext.Provider value={{ config: mockConfig }}>
       <MemoryRouter initialEntries={['/edit/1/101/John/Doe']}>
@@ -56,9 +59,14 @@ test('renders EditPayroll and displays heading with employee name', async () => 
     </ConfigContext.Provider>
   );
 
+  // Wait for heading to appear with employee's name
   const heading = await screen.findByRole('heading', {
     name: /edit payroll for john doe/i,
   });
-
   expect(heading).toBeInTheDocument();
+
+  // Check if a known input appears (e.g., basic salary)
+  await waitFor(() => {
+    expect(screen.getByLabelText(/basic/i)).toBeInTheDocument();
+  });
 });
