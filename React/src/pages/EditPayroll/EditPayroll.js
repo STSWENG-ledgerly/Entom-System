@@ -1,4 +1,3 @@
-
 import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
@@ -210,3 +209,4 @@ const EditPayroll = () => {
   );
 };
 
+export default EditPayroll;
