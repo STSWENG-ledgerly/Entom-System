@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
@@ -27,6 +28,7 @@ const Header = () => {
 
     const handleLogout= () => {
         sessionStorage.removeItem('userValid');
+        sessionStorage.removeItem('company'); 
         navigate('/');
     };
 
@@ -69,4 +71,3 @@ const Header = () => {
     );
   };
   
-export default Header;
