@@ -26,7 +26,6 @@ const ViewPayment = () => {
   };
 
   useEffect (()=>{
-    console.log("Fetching payment for ID:", id);
     fetch(`${BASE_URL}/payments/${id}`, {
     })
     .then(res => res.json())
@@ -36,7 +35,7 @@ const ViewPayment = () => {
       console.log(data);
     })
     .catch(err => console.log(err));
-  }, [id])
+  }, [])
 
 
   return (

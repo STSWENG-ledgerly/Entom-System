@@ -26,13 +26,10 @@ const GeneratePayroll = () => {
     const [savedStatus, setSavedStatus] = useState(null);
     const [ email, setEmail ] = useState();
     const [isVisible, setIsVisible] = useState(false);
-    const { setSelectedEmployeeId } = useContext(ConfigContext);
-    
 
     useEffect(() => {
     const employee_index_id = { employee_index_id: id };
     
-    setSelectedEmployeeId(id);
     fetch(`${BASE_URL}/getEmail`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,11 +58,11 @@ const GeneratePayroll = () => {
     });
     const [deductions, setDeductions] = useState({
         sss: 0,
-        philHealth: 0,
-        pagIbig: 0,
+        philhealth: 0,
+        pagibig: 0,
         cashAdvance: 0,
         healthCard: 0,
-        lateAbsent: 0,
+        absences: 0,
         otherDeductions: 0
     });
     const [results, setResults] = useState({
@@ -102,8 +99,8 @@ const GeneratePayroll = () => {
         doc.setFont("helvetica", "normal");
         let yPosition = 50;
         const payrollDetails = [
-            `Overtime Hours: ${otHours}`,
-            `Overtime Pay: ${otTotal.toFixed(2)}`,
+            `Overtime: ${payrollInfo.ot}`,
+            `Salary Increase: ${payrollInfo.salaryIncrease}`,
             `Meal Allowance: ${payrollInfo.mealAllow}`,
             `Birthday Bonus: ${payrollInfo.bdayBonus}`,
             `Incentive: ${payrollInfo.incentive}`,
@@ -126,11 +123,11 @@ const GeneratePayroll = () => {
         yPosition += 15;
         const deductionDetails = [
             `SSS: ${deductions.sss}`,
-            `philHealth: ${deductions.philHealth}`,
-            `Pag-IBIG: ${deductions.pagIbig}`,
+            `PhilHealth: ${deductions.philhealth}`,
+            `Pag-IBIG: ${deductions.pagibig}`,
             `Cash Advance: ${deductions.cashAdvance}`,
             `Health Card: ${deductions.healthCard}`,
-            `lateAbsent: ${deductions.lateAbsent}`,
+            `Absences: ${deductions.absences}`,
             `Other Deductions: ${deductions.otherDeductions}`
         ];
 
@@ -199,88 +196,29 @@ const GeneratePayroll = () => {
             setSavedMessage(false);
         }, 5000);
     };
-    const otHours = parseFloat(payrollInfo.ot) || 0;
-    const otRate  = parseFloat(config.rate)     || 0;
-    const otTotal = otHours * otRate;
 
     const saveToDB = () => {
-    console.log("💬 Saving payroll for employee:", id);
-    console.log("💬 Current results:", results);
-
-    // 1) Build the nested allowances object from your form state
-    const allowances = {
-        overtimePay: otTotal,
-        mealAllowance:  payrollInfo.mealAllow,
-        birthdayBonus:  payrollInfo.bdayBonus,
-        incentives:     payrollInfo.incentive,
-        otherAdditions: payrollInfo.otherPayrollInfo
-    };
-
-    // 3) Pull your computed numbers out of `results`
-    const grossSalary     = results.payroll;    
-    const totalDeductions = results.deductions;
-    const total           = results.total;     
-
-    // 4) Build the nested deductions object
-    const nestedDeductions = {
-        tax:             0,                  // flat zero, unless you have a tax field
-        sss:             deductions.sss,
-        philHealth:      deductions.philHealth,
-        pagIbig:         deductions.pagIbig,
-        healthCard:      deductions.healthCard,
-        cashAdvance:     deductions.cashAdvance,
-        lateAbsent:      deductions.lateAbsent,
-        otherDeductions: deductions.otherDeductions
-    };
-
-    // 5) A simple payslipId — must be unique per date/employee
-    const payslipId = `PS${id}-${payrollInfo.date.replace(/-/g, "")}-${today}`;
-
-
-    // 6) Compose final payload
-    const payload = {
-        employee:         id,                    
-        payDate:          payrollInfo.date,      // e.g. "2025-07-04"
-        payrollTimeframe: "Monthly",             // or wire this up to a dropdown
-        allowances,
-        overtimeDetails: {
-            hours: otHours,
-            rate:  otRate,
-            total: otTotal
-        },
-        grossSalary,
-        deductions:       nestedDeductions,
-        totalDeductions,
-        total,
-        paymentMode:      "Bank Transfer",       // or wire to UI
-        payslipId,
-        isApproved:       true,                  // default approval
-        dateGenerated:    payrollInfo.date,
-        isDeleted:        false,
-        company: sessionStorage.getItem('company')
-    };
-
-    console.log("📤 POST payload:", payload);
-
-    fetch(`${BASE_URL}/addPayment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    })
-        .then(res => {
-        if (!res.ok) throw new Error(`Server responded ${res.status}`);
-        return res.json();
+        console.log("💬 id before sending:", id);
+        const newPayment = {
+            employee_id: id,
+            rate: config.rate,
+            basic: config.basic,
+            payrollInfo, 
+            deductions,
+            results
+        };
+        console.log(JSON.stringify(newPayment));
+        fetch(`${BASE_URL}/addPayment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newPayment),
         })
-        .then(data => {
-        console.log("Saved payroll:", data);
-        setSavedStatus('Saved to Database!');
-        handleFadeOut();
+        .then((res) => res.json())
+        .then((data) => {
+            setSavedStatus('Saved to Database!');
+            console.log(data);
         })
-        .catch(err => {
-        console.error("Error saving payroll:", err);
-        setSavedStatus('Save failed');
-        handleFadeOut();
-        });
+        .catch((err) => console.log(err));
     };
 
     const handleFadeOut = () => {

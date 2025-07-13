@@ -8,11 +8,8 @@ export const ConfigProvider = ({ children }) => {
   const [config, setConfig] = useState({ rate: '', basic: '' });
   const [passwordHash, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   useEffect(() => {
-  if (!selectedEmployeeId) {
-    // fallback to default config if no employee selected
     fetch(`${BASE_URL}/getConfig`)
       .then((res) => res.json())
       .then((data) => {
@@ -23,27 +20,21 @@ export const ConfigProvider = ({ children }) => {
         }
       })
       .catch((err) => console.error("Error fetching config:", err));
-    return;
-  }
+  }, []);
 
-  fetch(`${BASE_URL}/getEmployeeDetails/${selectedEmployeeId}`)
-    .then(res => {
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      return res.json();
-    })
-    .then(data => {
-      if (data) {
-        setConfig({
-        rate:  data.overtimeRate ?? 0,
-        basic: data.basicSalary  ?? 0
-        });
+  useEffect(() => {
+  fetch(`${BASE_URL}/getAdminAccount`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data && data.username && data.password) {
+        setUsername(data.username);
+        setPassword(data.password); // This assumes your backend returns passwordHash as `password`
+      } else {
+        console.warn("No admin credentials returned from /getAdminAccount");
       }
     })
-    .catch(err => {
-      console.error("Error fetching employee config:", err.message);
-    });
-}, [selectedEmployeeId]);
-  
+    .catch((err) => console.error("Error fetching admin credentials:", err));
+  }, []);
 
   //payroll configs
   const [userPayroll, setUserPayroll] = useState({
@@ -111,7 +102,6 @@ export const ConfigProvider = ({ children }) => {
   return (
     <ConfigContext.Provider value={{
       config, setConfig,
-       selectedEmployeeId, setSelectedEmployeeId,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
       passwordHash, setPassword, username, setUsername

@@ -31,21 +31,21 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>philHealth:</label>
+            <label>Philhealth:</label>
             <input
                 type="number"
-                value={deductions.philHealth ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "philHealth")}
-                onBlur={(e) => handleBlur(e, setDeductions, "philHealth")}
+                value={deductions.philhealth ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "philhealth")}
+                onBlur={(e) => handleBlur(e, setDeductions, "philhealth")}
             />
         </div>
         <div className={styles.formGroup}>
             <label>PAG-IBIG:</label>
             <input
                 type="number"
-                value={deductions.pagIbig ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "pagIbig")}
-                onBlur={(e) => handleBlur(e, setDeductions, "pagIbig")}
+                value={deductions.pagibig ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "pagibig")}
+                onBlur={(e) => handleBlur(e, setDeductions, "pagibig")}
             />
         </div>
         <div className={styles.formGroup}>
@@ -70,9 +70,9 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
             <label>Late/Absent:</label>
             <input
                 type="number"
-                value={deductions.lateAbsent ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "lateAbsent")}
-                onBlur={(e) => handleBlur(e, setDeductions, "lateAbsent")}
+                value={deductions.absences ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "absences")}
+                onBlur={(e) => handleBlur(e, setDeductions, "absences")}
             />
         </div>
         <div className={styles.formGroup}>
