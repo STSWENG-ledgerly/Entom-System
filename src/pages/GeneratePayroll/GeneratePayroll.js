@@ -1,3 +1,4 @@
+
 import React, { useState, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
@@ -343,4 +344,3 @@ const GeneratePayroll = () => {
     );
 };
 
-export default GeneratePayroll;
