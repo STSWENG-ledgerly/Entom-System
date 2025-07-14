@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import Sidebar from '../_sidebar/Sidebar';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { BASE_URL } from '../../ConfigContext';
+import global from '../../global.module.css';
 import Header from '../_header/Header';
-import global from '../../global.module.css'
+import Sidebar from '../_sidebar/Sidebar';
 import styles from './SearchEmployee.module.css';
-import {BASE_URL} from '../../ConfigContext';
 
 const SearchEmployee = () => {
     const navigate = useNavigate();
@@ -169,3 +169,4 @@ const SearchEmployee = () => {
     );
   };
  
+  export { SearchEmployee };

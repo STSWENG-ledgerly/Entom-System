@@ -1,16 +1,16 @@
 
-import React, { useState, useContext, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import Sidebar from '../_sidebar/Sidebar';
-import PayrollInfo from '../_payrollInfo/PayrollInfo';
-import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
-import ResultsInfo from '../_resultsInfo/ResultsInfo';
-import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
-import styles from './GeneratePayroll.module.css';
-import global from '../../global.module.css';
-import Header from '../_header/Header';
-import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import jsPDF from 'jspdf';
+import { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { BASE_URL, ConfigContext } from '../../ConfigContext';
+import global from '../../global.module.css';
+import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
+import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
+import Header from '../_header/Header';
+import PayrollInfo from '../_payrollInfo/PayrollInfo';
+import ResultsInfo from '../_resultsInfo/ResultsInfo';
+import Sidebar from '../_sidebar/Sidebar';
+import styles from './GeneratePayroll.module.css';
 
 const GeneratePayroll = () => {
     const today = new Date();
@@ -333,3 +333,5 @@ const GeneratePayroll = () => {
         </div>
     );
 };
+
+export default GeneratePayroll;
