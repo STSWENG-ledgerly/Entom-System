@@ -11,6 +11,7 @@ import { ConfigProvider } from './ConfigContext';
 import ProtectedRoutes from './ProtectedRoutes'
 import AddEmployee from './pages/AddEmployee/AddEmployee';
 
+
 function App() {
   // setup all available/possible links within the app
   return (
