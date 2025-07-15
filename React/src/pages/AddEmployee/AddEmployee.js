@@ -125,7 +125,10 @@ const AddEmployee = () => {
 
   }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
   const title = "Add Employee";
