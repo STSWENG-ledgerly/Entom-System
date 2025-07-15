@@ -79,9 +79,55 @@ const AddEmployee = () => {
     }));
   };
 
-  const handeAddEmployeeButton = () => {
-  }
+  const handeAddEmployeeButton = async () => {
 
+    const employeeData = {
+      employee_id: `EMP${Date.now()}`,
+      company: "Chase",
+      fname: fName,
+      middleName,
+      lname: lName,
+      department,
+      position,
+      designation,
+      basicSalary: Number(basicSalary),
+      dateHired,
+      phone,
+      email,
+      rbacProfile: 1,
+      bankAccount: {
+        bankName: bankAccount.bankName,
+        accountNumber: bankAccount.accountNumber,
+        branch: bankAccount.branch
+      }
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/addEmployee`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(employeeData)
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert("Employee has been added!");
+      }
+      else {
+        alert("Failed to add employee: ${result.error");
+      }
+    } catch (error) {
+      console.error("Error adding employee: ", error);
+      alert("Error in adding employee");
+    }
+
+  }
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
   const title = "Add Employee";
 
   return (
@@ -194,7 +240,7 @@ const AddEmployee = () => {
               </div>
             </div>
           </div>
-          <button className={styles.buttonDesign} >Add Employee</button>
+          <button className={styles.buttonDesign} onClick={handeAddEmployeeButton}>Add Employee</button>
 
         </div>
       </div>
