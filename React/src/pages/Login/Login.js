@@ -6,6 +6,7 @@ import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import officeImage from '../Login/office.jpg';
 
 
+<<<<<<< Updated upstream
   const Login = () => {
     const [userName, setUserName] = useState('');
     const [userPassword, setUserPassword] = useState('');
@@ -18,6 +19,20 @@ import officeImage from '../Login/office.jpg';
     useEffect(() => {
       sessionStorage.removeItem('userValid');
     }, []);
+=======
+
+const Login = () => {
+  const [userName, setUserName] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [errMessage, setErrMessage] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    sessionStorage.removeItem('userValid');
+    sessionStorage.removeItem('company');
+    sessionStorage.removeItem('username');
+  }, []);
+>>>>>>> Stashed changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,3 +90,8 @@ import officeImage from '../Login/office.jpg';
 
   );
 };
+<<<<<<< Updated upstream
+=======
+
+export default Login;
+>>>>>>> Stashed changes

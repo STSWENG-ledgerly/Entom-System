@@ -12,6 +12,7 @@ export const ConfigProvider = ({ children }) => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   useEffect(() => {
+<<<<<<< Updated upstream
   if (!selectedEmployeeId) {
     // fallback to default config if no employee selected
     fetch(`${BASE_URL}/getConfig`)
@@ -21,6 +22,23 @@ export const ConfigProvider = ({ children }) => {
           setConfig({ rate: data[0].rate, basic: data[0].basic });
         } else {
           console.warn("No config data found from /getConfig");
+=======
+    if (!selectedEmployeeId) {
+      return;
+    }
+
+    fetch(`${BASE_URL}/getEmployeeDetails/${selectedEmployeeId}`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (data) {
+          setConfig({
+            rate: data.overtimeRate ?? 0,
+            basic: data.basicSalary ?? 0
+          });
+>>>>>>> Stashed changes
         }
       })
       .catch((err) => console.error("Error fetching config:", err));
@@ -112,7 +130,7 @@ export const ConfigProvider = ({ children }) => {
   return (
     <ConfigContext.Provider value={{
       config, setConfig,
-       selectedEmployeeId, setSelectedEmployeeId,
+      selectedEmployeeId, setSelectedEmployeeId,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
       passwordHash, setPassword, username, setUsername
