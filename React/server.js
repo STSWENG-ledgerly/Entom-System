@@ -1,6 +1,6 @@
 // const SERVER_PORT = 8000;
 const express = require('express');
-const bcrypt  = require('bcrypt');  
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { Employee, Payroll, Account, Company, Config } = require('./models/payrollSchema');
@@ -22,11 +22,11 @@ app.use(express.json());
 //   .catch((err) => console.error("MongoDB connection error:", err));
 
 async function database() {
-    try {
-        await connectToMongo();
-    } catch (error) {
-        console.error('Server: Failed to start server', error);
-    }
+  try {
+    await connectToMongo();
+  } catch (error) {
+    console.error('Server: Failed to start server', error);
+  }
 }
 
 app.get('/', (req, res) => {
@@ -54,7 +54,7 @@ app.get('/payments/:employee_id', async (req, res) => {
 
     const employee = await Employee.findOne({
       employee_id: req.params.employee_id,
-      company                
+      company
     });
     if (!employee) {
       return res.status(404).json({ error: 'Employee not found' });
@@ -62,10 +62,10 @@ app.get('/payments/:employee_id', async (req, res) => {
 
     // 2) find all non-deleted payrolls for that employee
     const payments = await Payroll.find({
-      employee:   employee._id,
+      employee: employee._id,
       isDeleted: false
     })
-    .lean();
+      .lean();
 
     // 3) format the date for each
     payments.forEach(p => {
@@ -108,7 +108,7 @@ app.get('/getPayment/:payment_id', async (req, res) => {
 
 app.post('/deletePayment/:payment_id', async (req, res) => {
   try {
-     const { company } = req.query;
+    const { company } = req.query;
     if (!company) {
       return res.status(400).json({ error: 'Missing company parameter' });
     }
@@ -128,10 +128,10 @@ app.post('/deletePayment/:payment_id', async (req, res) => {
 
     await Payroll.findByIdAndUpdate(req.params.payment_id, { isDeleted: true });
     res.json({ message: 'Payment marked as deleted' });
-    } catch (err) {
-      console.error("Error in POST /deletePayment/:payment_id:", err);
-      res.status(500).json({ error: 'Failed to delete payment' });
-    }
+  } catch (err) {
+    console.error("Error in POST /deletePayment/:payment_id:", err);
+    res.status(500).json({ error: 'Failed to delete payment' });
+  }
 });
 
 app.post("/getEmail", async (req, res) => {
@@ -160,14 +160,14 @@ app.post('/editPayment/:payment_id', async (req, res) => {
   try {
     const {
       payrollInfo = {},
-      deductions   = {},
+      deductions = {},
       grossSalary,
       totalDeductions,
       total,
-      overtimeDetails = {}, 
+      overtimeDetails = {},
       payDate,
-      paymentMode  = 'Bank Transfer',
-      isApproved   = true
+      paymentMode = 'Bank Transfer',
+      isApproved = true
     } = req.body;
 
     console.log('⛔ payload.payrollInfo:', req.body.payrollInfo);
@@ -183,32 +183,32 @@ app.post('/editPayment/:payment_id', async (req, res) => {
       $set: {
         payDate: parsed,
         allowances: {
-          overtimePay: overtimeDetails.total,  
-          mealAllowance:  payrollInfo.mealAllow,
-          birthdayBonus:  payrollInfo.bdayBonus,
-          incentives:     payrollInfo.incentive,
+          overtimePay: overtimeDetails.total,
+          mealAllowance: payrollInfo.mealAllow,
+          birthdayBonus: payrollInfo.bdayBonus,
+          incentives: payrollInfo.incentive,
           otherAdditions: payrollInfo.otherPayrollInfo
         },
 
-        grossSalary, 
+        grossSalary,
         deductions: {
-          tax:            0,
-          sss:            deductions.sss,
-          philHealth:     deductions.philHealth,
-          pagIbig:        deductions.pagIbig,
-          healthCard:     deductions.healthCard,
-          cashAdvance:    deductions.cashAdvance,
-          lateHours:     deductions.lateHours,
-          absentDays:     deductions.absentDays,
+          tax: 0,
+          sss: deductions.sss,
+          philHealth: deductions.philHealth,
+          pagIbig: deductions.pagIbig,
+          healthCard: deductions.healthCard,
+          cashAdvance: deductions.cashAdvance,
+          lateHours: deductions.lateHours,
+          absentDays: deductions.absentDays,
           otherDeductions: deductions.otherDeductions
         },
-        totalDeductions, 
-        total, 
-        overtimeDetails,  
+        totalDeductions,
+        total,
+        overtimeDetails,
         paymentMode,
         isApproved
       }
-      
+
     };
 
     // perform the update
@@ -243,7 +243,7 @@ app.post('/addPayment', async (req, res) => {
     if (!company) {
       return res.status(400).json({ error: 'Missing company in request' });
     }
-    
+
     const emp = await Employee.findOne({ employee_id: employee, company }).lean();
     if (!emp) {
       return res.status(400).json({ error: `Employee ${employee} not found in company ${company}` });
@@ -316,7 +316,7 @@ app.post('/admin/login', async (req, res) => {
 
 app.get('/getEmployeeDetails/:id', async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
 
     let employee = null;
 
@@ -342,6 +342,7 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
 });
 
 app.post('/addEmployee', async (req, res) => {
+
   try {
     const {
       employee_id,
@@ -371,34 +372,34 @@ app.post('/addEmployee', async (req, res) => {
     }
 
     const workingDaysInMonth = 22;      // adjust to your policy
-    const workHoursPerDay    = 8;     
-    const overtimeMultiplier = 1.25;   
+    const workHoursPerDay = 8;
+    const overtimeMultiplier = 1.25;
 
-    const dailyRate    = basicSalary / workingDaysInMonth;
-    const hourlyRate   = dailyRate / workHoursPerDay;
+    const dailyRate = basicSalary / workingDaysInMonth;
+    const hourlyRate = dailyRate / workHoursPerDay;
     const overtimeRate = hourlyRate * overtimeMultiplier;
 
     const newEmployee = new Employee({
-      employee_id,                           
-      company:        mongoose.Types.ObjectId(company), 
-      status,                                
+      employee_id,
+      company: new mongoose.Types.ObjectId(company),
+      status,
       fname,
       middleName,
       lname,
       department,
       position,
       designation,
-      basicSalary,                         
-      overtimeRate,                          
-      bankAccount: {                          
+      basicSalary,
+      overtimeRate,
+      bankAccount: {
         bankName,
         accountNumber,
         branch
       },
-      dateHired:      new Date(dateHired),      
+      dateHired: new Date(dateHired),
       phone,
       email,
-      rbacProfile                    
+      rbacProfile
     });
 
     const saved = await newEmployee.save();
@@ -413,6 +414,6 @@ app.post('/addEmployee', async (req, res) => {
 // });
 
 app.listen(port, async function() {
-    await database(); 
-    console.log(`Server: Running on http://localhost:${port}`);
+  await database();
+  console.log(`Server: Running on http://localhost:${port}`);
 });
