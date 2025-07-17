@@ -7,22 +7,9 @@ import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
 import GeneratePayroll from './pages/GeneratePayroll/GeneratePayroll';
 import EditPayroll from './pages/EditPayroll/EditPayroll';
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { ConfigProvider } from './ConfigContext';
-import ProtectedRoutes from './ProtectedRoutes'
-import AddEmployee from './pages/AddEmployee/AddEmployee';
-
-=======
 import AddEmployee from './pages/AddEmployee/AddEmployee'
 import { ConfigProvider } from './ConfigContext';
 import ProtectedRoutes from './ProtectedRoutes'
->>>>>>> Stashed changes
-=======
-import AddEmployee from './pages/AddEmployee/AddEmployee'
-import { ConfigProvider } from './ConfigContext';
-import ProtectedRoutes from './ProtectedRoutes'
->>>>>>> Stashed changes
 
 function App() {
   // setup all available/possible links within the app
