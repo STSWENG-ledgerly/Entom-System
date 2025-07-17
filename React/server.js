@@ -1,6 +1,10 @@
 // const SERVER_PORT = 8000;
 const express = require('express');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+const bcrypt = require('bcrypt');
+>>>>>>> Stashed changes
 =======
 const bcrypt = require('bcrypt');
 >>>>>>> Stashed changes
@@ -230,6 +234,9 @@ app.post('/editPayment/:payment_id', async (req, res) => {
       payDate,
       paymentMode = 'Bank Transfer',
       isApproved = true
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     } = req.body;
 

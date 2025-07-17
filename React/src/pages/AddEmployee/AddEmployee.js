@@ -38,6 +38,7 @@ const AddEmployee = () => {
 
   const handeAddEmployeeButton = async () => {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     const employeeData = {
       employee_id: `EMP${Date.now()}`,
@@ -117,6 +118,58 @@ const AddEmployee = () => {
         branch: bankAccount.branch
       }
     };
+=======
+    const companyId = sessionStorage.getItem('company');
+
+    if (!companyId || companyId.length !== 24) {
+      alert('Company ID is missing or invalid. Please log in again.');
+      return;
+    }
+
+    const employeeData = {
+      employee_id: `EMP${Date.now()}`,
+      company: companyId,
+      fname: fName,
+      middleName,
+      lname: lName,
+      department,
+      position,
+      designation,
+      basicSalary: Number(basicSalary),
+      dateHired,
+      phone,
+      email,
+      rbacProfile: 1,
+      bankAccount: {
+        bankName: bankAccount.bankName,
+        accountNumber: bankAccount.accountNumber,
+        branch: bankAccount.branch
+      }
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/addEmployee`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(employeeData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("✅ Employee has been added!");
+        navigate('/employeeList'); // or wherever you want to go
+      } else {
+        alert(`❌ Failed to add employee: ${result.error}`);
+      }
+    } catch (error) {
+      console.error("Error adding employee: ", error);
+      alert("Error in adding employee");
+    }
+  };
+>>>>>>> Stashed changes
 
     try {
       const response = await fetch(`${BASE_URL}/addEmployee`, {
@@ -191,7 +244,10 @@ const AddEmployee = () => {
             </div>
           </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <button className={styles.buttonDesign} onClick={handeAddEmployeeButton}>Add Employee</button>
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
