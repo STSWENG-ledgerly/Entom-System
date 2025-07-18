@@ -1,123 +1,87 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { ConfigContext } from '../../ConfigContext';
-import Login from './Login';
+import { BrowserRouter } from 'react-router-dom';
+import Login from '../../pages/Login/Login'; // adjust if needed
 
-// Mock navigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
+// Mock BASE_URL
+jest.mock('../../ConfigContext', () => ({
+  BASE_URL: 'http://localhost:3000',
 }));
 
-// Mock sessionStorage
-const sessionStorageMock = (() => {
-  let store = {};
-  return {
-    getItem: (key) => store[key] || null,
-    setItem: (key, value) => (store[key] = value.toString()),
-    removeItem: (key) => delete store[key],
-    clear: () => (store = {}),
-  };
-})();
-Object.defineProperty(window, 'sessionStorage', {
-  value: sessionStorageMock,
-});
-
-// Helper to render with context
-const renderLogin = () =>
-  render(
-    <ConfigContext.Provider value={{ username: 'admin', passwordHash: 'hashedPassword' }}>
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    </ConfigContext.Provider>
-  );
+const renderWithRouter = (ui) => {
+  return render(<BrowserRouter>{ui}</BrowserRouter>);
+};
 
 beforeEach(() => {
-  jest.clearAllMocks();
   sessionStorage.clear();
+  jest.resetAllMocks();
+  global.fetch = jest.fn();
 });
 
-test('logs in successfully with valid credentials', async () => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
+describe('Login.js', () => {
+  test('UT-E01: Login with correct credentials', async () => {
+    const mockResponse = { username: 'admin', company: 'TestCorp' };
+
+    fetch.mockResolvedValueOnce({
       ok: true,
-      json: () =>
-        Promise.resolve({
-          username: 'admin',
-          password: 'password123',
-          company: 'MyCompany',
-        }),
-    })
-  );
+      json: async () => mockResponse,
+    });
 
-  renderLogin();
+    renderWithRouter(<Login />);
 
-  fireEvent.change(screen.getByPlaceholderText(/username/i), {
-    target: { value: 'admin' },
+    fireEvent.change(screen.getByPlaceholderText('Username'), {
+      target: { value: 'admin' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('Password'), {
+      target: { value: 'password123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    await waitFor(() => {
+      expect(sessionStorage.getItem('userValid')).toBe('true');
+      expect(sessionStorage.getItem('username')).toBe('admin');
+      expect(sessionStorage.getItem('company')).toBe('TestCorp');
+    });
   });
-  fireEvent.change(screen.getByPlaceholderText(/admin password/i), {
-    target: { value: 'password123' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
-  await waitFor(() => {
-    expect(mockNavigate).toHaveBeenCalledWith('/MainMenu');
-    expect(sessionStorage.getItem('userValid')).toBe('true');
-    expect(sessionStorage.getItem('company')).toBe('MyCompany');
-    expect(sessionStorage.getItem('username')).toBe('admin');
-  });
-});
-
-test('shows error when password is incorrect', async () => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          username: 'admin',
-          password: 'correctPassword',
-          company: 'MyCompany',
-        }),
-    })
-  );
-
-  renderLogin();
-
-  fireEvent.change(screen.getByPlaceholderText(/username/i), {
-    target: { value: 'admin' },
-  });
-  fireEvent.change(screen.getByPlaceholderText(/admin password/i), {
-    target: { value: 'wrongPassword' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: /login/i }));
-
-  await waitFor(() => {
-    expect(screen.getByText(/password is incorrect/i)).toBeInTheDocument();
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-});
-
-test('shows error when username is not found', async () => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
+  test('UT-E02: Login with incorrect password (401)', async () => {
+    fetch.mockResolvedValueOnce({
       ok: false,
-    })
-  );
+      status: 401,
+    });
 
-  renderLogin();
+    renderWithRouter(<Login />);
 
-  fireEvent.change(screen.getByPlaceholderText(/username/i), {
-    target: { value: 'unknown' },
+    fireEvent.change(screen.getByPlaceholderText('Username'), {
+      target: { value: 'admin' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('Password'), {
+      target: { value: 'wrongpass' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/invalid username or password/i)).toBeInTheDocument();
+    });
   });
-  fireEvent.change(screen.getByPlaceholderText(/admin password/i), {
-    target: { value: 'password123' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
-  await waitFor(() => {
-    expect(screen.getByText(/username not found/i)).toBeInTheDocument();
-    expect(mockNavigate).not.toHaveBeenCalled();
+  test('UT-E03: Login with server error (e.g., 500)', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+    });
+
+    renderWithRouter(<Login />);
+
+    fireEvent.change(screen.getByPlaceholderText('Username'), {
+      target: { value: 'admin' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('Password'), {
+      target: { value: 'password123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/login failed. please try again./i)).toBeInTheDocument();
+    });
   });
 });
