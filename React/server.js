@@ -412,6 +412,16 @@ app.post('/addEmployee', async (req, res) => {
 // app.listen(SERVER_PORT, () => {
 //   console.log(`Listening on port ${SERVER_PORT}`);
 // });
+//
+app.get('/getEmployeeDetails/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const employee = await Employee.findById(id);
+    res.json(employee);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching employee details' });
+  }
+});
 
 app.listen(port, async function() {
   await database();
