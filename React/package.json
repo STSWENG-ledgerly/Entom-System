@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "better-sqlite3": "^11.5.0",
     "dotenv": "^16.5.0",
@@ -42,9 +40,12 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
     "concurrently": "^9.2.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "jest-fetch-mock": "^3.0.3",
     "jspdf": "^2.5.2",
     "mongoose": "^8.16.1",
     "mysql": "^2.18.1",
