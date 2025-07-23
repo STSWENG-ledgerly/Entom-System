@@ -1,10 +1,9 @@
-import React, {useState, useContext, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { ConfigContext } from '../../ConfigContext';
 import global from '../../global.module.css';
 import TempHeader from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
-import styles from './SetDefaults.module.css'
-import {ConfigContext, BASE_URL} from '../../ConfigContext';
+import styles from './SetDefaults.module.css';
 
 const SetDefaults = () => {
     const {config, setConfig} = useContext(ConfigContext);
@@ -81,12 +80,12 @@ const SetDefaults = () => {
 
                   <div className={styles.inputField}>
                   <label>Rate</label><br></br>
-                  <input type='number' min='0' value={newConfig.rate} step='any' onChange={(e)=>setNewConfig({...newConfig, rate: e.target.value})}></input><br></br>
+                  <input id="rate-field" type='number' min='0' value={newConfig.rate} step='any' onChange={(e)=>setNewConfig({...newConfig, rate: e.target.value})}></input><br></br>
                   </div>
                   
                   <div className={styles.inputField}>
                   <label>Basic</label><br></br>
-                  <input type='number' min='0' value={newConfig.basic} step='any' onChange={(e)=>setNewConfig({...newConfig, basic: e.target.value})}></input>
+                  <input id="basic-field" type='number' min='0' value={newConfig.basic} step='any' onChange={(e)=>setNewConfig({...newConfig, basic: e.target.value})}></input>
                   </div>
 
                   <div className={`${styles.status} ${isVisible ? global.fadeOut : global.opacity0}`}> {statusMsg} </div>
@@ -94,7 +93,7 @@ const SetDefaults = () => {
                 </div>
               </div>
 
-              <button className={styles.confirm} onClick={handleSubmit}> CONFIRM CHANGES </button><br/>
+              <button id="confirm-button" className={styles.confirm} onClick={handleSubmit}> CONFIRM CHANGES </button><br/>
               </div>
           </div>
         </div>
