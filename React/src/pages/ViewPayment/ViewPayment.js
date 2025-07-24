@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../_sidebar/Sidebar';
@@ -12,7 +13,7 @@ const ViewPayment = () => {
   const { id, fname, lname } = useParams();  // params passed from previous pages
   const { getAllUserPayments, deleteUserPayment } = useContext(ConfigContext);
   //const userPayments = getAllUserPayments(id);
-  const [ userPayments, setUserPayments] = useState(null);
+  const [userPayments, setUserPayments] = useState(null);
   const [openBtn, setOpenBtn] = useState(false);
   const [pid, setPID] = useState();
 
@@ -25,17 +26,18 @@ const ViewPayment = () => {
     setOpenBtn(true);
   };
 
-  useEffect (()=>{
+  useEffect(() => {
+    console.log("Fetching payment for ID:", id);
     fetch(`${BASE_URL}/payments/${id}`, {
     })
-    .then(res => res.json())
-    .then(data => {
-      const sortedData = data.sort((a, b) => new Date(b.formatted_date) - new Date(a.formatted_date));
-      setUserPayments(sortedData);
-      console.log(data);
-    })
-    .catch(err => console.log(err));
-  }, [])
+      .then(res => res.json())
+      .then(data => {
+        const sortedData = data.sort((a, b) => new Date(b.formatted_date) - new Date(a.formatted_date));
+        setUserPayments(sortedData);
+        console.log(data);
+      })
+      .catch(err => console.log(err));
+  }, [id])
 
 
   return (
@@ -49,9 +51,9 @@ const ViewPayment = () => {
           <Popup trigger={openBtn} setTrigger={setOpenBtn} pid={pid} id={id} userPayments={userPayments} setUserPayments={setUserPayments}></Popup>
 
           {
-            //added payments here for navigation to edit payroll 
+            //added payments here for navigation to edit payroll
           }
-          <div className = {styles.tableContainer}>
+          <div className={styles.tableContainer}>
             {userPayments && userPayments.length > 0 ? (
               <table>
                 <tbody>
@@ -64,7 +66,7 @@ const ViewPayment = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>              
+              </table>
             ) : (
               <div className={styles.noRecord}>
                 No payroll history records found.
@@ -78,5 +80,4 @@ const ViewPayment = () => {
     </div>
   );
 };
-
 export default ViewPayment;

@@ -1,8 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import officeImage from '../Login/office.jpg';
+
 
 
 const Login = () => {
@@ -11,30 +12,37 @@ const Login = () => {
   const [errMessage, setErrMessage] = useState('');
   const navigate = useNavigate();
 
-  // Use admin credentials from context
-const { username, passwordHash } = useContext(ConfigContext);
-
   useEffect(() => {
     sessionStorage.removeItem('userValid');
+    sessionStorage.removeItem('company');
+    sessionStorage.removeItem('username');
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const res = await fetch(`${BASE_URL}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: userName, password: userPassword })
+      });
 
-      if (userName === username && userPassword === passwordHash) {
-      sessionStorage.setItem('userValid', true);
-      navigate('/MainMenu');
+      if (res.ok) {
+        const { username, company } = await res.json();
+        sessionStorage.setItem('userValid', 'true');
+        sessionStorage.setItem('company', company);
+        sessionStorage.setItem('username', username);
+        navigate('/MainMenu');
+      } else if (res.status === 401) {
+        setErrMessage('Invalid username or password');
       } else {
-        if (userName !== username) {
-          setErrMessage('Username not found');
-        } else if (userPassword !== passwordHash) {
-          setErrMessage('Password is incorrect');
-        } else {
-          setErrMessage('Invalid login');
-        }
+        setErrMessage('Login failed. Please try again.');
       }
+    } catch (err) {
+      console.error('Login error:', err);
+      setErrMessage('Something went wrong. Please try again.');
+    }
   };
-
 
   return (
     <div className={styles.background}>
@@ -43,7 +51,7 @@ const { username, passwordHash } = useContext(ConfigContext);
           <img src={officeImage} alt='bruh'></img>
         </div>
         <div className={styles.rightrect}>
-          <text className={styles.prompt}>Login to your system</text>
+          <span className={styles.prompt}>Login to your system</span>
           <form className={styles.formSection} onSubmit={handleSubmit}>
             <input className={styles.usernameHolder}
               type="text"
@@ -55,7 +63,7 @@ const { username, passwordHash } = useContext(ConfigContext);
               type="password"
               value={userPassword}
               onChange={(e) => setUserPassword(e.target.value)}
-              placeholder="Admin Password"
+              placeholder="Password"
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
             <button className={styles.submitButton} type="submit">LOGIN</button>

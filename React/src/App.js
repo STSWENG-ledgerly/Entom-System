@@ -7,30 +7,31 @@ import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
 import GeneratePayroll from './pages/GeneratePayroll/GeneratePayroll';
 import EditPayroll from './pages/EditPayroll/EditPayroll';
-import {ConfigProvider} from './ConfigContext';
+import AddEmployee from './pages/AddEmployee/AddEmployee'
+import { ConfigProvider } from './ConfigContext';
 import ProtectedRoutes from './ProtectedRoutes'
 
 function App() {
   // setup all available/possible links within the app
   return (
     <BrowserRouter>
-    <ConfigProvider>
-      <Routes>
-        <Route path="/" element={<Login />} />
+      <ConfigProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-        <Route element={<ProtectedRoutes/>}>
+          <Route element={<ProtectedRoutes />}>
 
-          <Route path="/MainMenu" element={<MainMenu />} />
-          <Route path="/SetDefaults" element={<SetDefaults />} />
-          <Route path="/SearchEmployee/:searchType" element={<SearchEmployee />} />
-          <Route path="/ViewPayment/:id/:fname/:lname" element={<ViewPayment/>} />
-          <Route path="/GeneratePayroll/:id/:fname/:lname" element={<GeneratePayroll />} />
-          <Route path="/EditPayroll/:id/:payment_id/:fname/:lname" element={<EditPayroll />} />
+            <Route path="/MainMenu" element={<MainMenu />} />
+            <Route path="/SetDefaults" element={<SetDefaults />} />
+            <Route path="/SearchEmployee/:searchType" element={<SearchEmployee />} />
+            <Route path="/ViewPayment/:id/:fname/:lname" element={<ViewPayment />} />
+            <Route path="/GeneratePayroll/:id/:fname/:lname" element={<GeneratePayroll />} />
+            <Route path="/EditPayroll/:id/:payment_id/:fname/:lname" element={<EditPayroll />} />
+            <Route path="/AddEmployee" element={<AddEmployee />} />
+          </Route>
 
-        </Route>
-        
-      </Routes>
-    </ConfigProvider>
+        </Routes>
+      </ConfigProvider>
     </BrowserRouter>
   );
 }

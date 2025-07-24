@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './PayrollInfo.module.css';
 
 const checkNumberInput = (e, setState, field) => {
@@ -21,16 +20,18 @@ const handleBlur = (e, setState, field) => {
 const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
     <div className={styles.formSection}>
         <div className={styles.formGroup}>
-            <label>Date:</label>
+            <label htmlFor="date">Date:</label>
             <input
+                id="date"
                 type="date"
                 value={payrollInfo.date ?? ''}
                 onChange={(e) => setPayrollInfo({ ...payrollInfo, date: e.target.value })}
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Overtime (in Days):</label>
+            <label htmlFor="ot">Overtime (in Days):</label>
             <input
+                id="ot"
                 type="number"
                 value={payrollInfo.ot ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "ot")}
@@ -38,8 +39,9 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Salary Increase:</label>
+            <label htmlFor="salaryIncrease">Salary Increase:</label>
             <input
+                id="salaryIncrease"
                 type="number"
                 value={payrollInfo.salaryIncrease ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "salaryIncrease")}
@@ -47,8 +49,9 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Meal Allowance:</label>
+            <label htmlFor="mealAllow">Meal Allowance:</label>
             <input
+                id="mealAllow"
                 type="number"
                 value={payrollInfo.mealAllow ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "mealAllow")}
@@ -56,8 +59,9 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Birthday Bonus:</label>
+            <label htmlFor="bdayBonus">Birthday Bonus:</label>
             <input
+                id="bdayBonus"
                 type="number"
                 value={payrollInfo.bdayBonus ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "bdayBonus")}
@@ -65,8 +69,9 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Incentive:</label>
+            <label htmlFor="incentive">Incentive:</label>
             <input
+                id="incentive"
                 type="number"
                 value={payrollInfo.incentive ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "incentive")}
@@ -74,8 +79,9 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Others:</label>
+            <label htmlFor="otherPayrollInfo">Others:</label>
             <input
+                id="otherPayrollInfo"
                 type="number"
                 value={payrollInfo.otherPayrollInfo ?? 0}
                 onChange={(e) => checkNumberInput(e, setPayrollInfo, "otherPayrollInfo")}

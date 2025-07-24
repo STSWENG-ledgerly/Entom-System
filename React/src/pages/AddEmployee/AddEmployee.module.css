@@ -1,17 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-  
+
   .searchContainer {
     margin-bottom: 20px;
+    margin-right: 20px;
   }
-  
+
   .searchContainer input {
     padding: 10px;
     margin-right: 10px;
     border-radius: 20px;
     background-color: #ACCBE0;
     border: none;
+    width: 100%;
   }
-  
+
   .searchContainer button {
     font-size: 12px;
     font-family: 'JetBrains Mono';
@@ -23,7 +25,7 @@
     padding: 10px;
     text-transform: uppercase;
   }
-  
+
   .searchContainer button:hover {
     background-color: darkred;
   }
@@ -38,6 +40,7 @@
     display: flex;
     flex-direction:column;
     font-size:30px;
+
 }
 
 .tableContainer {
@@ -56,7 +59,7 @@
 .tableContainer th, .tableContainer td {
   text-align: left;
   padding: 10px;
-  white-space: nowrap; 
+  white-space: nowrap;
 }
 
 .tableContainer th {
@@ -76,14 +79,14 @@
 }
 
 .tableContainer td:last-child {
-  white-space: nowrap; 
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .actionButton {
-  background-color: #e0e0e0; 
-  color: #015FA9; 
+  background-color: #e0e0e0;
+  color: #015FA9;
   border: none;
   padding: 5px 10px;
   border-radius: 4px;
@@ -92,7 +95,7 @@
 }
 
 .actionButton:hover {
-  background-color: #015FA9; 
+  background-color: #015FA9;
   color: white;
 }
 
@@ -106,4 +109,48 @@
   color: #721c24;
   font-size: 18px;
   font-weight: bold;
+}
+
+.infoContainer{
+  display:flex;
+  flex-direction: row;
+  gap: 50px;
+  width: 85%;
+}
+
+
+.dateInput::before {
+  content: "Enter employee's hiring date";
+  color: #999;
+  margin-right: 0.5em;
+}
+.dateInput:focus::before {font-size: 12px;
+    font-family: 'JetBrains Mono';
+    cursor: pointer;
+    background-color: #ff0000aa;
+    color: white;
+    border:none;
+    border-radius:5px;
+    padding: 10px;
+    text-transform: uppercase;
+
+  content: "";
+}
+
+.infoContainer > .addButton{
+  width: 100%;
+  padding: 100px;
+}
+
+.buttonDesign{
+font-size: 24px;
+    font-family: 'JetBrains Mono';
+    cursor: pointer;
+    background-color: #ff0000aa;
+    color: white;
+    border:none;
+    border-radius:5px;
+    padding: 10px;
+    text-transform: uppercase;
+
 }
