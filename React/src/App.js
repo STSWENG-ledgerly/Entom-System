@@ -13,7 +13,6 @@ import EditEmployee from './pages/EditEmployee/EditEmployee';
 import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
 import { ConfigProvider } from './ConfigContext';
 import ProtectedRoutes from './ProtectedRoutes'
-import AddEmployee from './pages/AddEmployee/AddEmployee';
 
 
 function App() {
