@@ -412,6 +412,39 @@ app.post('/addEmployee', async (req, res) => {
 // app.listen(SERVER_PORT, () => {
 //   console.log(`Listening on port ${SERVER_PORT}`);
 // });
+//
+app.get('/getEmployeeDetails/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const employee = await Employee.findById(id);
+    res.json(employee);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching employee details' });
+  }
+});
+
+app.post('/editEmployee/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const employee = await Employee.findById(id);
+    if (!employee) {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    res.json({ message: 'Employee updated successfully', employee: updatedEmployee });
+  } catch (error) {
+    console.error('Error updating employee:', error);
+    res.status(500).json({ error: 'Failed to update employee', details: error.message });
+  }
+});
 
 app.listen(port, async function() {
   await database();

@@ -7,9 +7,14 @@ import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
 import GeneratePayroll from './pages/GeneratePayroll/GeneratePayroll';
 import EditPayroll from './pages/EditPayroll/EditPayroll';
-import AddEmployee from './pages/AddEmployee/AddEmployee'
+
+import AddEmployee from './pages/AddEmployee/AddEmployee';
+import EditEmployee from './pages/EditEmployee/EditEmployee';
+import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
 import { ConfigProvider } from './ConfigContext';
 import ProtectedRoutes from './ProtectedRoutes'
+import AddEmployee from './pages/AddEmployee/AddEmployee';
+
 
 function App() {
   // setup all available/possible links within the app
@@ -28,6 +33,9 @@ function App() {
             <Route path="/GeneratePayroll/:id/:fname/:lname" element={<GeneratePayroll />} />
             <Route path="/EditPayroll/:id/:payment_id/:fname/:lname" element={<EditPayroll />} />
             <Route path="/AddEmployee" element={<AddEmployee />} />
+            <Route path="/EditEmployee" element={<EditEmployee />} />
+            <Route path="/EditEmployee/:id" element={<EditEmployeeForm />} />
+
           </Route>
 
         </Routes>

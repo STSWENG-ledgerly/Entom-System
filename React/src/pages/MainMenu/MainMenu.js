@@ -51,7 +51,7 @@ const MainMenu = () => {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
