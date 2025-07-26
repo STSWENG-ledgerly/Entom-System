@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import styles from './Login.module.css';
+import styles from './AccountRegistration.module.css';
 import { ConfigContext, BASE_URL } from '../../ConfigContext';
-import officeImage from '../Login/office.jpg';
+import signupImage from '../AccountRegistration/signupimage.jpg';
 
-const Login = () => {
+
+
+const AccountRegistration = () => {
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
+  const [company, setCompany] = useState('');
   const [errMessage, setErrMessage] = useState('');
   const navigate = useNavigate();
 
@@ -19,10 +22,10 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${BASE_URL}/admin/login`, {
+      const res = await fetch(`${BASE_URL}/admin/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: userName, password: userPassword })
+        body: JSON.stringify({ username: userName, password: userPassword, company: company })
       });
 
       if (res.ok) {
@@ -31,8 +34,8 @@ const Login = () => {
         sessionStorage.setItem('company', company);
         sessionStorage.setItem('username', username);
         navigate('/MainMenu');
-      } else if (res.status === 401) {
-        setErrMessage('Invalid username or password');
+      } else if (res.status === 409) {
+        setErrMessage('Account already exists.');
       } else {
         setErrMessage('Login failed. Please try again.');
       }
@@ -46,10 +49,11 @@ const Login = () => {
     <div className={styles.background}>
       <div className={styles.rect}>
         <div className={styles.leftrect}>
-          <img src={officeImage} alt='bruh'></img>
+          <img src={signupImage} alt="signup"></img>
         </div>
         <div className={styles.rightrect}>
-          <span className={styles.prompt}>Login to your system</span>
+          <span className={styles.prompt}>Sign up</span>
+          <p className={styles.text}>Register your company now.</p>
           <form className={styles.formSection} onSubmit={handleSubmit}>
             <input className={styles.usernameHolder}
               type="text"
@@ -63,9 +67,16 @@ const Login = () => {
               onChange={(e) => setUserPassword(e.target.value)}
               placeholder="Password"
             />
+            {/* idk if theres a dropdown thing pero will look for it  */}
+            <input className={styles.passwordHolder}
+              type="text"
+              value={company} 
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="Company"
+            />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
-            <button className={styles.submitButton} type="submit">LOGIN</button>
-            <Link to="/AccountRegistration"> <button className={styles.submitButton} type="button">Register</button></Link>
+            <button className={styles.submitButton} type="submit">REGISTER</button>
+            <Link to="/"><button className={styles.submitButton} type="button">LOGIN</button></Link>
           </form>
         </div>
       </div>
@@ -74,4 +85,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AccountRegistration;
