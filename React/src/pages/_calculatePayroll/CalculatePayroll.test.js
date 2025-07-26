@@ -74,7 +74,7 @@ describe('calculatePayroll', () => {
       salaryIncrease: 100,
     };
     const result = calculatePayroll(incompletePayroll, {}, config);
-    expect(result.payroll).toBeNaN(); // Because some props are undefined → parseFloat(undefined) is NaN
+    expect(result.payroll).toBeNaN(); // Because some props are undefined -> parseFloat(undefined) is NaN
     expect(result.deductions).toBeNaN();
     expect(result.total).toBeNaN();
   });

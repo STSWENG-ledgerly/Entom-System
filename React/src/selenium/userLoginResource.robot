@@ -2,10 +2,10 @@
 Library           SeleniumLibrary
 
 *** Variables ***
-${URL}                http://localhost:3000
+${URL}                http://localhost:3001
 ${BROWSER}            Chrome
 ${VALID_USERNAME}     admin
-${VALID_PASSWORD}     password123
+${VALID_PASSWORD}     123
 ${INVALID_USERNAME}   wronguser
 ${INVALID_PASSWORD}   wrongpass
 

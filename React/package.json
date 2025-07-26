@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@testing-library/user-event": "^13.5.0",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^11.5.0",
     "dotenv": "^16.5.0",
     "react": "^19.1.0",
@@ -17,6 +18,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:robot": "robot -d src/selenium/output src/selenium/",
+    "test:all": "npm run test && npm run test:robot",
     "eject": "react-scripts eject",
     "server": "nodemon server.js",
     "start:both": "concurrently \"react-scripts start\" \"nodemon server.js\""
