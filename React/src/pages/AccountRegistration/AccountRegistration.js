@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './AccountRegistration.module.css';
 import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import signupImage from '../AccountRegistration/signupimage.jpg';
@@ -75,7 +75,8 @@ const AccountRegistration = () => {
               placeholder="Company"
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
-            <button className={styles.submitButton} type="submit">LOGIN</button>
+            <button className={styles.submitButton} type="submit">REGISTER</button>
+            <Link to="/"><button className={styles.submitButton} type="button">LOGIN</button></Link>
           </form>
         </div>
       </div>

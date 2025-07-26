@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './Login.module.css';
 import { ConfigContext, BASE_URL } from '../../ConfigContext';
 import officeImage from '../Login/office.jpg';
-
-
 
 const Login = () => {
   const [userName, setUserName] = useState('');
@@ -67,6 +65,7 @@ const Login = () => {
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
             <button className={styles.submitButton} type="submit">LOGIN</button>
+            <Link to="/AccountRegistration"> <button className={styles.submitButton} type="button">Register</button></Link>
           </form>
         </div>
       </div>
