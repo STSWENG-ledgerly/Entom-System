@@ -24,9 +24,9 @@ function App() {
       <ConfigProvider>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/AccountRegistration" element={<AccountRegistration />} />
 
           <Route element={<ProtectedRoutes />}>
-
             <Route path="/MainMenu" element={<MainMenu />} />
             <Route path="/SetDefaults" element={<SetDefaults />} />
             <Route path="/SearchEmployee/:searchType" element={<SearchEmployee />} />
@@ -36,7 +36,6 @@ function App() {
             <Route path="/AddEmployee" element={<AddEmployee />} />
             <Route path="/EditEmployee" element={<EditEmployee />} />
             <Route path="/EditEmployee/:id" element={<EditEmployeeForm />} />
-            <Route path="/AccountRegistration" element={<AccountRegistration />} />
           </Route>
 
         </Routes>

@@ -1,4 +1,3 @@
-// const SERVER_PORT = 8000;
 const express = require('express');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
@@ -8,7 +7,7 @@ const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
 
-const port = process.env.SERVER_PORT || 4000;
+const port = 4000;
 
 const app = express();
 app.use(cors());
@@ -326,29 +325,40 @@ app.post('/admin/login', async (req, res) => {
 });
 
 app.post('/admin/register', async (req, res) => {
-  try{
-    const {username, password, company } = req.body;
-    const userCheck = await Account.findOne({ username: { $regex: `^${username}$`, $options: 'i' } });
-    if (userCheck) {
-        return res.sendStatus(409)
+  try {
+    const { username, password, company } = req.body;
+    if (!username || !password || !company) {
+      return res.status(400).json({ error: 'username, password and company are all required' });
     }
 
-    let hashedPassword = await hashPassword(password);
+    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
+    const userExists = await Account.findOne({
+      username: { $regex: `^${username}$`, $options: 'i' }
+    });
+    if (userExists) {
+      return res.sendStatus(409); // Conflict
+    }
 
-    const newAcc = {
-      username: username,
-      password: hashedPassword,
-      company: company
-    };
+    const hashedPassword = await hashPassword(password);
+    const companyDoc = await Company
+      .findOne({ name: company })
+      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
+      .select('_id');
+    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
 
-    const account = new Account(newAcc);
     await account.save();
-    
-  } catch {
+
+    return res.status(201).json({
+      username: account.username,
+      company: account.company
+    });
+
+  } catch (err) {
     console.error("Error in POST /admin/register:", err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 app.get('/getEmployeeDetails/:id', async (req, res) => {
   try {
