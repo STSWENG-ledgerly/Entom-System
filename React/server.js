@@ -29,6 +29,17 @@ async function database() {
   }
 }
 
+async function hashPassword(password){
+    const saltRounds = 10;
+    try {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        return hashedPassword;
+      } catch (error) {
+        console.error('Error hashing password:', error);
+      }
+}
+
+
 app.get('/', (req, res) => {
   res.json("from backend side");
 });
@@ -310,6 +321,31 @@ app.post('/admin/login', async (req, res) => {
     res.json({ username: admin.username, company: admin.company });
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/admin/register', async (req, res) => {
+  try{
+    const {username, password, company } = req.body;
+    const userCheck = await Account.findOne({ username: { $regex: `^${username}$`, $options: 'i' } });
+    if (userCheck) {
+        return res.sendStatus(409)
+    }
+
+    let hashedPassword = await hashPassword(password);
+
+    const newAcc = {
+      username: username,
+      password: hashedPassword,
+      company: company
+    };
+
+    const account = new Account(newAcc);
+    await account.save();
+    
+  } catch {
+    console.error("Error in POST /admin/register:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

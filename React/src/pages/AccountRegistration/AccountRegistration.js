@@ -9,6 +9,7 @@ import signupImage from '../AccountRegistration/signupimage.jpg';
 const AccountRegistration = () => {
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
+  const [company, setCompany] = useState('');
   const [errMessage, setErrMessage] = useState('');
   const navigate = useNavigate();
 
@@ -21,10 +22,10 @@ const AccountRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${BASE_URL}/admin/login`, {
+      const res = await fetch(`${BASE_URL}/admin/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: userName, password: userPassword })
+        body: JSON.stringify({ username: userName, password: userPassword, company: company })
       });
 
       if (res.ok) {
@@ -33,8 +34,8 @@ const AccountRegistration = () => {
         sessionStorage.setItem('company', company);
         sessionStorage.setItem('username', username);
         navigate('/MainMenu');
-      } else if (res.status === 401) {
-        setErrMessage('Invalid username or password');
+      } else if (res.status === 409) {
+        setErrMessage('Account already exists.');
       } else {
         setErrMessage('Login failed. Please try again.');
       }
@@ -68,9 +69,9 @@ const AccountRegistration = () => {
             />
             {/* idk if theres a dropdown thing pero will look for it  */}
             <input className={styles.passwordHolder}
-              type="password"
-              // value={} //to change value to company
-              onChange={(e) => setUserPassword(e.target.value)}
+              type="text"
+              value={company} 
+              onChange={(e) => setCompany(e.target.value)}
               placeholder="Company"
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
