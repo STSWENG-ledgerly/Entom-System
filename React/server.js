@@ -26,6 +26,7 @@ async function database() {
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }
+
 }
 
 async function hashPassword(password){
@@ -227,7 +228,6 @@ app.post('/editPayment/:payment_id', async (req, res) => {
       update,
       { new: true, runValidators: true }
     );
-
     if (!updated) {
       return res.status(404).json({ error: 'Payroll not found' });
     }
@@ -387,6 +387,7 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
   }
 });
 
+
 app.post('/addEmployee', async (req, res) => {
 
   try {
@@ -411,7 +412,6 @@ app.post('/addEmployee', async (req, res) => {
       email,
       rbacProfile
     } = req.body;
-
     // validate company _id
     if (!mongoose.Types.ObjectId.isValid(company)) {
       return res.status(400).json({ error: 'Invalid company ID' });

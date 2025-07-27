@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import EditPayroll from './pages/EditPayroll/EditPayroll';
+import GeneratePayroll from './pages/GeneratePayroll/GeneratePayroll';
 import Login from './pages/Login/Login';
 import MainMenu from './pages/MainMenu/MainMenu';
-import SetDefaults from './pages/SetDefaults/SetDefaults';
 import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
+import SetDefaults from './pages/SetDefaults/SetDefaults';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
 import GeneratePayroll from './pages/GeneratePayroll/GeneratePayroll';
 import EditPayroll from './pages/EditPayroll/EditPayroll';
@@ -15,6 +16,7 @@ import AccountRegistration from './pages/AccountRegistration/AccountRegistration
 
 import { ConfigProvider } from './ConfigContext';
 import ProtectedRoutes from './ProtectedRoutes'
+
 
 
 function App() {
@@ -36,6 +38,7 @@ function App() {
             <Route path="/AddEmployee" element={<AddEmployee />} />
             <Route path="/EditEmployee" element={<EditEmployee />} />
             <Route path="/EditEmployee/:id" element={<EditEmployeeForm />} />
+
           </Route>
 
         </Routes>
