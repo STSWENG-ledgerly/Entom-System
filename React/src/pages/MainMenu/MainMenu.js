@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import Sidebar from '../_sidebar/Sidebar'
 import global from '../../global.module.css';
 import Header from '../_header/Header';
+import Sidebar from '../_sidebar/Sidebar';
 import styles from './MainMenu.module.css';
 
 const MainMenu = () => {

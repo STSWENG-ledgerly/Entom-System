@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import styles from './AccountRegistration.module.css';
-import { ConfigContext, BASE_URL } from '../../ConfigContext';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../ConfigContext';
 import signupImage from '../AccountRegistration/signupimage.jpg';
+import styles from './AccountRegistration.module.css';
 
 
 
@@ -56,12 +56,14 @@ const AccountRegistration = () => {
           <p className={styles.text}>Register your company now.</p>
           <form className={styles.formSection} onSubmit={handleSubmit}>
             <input className={styles.usernameHolder}
+              id="username"
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Username"
             />
             <input className={styles.passwordHolder}
+              id="password"
               type="password"
               value={userPassword}
               onChange={(e) => setUserPassword(e.target.value)}
@@ -69,6 +71,7 @@ const AccountRegistration = () => {
             />
             {/* idk if theres a dropdown thing pero will look for it  */}
             <input className={styles.passwordHolder}
+              id="company"
               type="text"
               value={company} 
               onChange={(e) => setCompany(e.target.value)}
