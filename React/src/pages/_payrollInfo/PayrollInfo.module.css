@@ -24,3 +24,10 @@
     background-color: #c7dae8;
     border-radius: 4px;
 }
+
+
+.radioGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
