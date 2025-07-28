@@ -1,4 +1,3 @@
-// const SERVER_PORT = 8000;
 const express = require('express');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
@@ -8,7 +7,7 @@ const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
 
-const port = process.env.SERVER_PORT || 4000;
+const port = 4000;
 
 const app = express();
 app.use(cors());
@@ -27,7 +26,19 @@ async function database() {
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }
+
 }
+
+async function hashPassword(password){
+    const saltRounds = 10;
+    try {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        return hashedPassword;
+      } catch (error) {
+        console.error('Error hashing password:', error);
+      }
+}
+
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -217,7 +228,6 @@ app.post('/editPayment/:payment_id', async (req, res) => {
       update,
       { new: true, runValidators: true }
     );
-
     if (!updated) {
       return res.status(404).json({ error: 'Payroll not found' });
     }
@@ -314,6 +324,42 @@ app.post('/admin/login', async (req, res) => {
   }
 });
 
+app.post('/admin/register', async (req, res) => {
+  try {
+    const { username, password, company } = req.body;
+    if (!username || !password || !company) {
+      return res.status(400).json({ error: 'username, password and company are all required' });
+    }
+
+    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
+    const userExists = await Account.findOne({
+      username: { $regex: `^${username}$`, $options: 'i' }
+    });
+    if (userExists) {
+      return res.sendStatus(409); // Conflict
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const companyDoc = await Company
+      .findOne({ name: company })
+      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
+      .select('_id');
+    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
+
+    await account.save();
+
+    return res.status(201).json({
+      username: account.username,
+      company: account.company
+    });
+
+  } catch (err) {
+    console.error("Error in POST /admin/register:", err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 app.get('/getEmployeeDetails/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -341,6 +387,7 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
   }
 });
 
+
 app.post('/addEmployee', async (req, res) => {
 
   try {
@@ -365,7 +412,6 @@ app.post('/addEmployee', async (req, res) => {
       email,
       rbacProfile
     } = req.body;
-
     // validate company _id
     if (!mongoose.Types.ObjectId.isValid(company)) {
       return res.status(400).json({ error: 'Invalid company ID' });
