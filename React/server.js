@@ -49,7 +49,6 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
-
 app.get('/', (req, res) => {
   res.json("from backend side");
 });
