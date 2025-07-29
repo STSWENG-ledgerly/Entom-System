@@ -46,13 +46,23 @@ app.get('/', (req, res) => {
 
 app.get('/employee', async (req, res) => {
   const { company } = req.query;
+  
   try {
-    const employees = await Employee.find({ company });
-    res.json(employees);
+    const companyID = new mongoose.Types.ObjectId(company); 
+    try {
+      const employees = await Employee.find({ company: companyID });
+      res.json(employees);
+    } catch (err) {
+      console.error("Error during Employee.find:", err);
+      return res.status(500).json({ error: 'Error fetching employees' });
+    }
+
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch employees' });
+    console.error("Error in ObjectId conversion:", err);
+    res.status(400).json({ error: 'Invalid Company ID' });
   }
 });
+
 
 // GET all payrolls for a given employee_id (your front-end is calling /payments/111)
 app.get('/payments/:employee_id', async (req, res) => {
@@ -306,6 +316,7 @@ app.post('/admin/login', async (req, res) => {
     if (!admin) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+<<<<<<< Updated upstream
 
     // Hashing
     // const isMatch = await bcrypt.compare(password, admin.passwordHash);
@@ -318,6 +329,9 @@ app.post('/admin/login', async (req, res) => {
     }
 
     res.json({ username: admin.username, company: admin.company });
+=======
+    return res.status(200).json({ username: account.username, company: account.company });
+>>>>>>> Stashed changes
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
     res.status(500).json({ error: 'Internal server error' });

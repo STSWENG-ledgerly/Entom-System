@@ -8,6 +8,10 @@ const Login = () => {
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [errMessage, setErrMessage] = useState('');
+<<<<<<< Updated upstream
+=======
+  const { setUsername, setCompany } = useContext(ConfigContext);
+>>>>>>> Stashed changes
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,7 +33,13 @@ const Login = () => {
         const { username, company } = await res.json();
         sessionStorage.setItem('userValid', 'true');
         sessionStorage.setItem('company', company);
+<<<<<<< Updated upstream
         sessionStorage.setItem('username', username);
+=======
+        sessionStorage.setItem('username', userName);
+        setCompany(company);
+        setUsername(username);
+>>>>>>> Stashed changes
         navigate('/MainMenu');
       } else if (res.status === 401) {
         setErrMessage('Invalid username or password');

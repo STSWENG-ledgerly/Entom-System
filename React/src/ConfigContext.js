@@ -9,7 +9,28 @@ export const ConfigProvider = ({ children }) => {
   const [passwordHash, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [company, setCompany] = useState('');
 
+<<<<<<< Updated upstream
+=======
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem('username');
+    
+    if (storedUsername && !username) {
+      setUsername(storedUsername);
+    }
+  }, [username]);
+
+  useEffect(() => {
+    const storedCompany = sessionStorage.getItem('company');
+    
+    if (storedCompany && !company) {
+      setCompany(storedCompany);
+    }
+  }, [company]);
+
+
+>>>>>>> Stashed changes
   useEffect(() => {
     if (!selectedEmployeeId) {
       return;
@@ -104,7 +125,7 @@ export const ConfigProvider = ({ children }) => {
       selectedEmployeeId, setSelectedEmployeeId,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
-      passwordHash, setPassword, username, setUsername
+      passwordHash, setPassword, username, setUsername, company, setCompany
     }}>
       {children}
     </ConfigContext.Provider>

@@ -7,6 +7,15 @@ function SettingsMenu(props) {
   const [newPass, setNewPass] = useState('');
   const [errMessage, setErrMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+<<<<<<< Updated upstream
+=======
+  const { password, setPassword, username, company } = useContext(ConfigContext);
+
+
+  useEffect(() => {
+    console.log("Company: " + company);
+  }, [props.trigger]);
+>>>>>>> Stashed changes
 
   const { password, setPassword } = useContext(ConfigContext);
 

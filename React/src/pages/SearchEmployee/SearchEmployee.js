@@ -1,13 +1,14 @@
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { BASE_URL } from '../../ConfigContext';
+import { BASE_URL, ConfigContext } from '../../ConfigContext';
 import global from '../../global.module.css';
 import Header from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
 import styles from './SearchEmployee.module.css';
+// import { Company } from '../../../models/payrollSchema';
 
-const SearchEmployee = () => {
+const SearchEmployee = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { searchType } = useParams();
@@ -18,19 +19,25 @@ const SearchEmployee = () => {
   const [searchLName, setSearchLName] = useState('');
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState(employees);
+  const { company } = useContext(ConfigContext);
 
-  const adminCompany = sessionStorage.getItem('company'); // company
 
-  useEffect(() => {
-    fetch(`${BASE_URL}/employee?company=${adminCompany}`)
-      .then(res => res.json())
-      .then(data => {
-        const filtered = data.filter(emp => emp.company === adminCompany);
-        setEmployees(data)
-        setFilteredEmployees(data);
-      })
-      .catch(err => console.log(err));
-  }, [])
+useEffect(() => {
+  if (!company) {
+    console.log("Company ID is not set.");
+    return;
+  }
+  
+  fetch(`${BASE_URL}/employee?company=${company}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Fetched Employees: ", data);
+      setEmployees(data);
+      setFilteredEmployees(data);
+    })
+    .catch(err => console.log(err));
+}, [company]);
+
 
   useEffect(() => {
     setSearchID('');
