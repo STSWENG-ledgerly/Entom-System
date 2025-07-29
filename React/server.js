@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { Employee, Payroll, Account, Company, Config } = require('./models/payrollSchema');
+const { Employee, Payroll, Account, Company, Config } = require("./models/payrollSchema.js");
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
@@ -23,6 +23,7 @@ app.use(express.json());
 async function database() {
   try {
     await connectToMongo();
+    await populateDatabase();
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }
@@ -39,6 +40,14 @@ async function hashPassword(password){
       }
 }
 
+async function checkPassword(sentPassword, passwordFromDB) {
+    try {
+        return await bcrypt.compare(sentPassword, passwordFromDB);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+}
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -297,27 +306,18 @@ app.post('/addPayment', async (req, res) => {
 app.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-
-    const admin = await Account.findOne({
-      username,
-      role: 'Administrator',
-      isDeleted: false
-    });
-    if (!admin) {
+    const account = await Account.findOne({ username });
+    if (!account) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    const correctPassword = await checkPassword(password, account.passwordHash);
 
-    // Hashing
-    // const isMatch = await bcrypt.compare(password, admin.passwordHash);
-    // if (!isMatch) {
-    //   return res.status(401).json({ error: 'Invalid credentials' });
-    // }
-
-    if (password !== admin.passwordHash) {
+    if (!correctPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
-    res.json({ username: admin.username, company: admin.company });
+    
+    res.json({ username: account.username, company: account.company });
+    res.sendStatus(200);
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
     res.status(500).json({ error: 'Internal server error' });
