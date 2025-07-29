@@ -13,13 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-// mongoose.connect('mongodb://localhost:27017/payrollSystem', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// }).then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
 async function database() {
   try {
     await connectToMongo();
@@ -48,6 +41,16 @@ async function checkPassword(sentPassword, passwordFromDB) {
         return false;
     }
 }
+
+async function checkPassword(sentPassword, passwordFromDB) {
+    try {
+        return await bcrypt.compare(sentPassword, passwordFromDB);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+}
+
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -316,11 +319,70 @@ app.post('/admin/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    res.json({ username: account.username, company: account.company });
-    res.sendStatus(200);
+    return res.status(200).json({ username: account.username, company: account.company });
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/changePassword', async (req, res) => {
+  try {
+    const { username, oldPass, newPass } = req.body;
+    const account = await Account.findOne({ username: username });
+    const comparePass = await checkPassword(oldPass, account.passwordHash);
+
+    if(!comparePass){
+      return res.status(401).send("Wrong old password");
+    } // Wrong old pass
+
+    if( oldPass == newPass ){
+      return res.status(402).send("Same password");
+    } // Same password
+
+    const hashedPassword = await hashPassword(newPass);
+
+    account.passwordHash = hashedPassword;
+
+    await account.save();
+    return res.status(200).send("Success");
+  } catch (error) {
+    console.error("Error in POST /checkPassword:", error);
+    return res.status(500).send("Server Error");
+  }
+});
+
+app.post('/admin/register', async (req, res) => {
+  try {
+    const { username, password, company } = req.body;
+    if (!username || !password || !company) {
+      return res.status(400).json({ error: 'username, password and company are all required' });
+    }
+
+    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
+    const userExists = await Account.findOne({
+      username: { $regex: `^${username}$`, $options: 'i' }
+    });
+    if (userExists) {
+      return res.sendStatus(409); // Conflict
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const companyDoc = await Company
+      .findOne({ name: company })
+      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
+      .select('_id');
+    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
+
+    await account.save();
+
+    return res.status(201).json({
+      username: account.username,
+      company: account.company
+    });
+  } catch (err) {
+    console.error("Error in POST /admin/register:", err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -358,7 +420,6 @@ app.post('/admin/register', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 app.get('/getEmployeeDetails/:id', async (req, res) => {
   try {

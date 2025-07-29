@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { BASE_URL, ConfigContext } from '../../ConfigContext';
 import styles from './SettingsMenu.module.css';
 
@@ -7,20 +7,31 @@ function SettingsMenu(props) {
   const [newPass, setNewPass] = useState('');
   const [errMessage, setErrMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const { password, setPassword, username } = useContext(ConfigContext);
 
-  const { password, setPassword } = useContext(ConfigContext);
+  const handleSave = async () => {
+    if (!props.trigger) return;
+    
 
-  const handleSave = () => {
-    if (newPass === '') setSuccessMessage('New password cannot be blank.');
-    else setSuccessMessage('');
+    try {
+      const res = await fetch(`${BASE_URL}/changePassword`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, oldPass: oldPass, newPass: newPass })
+      });
 
-    if (oldPass !== password) setErrMessage('Password is incorrect.');
-    else setErrMessage('');
-
-    if (oldPass === password && newPass !== '') {
-      setPassword(newPass);
-      saveToDB(newPass);
-      setSuccessMessage('Password change successfully!');
+      if (res.status == 200) {
+        setSuccessMessage("Password Changed.");
+      } else if (res.status === 401) {
+        setSuccessMessage('Wrong old password');
+      } else if (res.status === 402){
+        setSuccessMessage('New password cannot be the same as the old one.');
+      } else {
+        setSuccessMessage('Login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setSuccessMessage('Something went wrong. Please try again.');
     }
   };
 
