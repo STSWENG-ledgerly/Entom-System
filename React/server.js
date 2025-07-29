@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { Employee, Payroll, Account, Company, Config } = require('./models/payrollSchema');
+const { Employee, Payroll, Account, Company, Config } = require("./models/payrollSchema.js");
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
@@ -23,6 +23,7 @@ app.use(express.json());
 async function database() {
   try {
     await connectToMongo();
+    await populateDatabase();
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }

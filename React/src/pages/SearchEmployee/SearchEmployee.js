@@ -87,7 +87,6 @@ const SearchEmployee = () => {
     setSearchFName('');
   };
 
-  // Note: change to SQL implementation later
   return (
     <div className={global.wrapper}>
       <Sidebar></Sidebar>
@@ -100,29 +99,32 @@ const SearchEmployee = () => {
           <div className={styles.searchBox}>
             <div className={styles.searchContainer}>
               <input
+                id="id-field"
                 type="text"
                 value={searchID}
                 onChange={handleSearchID}
               ></input>
-              <button onClick={handleSearchButtonID}>Search by ID</button>
+              <button id="search-by-id-button" onClick={handleSearchButtonID}>Search by ID</button>
             </div>
 
             <div className={styles.searchContainer}>
               <input
+                id="fname-field"
                 type="text"
                 value={searchFName}
                 onChange={handleSearchFName}
               ></input>
-              <button onClick={handleSearchButtonFName}>Search by First Name</button>
+              <button id="search-by-fname-button" onClick={handleSearchButtonFName}>Search by First Name</button>
             </div>
 
             <div className={styles.searchContainer}>
               <input
+                id="lname-field"
                 type="text"
                 value={searchLName}
                 onChange={handleSearchLName}
               ></input>
-              <button onClick={handleSearchButtonLName}>Search by Last Name</button>
+              <button id="search-by-lname-button" onClick={handleSearchButtonLName}>Search by Last Name</button>
             </div>
           </div>
 
