@@ -23,6 +23,16 @@ jobs:
         run: npm install
         working-directory: React
 
-      - name: Run tests
+      - name: Run Jest Unit Tests
         run: npm test -- --watchAll=false
         working-directory: React
+
+      - name: Run Robot Framework Tests
+        run: npm run test:robot
+        working-directory: React
+        if: false
+
+      - name: Run All Tests (Jest + Robot)
+        run: npm run test:all
+        working-directory: React
+        if: false  # disable unless you want to run all instead of the above two separately
