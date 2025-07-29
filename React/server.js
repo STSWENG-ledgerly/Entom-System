@@ -13,13 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-// mongoose.connect('mongodb://localhost:27017/payrollSystem', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// }).then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
 async function database() {
   try {
     await connectToMongo();
@@ -317,11 +310,36 @@ app.post('/admin/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    res.json({ username: account.username, company: account.company });
-    res.sendStatus(200);
+    return res.status(200).json({ username: account.username, company: account.company });
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/changePassword', async (req, res) => {
+  try {
+    const { username, oldPass, newPass } = req.body;
+    const account = await Account.findOne({ username: username });
+    const comparePass = await checkPassword(oldPass, account.passwordHash);
+
+    if(!comparePass){
+      return res.status(401).send("Wrong old password");
+    } // Wrong old pass
+
+    if( oldPass == newPass ){
+      return res.status(402).send("Same password");
+    } // Same password
+
+    const hashedPassword = await hashPassword(newPass);
+
+    account.passwordHash = hashedPassword;
+
+    await account.save();
+    return res.status(200).send("Success");
+  } catch (error) {
+    console.error("Error in POST /checkPassword:", error);
+    return res.status(500).send("Server Error");
   }
 });
 
