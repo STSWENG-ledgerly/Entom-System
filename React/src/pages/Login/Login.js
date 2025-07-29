@@ -25,7 +25,7 @@ const Login = () => {
         body: JSON.stringify({ username: userName, password: userPassword })
       });
 
-      if (res.ok) {
+      if (res.status == 200) {
         const { username, company } = await res.json();
         sessionStorage.setItem('userValid', 'true');
         sessionStorage.setItem('company', company);
@@ -65,7 +65,6 @@ const Login = () => {
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
             <button id="login-button" className={styles.submitButton} type="submit">LOGIN</button>
-
             <Link to="/AccountRegistration"> <button className={styles.submitButton} type="button">Register</button></Link>
           </form>
         </div>

@@ -20,7 +20,6 @@ import ProtectedRoutes from './ProtectedRoutes'
 
 
 
-
 function App() {
   // setup all available/possible links within the app
   return (
