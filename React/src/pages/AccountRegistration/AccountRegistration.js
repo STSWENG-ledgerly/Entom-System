@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../../ConfigContext';
-import signupImage from '../AccountRegistration/signupimage.jpg';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './AccountRegistration.module.css';
-
+import { ConfigContext, BASE_URL } from '../../ConfigContext';
+import signupImage from '../AccountRegistration/signupimage.jpg';
 
 
 const AccountRegistration = () => {

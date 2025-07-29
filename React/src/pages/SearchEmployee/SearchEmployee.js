@@ -87,7 +87,6 @@ const SearchEmployee = () => {
     setSearchFName('');
   };
 
-  // Note: change to SQL implementation later
   return (
     <div className={global.wrapper}>
       <Sidebar></Sidebar>

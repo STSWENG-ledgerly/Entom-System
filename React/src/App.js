@@ -11,7 +11,13 @@ import MainMenu from './pages/MainMenu/MainMenu';
 import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import SetDefaults from './pages/SetDefaults/SetDefaults';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
-import ProtectedRoutes from './ProtectedRoutes';
+import AddEmployee from './pages/AddEmployee/AddEmployee';
+import EditEmployee from './pages/EditEmployee/EditEmployee';
+import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
+import AccountRegistration from './pages/AccountRegistration/AccountRegistration.js';
+import { ConfigProvider } from './ConfigContext';
+import ProtectedRoutes from './ProtectedRoutes'
+
 
 
 
