@@ -67,7 +67,7 @@ const Login = () => {
               placeholder="Password"
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
-            <button className={styles.submitButton} type="submit">LOGIN</button>
+            <button id="login-button" className={styles.submitButton} type="submit">LOGIN</button>
             <Link to="/AccountRegistration"> <button className={styles.submitButton} type="button">Register</button></Link>
           </form>
         </div>

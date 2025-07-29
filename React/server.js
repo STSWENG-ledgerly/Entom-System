@@ -42,6 +42,15 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
+async function checkPassword(sentPassword, passwordFromDB) {
+    try {
+        return await bcrypt.compare(sentPassword, passwordFromDB);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+}
+
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -371,13 +380,46 @@ app.post('/admin/register', async (req, res) => {
       username: account.username,
       company: account.company
     });
-
   } catch (err) {
     console.error("Error in POST /admin/register:", err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+app.post('/admin/register', async (req, res) => {
+  try {
+    const { username, password, company } = req.body;
+    if (!username || !password || !company) {
+      return res.status(400).json({ error: 'username, password and company are all required' });
+    }
+
+    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
+    const userExists = await Account.findOne({
+      username: { $regex: `^${username}$`, $options: 'i' }
+    });
+    if (userExists) {
+      return res.sendStatus(409); // Conflict
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const companyDoc = await Company
+      .findOne({ name: company })
+      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
+      .select('_id');
+    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
+
+    await account.save();
+
+    return res.status(201).json({
+      username: account.username,
+      company: account.company
+    });
+
+  } catch (err) {
+    console.error("Error in POST /admin/register:", err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.get('/getEmployeeDetails/:id', async (req, res) => {
   try {

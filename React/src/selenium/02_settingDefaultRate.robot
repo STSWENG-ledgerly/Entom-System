@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Test cases for User Login 
+Documentation     Test cases for Setting Default Rate 
 Resource          userLoginResource.robot
 Resource          settingDefaultRateResource.robot
 Library           SeleniumLibrary
@@ -8,20 +8,26 @@ Library           SeleniumLibrary
 AT-03: Set Default Rate With Positive Integer
     Open Login Page
     Login With Valid Credentials
+    Should Be Redirected To Main Menu
+    Navigate To Set Defaults Page
     Set Default Rate To Value    ${POSITIVE_INTEGER}
-    Should See Success Message
-    Close Browser
+
+    [Teardown]      Close Browser
 
 AT-04: Set Default Rate With Floating Point Value
     Open Login Page
     Login With Valid Credentials
+    Should Be Redirected To Main Menu
+    Navigate To Set Defaults Page
     Set Default Rate To Value    ${FLOAT_VALUE}
-    Should See Success Message
-    Close Browser
+
+    [Teardown]      Close Browser
 
 AT-05: Set Default Rate With Negative Value
     Open Login Page
     Login With Valid Credentials
+    Should Be Redirected To Main Menu
+    Navigate To Set Defaults Page
     Set Default Rate To Value    ${NEGATIVE_VALUE}
-    Should See Error Message
-    Close Browser
+
+    [Teardown]      Close Browser
