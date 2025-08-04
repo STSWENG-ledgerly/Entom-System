@@ -1,47 +1,38 @@
-const { exec } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const os = require('os');
 
-const isWin = os.platform() === 'win32';
-const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-
-// Start the app
 console.log('[INFO] Starting app...');
-const startCmd = isWin
-  ? 'start /B cmd /C "npm run start:both > nul"'
-  : 'npm run start:both > /dev/null &';
 
-exec(startCmd, async (err) => {
-  if (err) {
-    console.error('[ERROR] Failed to start app:', err);
-    process.exit(1);
-  }
+const isWindows = os.platform() === 'win32';
+const startCommand = isWindows
+  ? 'npm run start:both'
+  : 'npm run start:both';
 
-  console.log('[INFO] App started. Waiting 30 seconds...');
-  await wait(30000);
-
-  console.log('[INFO] Running unit tests...');
-  exec('npm run test:unit', (unitErr) => {
-    if (unitErr) {
-      console.error('[ERROR] Unit tests failed.');
-      process.exit(1);
-    }
-
-    console.log('[INFO] Running Robot tests...');
-    exec('npm run test:robot', (robotErr) => {
-      if (robotErr) {
-        console.error('[ERROR] Robot tests failed.');
-        process.exit(1);
-      }
-
-      console.log('[INFO] Shutting down app...');
-      const killCmd = isWin
-        ? 'taskkill /F /IM node.exe > nul'
-        : 'pkill -f react-scripts';
-
-      exec(killCmd, () => {
-        console.log('[INFO] Done.');
-        process.exit(0);
-      });
-    });
-  });
+// Start the app in background
+const appProcess = spawn(startCommand, {
+  shell: true,
+  detached: true,
+  stdio: 'ignore'
 });
+
+appProcess.unref();
+
+console.log('[INFO] Waiting 30 seconds for app to be ready...');
+execSync(isWindows ? 'timeout 30' : 'sleep 30');
+
+try {
+  console.log('[INFO] Running unit tests...');
+  execSync('npm run test:unit', { stdio: 'inherit' });
+
+  console.log('[INFO] Running robot tests...');
+  execSync('npm run test:robot', { stdio: 'inherit' });
+} catch (error) {
+  console.error('[ERROR] Tests failed:', error);
+} finally {
+  console.log('[INFO] Killing app process...');
+  if (isWindows) {
+    execSync('taskkill /F /IM node.exe');
+  } else {
+    execSync('pkill -f "react-scripts start" || pkill -f "node server.js" || true');
+  }
+}
