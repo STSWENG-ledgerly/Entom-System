@@ -16,6 +16,7 @@ app.use(express.json());
 async function database() {
   try {
     await connectToMongo();
+    await populateDatabase();
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }
