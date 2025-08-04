@@ -1,7 +1,8 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+import Sidebar from '../_sidebar/Sidebar'
 import global from '../../global.module.css';
 import Header from '../_header/Header';
-import Sidebar from '../_sidebar/Sidebar';
 import styles from './MainMenu.module.css';
 
 const MainMenu = () => {
@@ -30,7 +31,7 @@ const MainMenu = () => {
                   <img src='/images/generate-greyed.png' alt='set rates grayed' className={styles.imageGray} />
                   <img src='/images/generate.png' alt='set rates hovered' className={styles.imageColor} />
                 </div>
-                <span>Generate Employee Payroll</span>
+                <span>Calculate Employee Payroll</span>
               </Link>
               <Link to="/SearchEmployee/ViewPayrollHistory" id="view-payroll-button">
                 <div className={styles.imageSwapContainer}>
@@ -39,6 +40,20 @@ const MainMenu = () => {
                 </div>
                 <span>View Payroll History</span>
               </Link>
+              <Link to="/AddEmployee" id="add-employee-button">
+                <div className={styles.imageSwapContainer}>
+                  <img src='/images/add-greyed.png' alt='add employee grayed' className={styles.imageGray} />
+                  <img src='/images/add.png' alt='add employee hovered' className={styles.imageColor} />
+                </div>
+                <span>Add Employee</span>
+              </Link>
+              <Link to="/EditEmployee" id="edit-employee-button">
+                <div className={styles.imageSwapContainer}>
+                  <img src='/images/edit-greyed.png' alt='edit employee grayed' className={styles.imageGray} />
+                  <img src='/images/edit.png' alt='edit employee hovered' className={styles.imageColor} />
+                </div>
+                <span>Edit Employee</span>
+              </Link>
               <Link to="/" onClick={handleExit}>
                 <div className={styles.imageSwapContainer}>
                   <img src='/images/exit-greyed.png' alt='set rates grayed' className={styles.imageGray} />
@@ -46,20 +61,7 @@ const MainMenu = () => {
                 </div>
                 <span>Exit</span>
               </Link>
-              <Link to="/AddEmployee" id="add-employee-button">
-                <div className={styles.imageSwapContainer}>
-                  <img src='/images/add-employee-greyed.png' alt='add employee grayed' className={styles.imageGray} />
-                  <img src='/images/add-employee.png' alt='add employee hovered' className={styles.imageColor} />
-                </div>
-                <span>Add Employee</span>
-              </Link>
-              <Link to="/EditEmployee" id="edit-employee-button">
-                <div className={styles.imageSwapContainer}>
-                  <img src='/images/edit-employee-greyed.png' alt='edit employee grayed' className={styles.imageGray} />
-                  <img src='/images/edit-employee.png' alt='edit employee hovered' className={styles.imageColor} />
-                </div>
-                <span>Edit Employee</span>
-              </Link>
+
             </div>
           </div>
         </div>

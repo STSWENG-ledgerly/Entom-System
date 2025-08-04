@@ -1,9 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ConfigProvider } from './ConfigContext';
-import AccountRegistration from './pages/AccountRegistration/AccountRegistration.js';
-import AddEmployee from './pages/AddEmployee/AddEmployee';
-import EditEmployee from './pages/EditEmployee/EditEmployee';
-import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
 import EditPayroll from './pages/EditPayroll/EditPayroll';
 import GeneratePayroll from './pages/GeneratePayroll/GeneratePayroll';
 import Login from './pages/Login/Login';
@@ -11,7 +7,12 @@ import MainMenu from './pages/MainMenu/MainMenu';
 import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import SetDefaults from './pages/SetDefaults/SetDefaults';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
-import ProtectedRoutes from './ProtectedRoutes';
+import AddEmployee from './pages/AddEmployee/AddEmployee';
+import EditEmployee from './pages/EditEmployee/EditEmployee';
+import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
+import AccountRegistration from './pages/AccountRegistration/AccountRegistration.js';
+import ProtectedRoutes from './ProtectedRoutes'
+
 
 
 

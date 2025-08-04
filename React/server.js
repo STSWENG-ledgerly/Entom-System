@@ -57,11 +57,23 @@ app.get('/', (req, res) => {
 });
 
 app.get('/employee', async (req, res) => {
-  const { company } = req.query;
+  const { company: companyName } = req.query; 
+  if (!companyName) {
+    return res.status(400).json({ error: 'Company name is required' });
+  }
+
   try {
-    const employees = await Employee.find({ company });
+ 
+    const company = await Company.findOne({ name: companyName }).lean();
+    if (!company) {
+      
+      return res.json([]);
+    }
+
+    const employees = await Employee.find({ company: company._id });
     res.json(employees);
   } catch (err) {
+    console.error("Error in GET /employee:", err);
     res.status(500).json({ error: 'Failed to fetch employees' });
   }
 });
@@ -309,17 +321,25 @@ app.post('/addPayment', async (req, res) => {
 app.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const account = await Account.findOne({ username });
-    if (!account) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    const correctPassword = await checkPassword(password, account.passwordHash);
 
-    if (!correctPassword) {
+    const admin = await Account.findOne({
+      username,
+      role: 'Administrator',
+      isDeleted: false
+    }).populate('company'); // Use populate to also fetch the linked company's details
+
+    if (!admin) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
-    return res.status(200).json({ username: account.username, company: account.company });
+   
+    // Hashing
+    const isMatch = await bcrypt.compare(password, admin.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Send the company's name, not its _id
+    res.json({ username: admin.username, company: admin.company.name });
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
     return res.status(500).json({ error: 'Internal server error' });

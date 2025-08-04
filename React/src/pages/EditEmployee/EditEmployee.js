@@ -19,14 +19,36 @@ const EditEmployee = () => {
   const adminCompany = sessionStorage.getItem('company');
 
   useEffect(() => {
+    // Do not fetch if adminCompany is not yet available
+    if (!adminCompany) return;
+
     fetch(`${BASE_URL}/employee?company=${adminCompany}`)
-      .then(res => res.json())
-      .then(data => {
-        setEmployees(data);
-        setFilteredEmployees(data);
+      .then(res => {
+        // Check if the response is successful
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json();
       })
-      .catch(err => console.log(err));
-  }, []);
+      .then(data => {
+        // Ensure the response from the server is an array
+        if (Array.isArray(data)) {
+          setEmployees(data);
+          setFilteredEmployees(data);
+        } else {
+          // If not an array, set to empty to avoid errors
+          console.error("Received data is not an array:", data);
+          setEmployees([]);
+          setFilteredEmployees([]);
+        }
+      })
+      .catch(err => {
+        console.error("Failed to fetch employees:", err);
+        // On error, set to empty arrays to prevent crashes
+        setEmployees([]);
+        setFilteredEmployees([]);
+      });
+  }, [adminCompany]);
 
   useEffect(() => {
     setSearchByName('');

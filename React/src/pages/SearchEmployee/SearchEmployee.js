@@ -22,15 +22,31 @@ const SearchEmployee = () => {
   const adminCompany = sessionStorage.getItem('company'); // company
 
   useEffect(() => {
+    if (!adminCompany) return;
+
     fetch(`${BASE_URL}/employee?company=${adminCompany}`)
-      .then(res => res.json())
-      .then(data => {
-        const filtered = data.filter(emp => emp.company === adminCompany);
-        setEmployees(data)
-        setFilteredEmployees(data);
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json();
       })
-      .catch(err => console.log(err));
-  }, [])
+      .then(data => {
+        if (Array.isArray(data)) {
+          setEmployees(data);
+          setFilteredEmployees(data);
+        } else {
+          console.error("Received data is not an array:", data);
+          setEmployees([]);
+          setFilteredEmployees([]);
+        }
+      })
+      .catch(err => {
+        console.error("Failed to fetch employees:", err);
+        setEmployees([]);
+        setFilteredEmployees([]);
+      });
+  }, [adminCompany])
 
   useEffect(() => {
     setSearchID('');
