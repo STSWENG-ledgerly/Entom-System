@@ -47,6 +47,27 @@ const MainMenu = () => {
                 </div>
                 <span>Exit</span>
               </Link>
+              <Link to="/" onClick={handleExit}>
+                <div className={styles.imageSwapContainer}>
+                  <img src='/images/exit-greyed.png' alt='set rates grayed' className={styles.imageGray} />
+                  <img src='/images/exit.png' alt='set rates hovered' className={styles.imageColor} />
+                </div>
+                <span>Exit</span>
+              </Link>
+              <Link to="/AddEmployee" id="add-employee-button">
+                <div className={styles.imageSwapContainer}>
+                  <img src='/images/add-employee-greyed.png' alt='add employee grayed' className={styles.imageGray} />
+                  <img src='/images/add-employee.png' alt='add employee hovered' className={styles.imageColor} />
+                </div>
+                <span>Add Employee</span>
+              </Link>
+              <Link to="/EditEmployee" id="edit-employee-button">
+                <div className={styles.imageSwapContainer}>
+                  <img src='/images/edit-employee-greyed.png' alt='edit employee grayed' className={styles.imageGray} />
+                  <img src='/images/edit-employee.png' alt='edit employee hovered' className={styles.imageColor} />
+                </div>
+                <span>Edit Employee</span>
+              </Link>
             </div>
           </div>
         </div>
