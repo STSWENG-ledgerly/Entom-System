@@ -10,6 +10,15 @@ export const ConfigProvider = ({ children }) => {
   const [username, setUsername] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
+    useEffect(() => {
+    const storedUsername = sessionStorage.getItem('username');
+    
+    if (storedUsername && !username) {
+      setUsername(storedUsername);
+    }
+  }, [username]);
+
+
   useEffect(() => {
     if (!selectedEmployeeId) {
       return;

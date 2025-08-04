@@ -4,8 +4,7 @@
 1. Download Node.js at `https://nodejs.org/en`
 2. Download MongoDB at `https://www.mongodb.com/try/download/community`
 3. Run `npm install express mongoose nodemon cors nodemon jspdf concurrently --save-dev` in the react directory.
-4. Run `node populatePayroll.js` in the react/models directory.
-5. Run the server in the react directory `npm run start:both`
+4. Run the server in the react directory `npm run start:both`
 
 
 

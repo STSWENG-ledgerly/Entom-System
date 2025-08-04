@@ -19,6 +19,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:robot": "robot -d src/selenium/output src/selenium/",
+    "test:robot:first4": "robot tests/01_userLogin.robot tests/02_settingDefaultRate.robot tests/03_calculatePayroll.robot tests/04_viewPayrollHistory.robot",
     "test:all": "npm run test && npm run test:robot",
     "eject": "react-scripts eject",
     "server": "nodemon server.js",
