@@ -31,7 +31,7 @@ const MainMenu = () => {
                   <img src='/images/generate-greyed.png' alt='set rates grayed' className={styles.imageGray} />
                   <img src='/images/generate.png' alt='set rates hovered' className={styles.imageColor} />
                 </div>
-                <span>Generate Employee Payroll</span>
+                <span>Calculate Employee Payroll</span>
               </Link>
               <Link to="/SearchEmployee/ViewPayrollHistory" id="view-payroll-button">
                 <div className={styles.imageSwapContainer}>
@@ -39,13 +39,6 @@ const MainMenu = () => {
                   <img src='/images/history.png' alt='set rates hovered' className={styles.imageColor} />
                 </div>
                 <span>View Payroll History</span>
-              </Link>
-              <Link to="/" onClick={handleExit}>
-                <div className={styles.imageSwapContainer}>
-                  <img src='/images/exit-greyed.png' alt='set rates grayed' className={styles.imageGray} />
-                  <img src='/images/exit.png' alt='set rates hovered' className={styles.imageColor} />
-                </div>
-                <span>Exit</span>
               </Link>
               <Link to="/AddEmployee" id="add-employee-button">
                 <div className={styles.imageSwapContainer}>
@@ -61,6 +54,14 @@ const MainMenu = () => {
                 </div>
                 <span>Edit Employee</span>
               </Link>
+              <Link to="/" onClick={handleExit}>
+                <div className={styles.imageSwapContainer}>
+                  <img src='/images/exit-greyed.png' alt='set rates grayed' className={styles.imageGray} />
+                  <img src='/images/exit.png' alt='set rates hovered' className={styles.imageColor} />
+                </div>
+                <span>Exit</span>
+              </Link>
+
             </div>
           </div>
         </div>
