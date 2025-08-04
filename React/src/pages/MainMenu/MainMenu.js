@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import Sidebar from '../_sidebar/Sidebar'
 import global from '../../global.module.css';
 import Header from '../_header/Header';
+import Sidebar from '../_sidebar/Sidebar';
 import styles from './MainMenu.module.css';
 
 const MainMenu = () => {
@@ -39,13 +38,6 @@ const MainMenu = () => {
                   <img src='/images/history.png' alt='set rates hovered' className={styles.imageColor} />
                 </div>
                 <span>View Payroll History</span>
-              </Link>
-              <Link to="/" onClick={handleExit}>
-                <div className={styles.imageSwapContainer}>
-                  <img src='/images/exit-greyed.png' alt='set rates grayed' className={styles.imageGray} />
-                  <img src='/images/exit.png' alt='set rates hovered' className={styles.imageColor} />
-                </div>
-                <span>Exit</span>
               </Link>
               <Link to="/" onClick={handleExit}>
                 <div className={styles.imageSwapContainer}>

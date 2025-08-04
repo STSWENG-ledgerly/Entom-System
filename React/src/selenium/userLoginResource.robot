@@ -4,7 +4,7 @@ Library           SeleniumLibrary
 *** Variables ***
 ${URL}                http://localhost:3000
 ${BROWSER}            Chrome
-${VALID_USERNAME}     admin
+${VALID_USERNAME}     DLSU admin
 ${VALID_PASSWORD}     123
 ${INVALID_USERNAME}   wronguser
 ${INVALID_PASSWORD}   wrongpass
@@ -19,7 +19,6 @@ Login With Valid Credentials
     Input Text    css:input[placeholder="Password"]     ${VALID_PASSWORD}
     Click Button  id:login-button
     
-
 Login With Invalid Credentials
     Input Text    css:input[placeholder="Username"]     ${INVALID_USERNAME}
     Input Text    css:input[placeholder="Password"]     ${INVALID_PASSWORD}

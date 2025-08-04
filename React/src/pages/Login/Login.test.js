@@ -1,87 +1,111 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import Login from '../../pages/Login/Login'; // adjust if needed
+import { MemoryRouter } from 'react-router-dom';
+import { ConfigContext } from '../../ConfigContext';
+import Login from './Login';
 
-// Mock BASE_URL
-jest.mock('../../ConfigContext', () => ({
-  BASE_URL: 'http://localhost:3000',
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
 }));
 
-const renderWithRouter = (ui) => {
-  return render(<BrowserRouter>{ui}</BrowserRouter>);
-};
+// Mock fetch globally
+global.fetch = jest.fn();
 
-beforeEach(() => {
-  sessionStorage.clear();
-  jest.resetAllMocks();
-  global.fetch = jest.fn();
-});
+describe('Login Component', () => {
+  const mockSetUsername = jest.fn();
 
-describe('Login.js', () => {
-  test('UT-E01: Login with correct credentials', async () => {
-    const mockResponse = { username: 'admin', company: 'TestCorp' };
+  const renderLogin = () => {
+    render(
+      <ConfigContext.Provider value={{ setUsername: mockSetUsername }}>
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+      </ConfigContext.Provider>
+    );
+  };
 
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse,
-    });
-
-    renderWithRouter(<Login />);
-
-    fireEvent.change(screen.getByPlaceholderText('Username'), {
-      target: { value: 'admin' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'password123' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: /login/i }));
-
-    await waitFor(() => {
-      expect(sessionStorage.getItem('userValid')).toBe('true');
-      expect(sessionStorage.getItem('username')).toBe('admin');
-      expect(sessionStorage.getItem('company')).toBe('TestCorp');
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
+    sessionStorage.clear();
   });
 
-  test('UT-E02: Login with incorrect password (401)', async () => {
-    fetch.mockResolvedValueOnce({
-      ok: false,
-      status: 401,
-    });
+  test('renders input fields and buttons', () => {
+    renderLogin();
 
-    renderWithRouter(<Login />);
-
-    fireEvent.change(screen.getByPlaceholderText('Username'), {
-      target: { value: 'admin' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'wrongpass' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: /login/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/invalid username or password/i)).toBeInTheDocument();
-    });
+    expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+    expect(screen.getByText('LOGIN')).toBeInTheDocument();
+    expect(screen.getByText('Register')).toBeInTheDocument();
   });
 
-  test('UT-E03: Login with server error (e.g., 500)', async () => {
+  test('updates input fields', () => {
+    renderLogin();
+
+    const usernameInput = screen.getByPlaceholderText('Username');
+    const passwordInput = screen.getByPlaceholderText('Password');
+
+    fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+
+    expect(usernameInput.value).toBe('testuser');
+    expect(passwordInput.value).toBe('password123');
+  });
+
+  test('navigates to MainMenu on successful login', async () => {
     fetch.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
+      status: 200,
+      json: async () => ({ username: 'testuser', company: 'TestCorp' }),
     });
 
-    renderWithRouter(<Login />);
+    renderLogin();
 
-    fireEvent.change(screen.getByPlaceholderText('Username'), {
-      target: { value: 'admin' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'password123' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'pass' } });
+    fireEvent.click(screen.getByText('LOGIN'));
 
-    await waitFor(() => {
-      expect(screen.getByText(/login failed. please try again./i)).toBeInTheDocument();
-    });
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/MainMenu'));
+    expect(mockSetUsername).toHaveBeenCalledWith('testuser');
+    expect(sessionStorage.getItem('username')).toBe('testuser');
+    expect(sessionStorage.getItem('company')).toBe('TestCorp');
+    expect(sessionStorage.getItem('userValid')).toBe('true');
+  });
+
+  test('shows error message on invalid credentials (401)', async () => {
+    fetch.mockResolvedValueOnce({ status: 401 });
+
+    renderLogin();
+
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'wrong' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'badpass' } });
+    fireEvent.click(screen.getByText('LOGIN'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Invalid username or password')).toBeInTheDocument()
+    );
+  });
+
+  test('shows generic error for other server errors', async () => {
+    fetch.mockResolvedValueOnce({ status: 500 });
+
+    renderLogin();
+
+    fireEvent.click(screen.getByText('LOGIN'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Login failed. Please try again.')).toBeInTheDocument()
+    );
+  });
+
+  test('shows error message on fetch failure', async () => {
+    fetch.mockRejectedValueOnce(new Error('Fetch error'));
+
+    renderLogin();
+
+    fireEvent.click(screen.getByText('LOGIN'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Something went wrong. Please try again.')).toBeInTheDocument()
+    );
   });
 });

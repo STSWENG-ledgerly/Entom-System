@@ -100,7 +100,7 @@ const AddEmployee = () => {
           <h1><span className={global.title}>{title}</span></h1>
           <div className={styles.infoContainer}>
             <div className={styles.searchBox}>
-              <h3>Employee Personal Info</h3>
+              <h3 id="outside">Employee Personal Info</h3>
               <div className={styles.searchContainer}>
                 <input id="fname" type="text" placeholder="Enter employee's first name" value={fName} onChange={(e) => setFName(e.target.value)} />
                 <input id="mname" type="text" placeholder="Enter employee's middle name" value={middleName} onChange={(e) => setMName(e.target.value)} />
@@ -115,9 +115,7 @@ const AddEmployee = () => {
               <div className={styles.searchContainer}>
                 <input
                   id="date"
-                  type="text"
-                  onFocus={(e) => (e.target.type = 'date')}
-                  onBlur={(e) => (e.target.type = 'text')}
+                  type="date"
                   placeholder="Enter employee's hiring date"
                   value={dateHired}
                   onChange={(e) => setDateHired(e.target.value)}
@@ -138,10 +136,10 @@ const AddEmployee = () => {
               </div>
             </div>
           </div>
-          <button id="add-employee-button" className={styles.buttonDesign} onClick={handeAddEmployeeButton}>Add Employee</button>
-        </div >
-      </div >
-    </div >
+          <button id="add-employee-btn" className={styles.buttonDesign} onClick={handeAddEmployeeButton}>Add Employee</button>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -17,9 +17,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll",
+    "test:unit": "npm test -- --watchAll=false",
     "test:robot": "robot -d src/selenium/output src/selenium/",
-    "test:robot:first4": "robot tests/01_userLogin.robot tests/02_settingDefaultRate.robot tests/03_calculatePayroll.robot tests/04_viewPayrollHistory.robot",
+    "test:allLocal": "start /b cmd /c \"npm run start:both > nul\" && timeout 30 && npm run test:unit && npm run test:robot && taskkill /F /IM node.exe > nul",
     "test:all": "npm run test && npm run test:robot",
     "eject": "react-scripts eject",
     "server": "nodemon server.js",
