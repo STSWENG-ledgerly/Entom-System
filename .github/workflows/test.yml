@@ -25,6 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: React
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Robot Framework
+        run: pip install robotframework
 
       - name: Run Jest Unit Tests
         run: npm test -- --watchAll=false
