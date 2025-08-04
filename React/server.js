@@ -16,7 +16,6 @@ app.use(express.json());
 async function database() {
   try {
     await connectToMongo();
-    await populateDatabase();
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }
@@ -331,8 +330,7 @@ app.post('/admin/login', async (req, res) => {
     if (!admin) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    const correctPassword = await checkPassword(password, account.passwordHash);
-
+   
     // Hashing
     const isMatch = await bcrypt.compare(password, admin.passwordHash);
     if (!isMatch) {
