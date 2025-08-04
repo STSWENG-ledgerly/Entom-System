@@ -1,106 +1,136 @@
-// SettingsMenu.test.js
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ConfigContext } from '../../ConfigContext';
 import SettingsMenu from './SettingsMenu';
 
-// Mock fetch
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({ success: true }),
-  })
-);
+// Mock fetch globally
+global.fetch = jest.fn();
 
-describe('SettingsMenu Component', () => {
-  const setPassword = jest.fn();
-  const props = {
-    trigger: true,
-    setTrigger: jest.fn(),
+const mockSetTrigger = jest.fn();
+
+const renderComponent = (trigger = true) => {
+  const contextValue = {
+    password: 'currentPass',
+    setPassword: jest.fn(),
+    username: 'testUser',
   };
 
-  const renderWithContext = (password = 'admin') =>
-    render(
-      <ConfigContext.Provider value={{ password, setPassword }}>
-        <SettingsMenu {...props} />
-      </ConfigContext.Provider>
-    );
+  return render(
+    <ConfigContext.Provider value={contextValue}>
+      <SettingsMenu trigger={trigger} setTrigger={mockSetTrigger} />
+    </ConfigContext.Provider>
+  );
+};
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ success: true }),
-      })
-    );
-  });
-
-  test('renders SettingsMenu when trigger is true', () => {
-    renderWithContext();
-    expect(screen.getByText(/Change Password/i)).toBeInTheDocument();
-  });
-
-  test('displays error when old password is incorrect', () => {
-    renderWithContext();
-
-    fireEvent.change(screen.getByLabelText(/Old Password/i), {
-      target: { value: 'wrongpass' },
-    });
-    fireEvent.change(screen.getByLabelText(/New Password/i), {
-      target: { value: 'newpass123' },
-    });
-
-    fireEvent.click(screen.getByText(/Confirm Changes/i));
-
-    expect(screen.getByText(/Password is incorrect./i)).toBeInTheDocument();
-  });
-
-  
-  test('displays success when password is correct and changed', async () => {
-    renderWithContext();
-
-    fireEvent.change(screen.getByLabelText(/Old Password/i), {
-      target: { value: 'admin' },
-    });
-    fireEvent.change(screen.getByLabelText(/New Password/i), {
-      target: { value: 'newpass123' },
-    });
-
-    fireEvent.click(screen.getByText(/Confirm Changes/i));
-
-    await waitFor(() =>
-      expect(screen.queryByText(/Password change successfully!/i)).toBeInTheDocument()
-    );
-
-    expect(setPassword).toHaveBeenCalledWith('newpass123');
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/savePassword'),
-      expect.objectContaining({
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'newpass123' }),
-      })
-    );
-  });
-
-  test('shows validation when new password is empty', () => {
-    renderWithContext();
-
-    fireEvent.change(screen.getByLabelText(/Old Password/i), {
-      target: { value: 'admin' },
-    });
-    fireEvent.change(screen.getByLabelText(/New Password/i), {
-      target: { value: '' },
-    });
-
-    fireEvent.click(screen.getByText(/Confirm Changes/i));
-    expect(screen.getByText(/New password cannot be blank/i)).toBeInTheDocument();
-  });
-
-  test('closes settings menu on exit', () => {
-    renderWithContext();
-
-    const closeBtn = screen.getByRole('button', { name: '' }); // close button has no label
-    fireEvent.click(closeBtn);
-    expect(props.setTrigger).toHaveBeenCalledWith(false);
-  });
+beforeEach(() => {
+  fetch.mockReset();
+  mockSetTrigger.mockReset();
 });
+
+test('renders SettingsMenu when trigger is true', () => {
+  renderComponent(true);
+  expect(screen.getByText('Settings')).toBeInTheDocument();
+  expect(screen.getByText('Change Password')).toBeInTheDocument();
+});
+
+test('does not render SettingsMenu when trigger is false', () => {
+  renderComponent(false);
+  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+});
+
+test('handles password change success', async () => {
+  fetch.mockResolvedValueOnce({
+    status: 200,
+    json: async () => ({}),
+  });
+
+  renderComponent(true);
+
+  fireEvent.change(screen.getByLabelText(/Old Password/i), {
+    target: { value: 'old123' },
+  });
+  fireEvent.change(screen.getByLabelText(/New Password/i), {
+    target: { value: 'new123' },
+  });
+
+  fireEvent.click(screen.getByText('Confirm Changes'));
+
+  await waitFor(() =>
+    expect(screen.getByText('Password Changed.')).toBeInTheDocument()
+  );
+});
+
+test('shows error if old password is wrong', async () => {
+  fetch.mockResolvedValueOnce({
+    status: 401,
+    json: async () => ({}),
+  });
+
+  renderComponent(true);
+
+  fireEvent.change(screen.getByLabelText(/Old Password/i), {
+    target: { value: 'wrongold' },
+  });
+  fireEvent.change(screen.getByLabelText(/New Password/i), {
+    target: { value: 'newpass' },
+  });
+
+  fireEvent.click(screen.getByText('Confirm Changes'));
+
+  await waitFor(() =>
+    expect(screen.getByText('Wrong old password')).toBeInTheDocument()
+  );
+});
+
+test('shows message if passwords are the same', async () => {
+  fetch.mockResolvedValueOnce({
+    status: 402,
+    json: async () => ({}),
+  });
+
+  renderComponent(true);
+
+  fireEvent.change(screen.getByLabelText(/Old Password/i), {
+    target: { value: 'samepass' },
+  });
+  fireEvent.change(screen.getByLabelText(/New Password/i), {
+    target: { value: 'samepass' },
+  });
+
+  fireEvent.click(screen.getByText('Confirm Changes'));
+
+  await waitFor(() =>
+    expect(
+      screen.getByText('New password cannot be the same as the old one.')
+    ).toBeInTheDocument()
+  );
+});
+
+test('handles unexpected error', async () => {
+  fetch.mockRejectedValueOnce(new Error('Network Error'));
+
+  renderComponent(true);
+
+  fireEvent.change(screen.getByLabelText(/Old Password/i), {
+    target: { value: 'pass1' },
+  });
+  fireEvent.change(screen.getByLabelText(/New Password/i), {
+    target: { value: 'pass2' },
+  });
+
+  fireEvent.click(screen.getByText('Confirm Changes'));
+
+  await waitFor(() =>
+    expect(
+      screen.getByText('Something went wrong. Please try again.')
+    ).toBeInTheDocument()
+  );
+});
+
+test('calls setTrigger(false) on exit', () => {
+  renderComponent(true);
+
+  fireEvent.click(screen.getByRole('button', { name: '' })); // close button
+
+  expect(mockSetTrigger).toHaveBeenCalledWith(false);
+});
+
