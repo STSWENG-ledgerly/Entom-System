@@ -24,8 +24,8 @@ async function main() {
   appProcess.unref();
 
   // Wait for app to be ready
-  console.log('[INFO] Waiting 30 seconds for app to be ready...');
-  await sleep(30_000); // wait 30 seconds
+  console.log('[INFO] Waiting 60 seconds for app to be ready...');
+  await sleep(60_000); // wait 60 seconds
 
   try {
     console.log('[INFO] Running unit tests...');

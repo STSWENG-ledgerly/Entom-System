@@ -15,6 +15,7 @@ Set Default Rate To Value
     Wait Until Element Is Visible    id:rate-field    5s
     Input Text               id:rate-field      ${value}
     Input Text               id:basic-field     ${value}
+    Execute JavaScript       document.getElementById("confirm-button").scrollIntoView()
     Click Button             id:confirm-button
 
 Should See Success Message
