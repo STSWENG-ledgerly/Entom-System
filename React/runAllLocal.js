@@ -37,15 +37,6 @@ async function main() {
     console.error('[ERROR] Tests failed:', err);
   } finally {
     console.log('[INFO] Killing app process...');
-    try {
-      if (isWindows) {
-        execSync('taskkill /F /IM node.exe >nul 2>&1');
-      } else {
-        execSync('pkill -f "react-scripts start" || pkill -f "node server.js" || true');
-      }
-    } catch (killErr) {
-      console.warn('[WARN] Failed to kill app:', killErr.message);
-    }
   }
 }
 
