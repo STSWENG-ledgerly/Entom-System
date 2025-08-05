@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Login.module.css';
@@ -68,6 +67,7 @@ const Login = () => {
               placeholder="Password"
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
+
             <button id="login-button" className={styles.submitButton} type="submit">LOGIN</button>
             <Link to="/AccountRegistration"> <button className={styles.submitButton} type="button">Register</button></Link>
           </form>
