@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { Employee, Payroll, Account, Company, Config } = require('./models/payrollSchema');
+const { Employee, Payroll, Account, Company, Config } = require("./models/payrollSchema.js");
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
@@ -13,16 +13,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-// mongoose.connect('mongodb://localhost:27017/payrollSystem', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// }).then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
 async function database() {
   try {
     await connectToMongo();
+    await populateDatabase();
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }
@@ -39,17 +33,47 @@ async function hashPassword(password){
       }
 }
 
+async function checkPassword(sentPassword, passwordFromDB) {
+    try {
+        return await bcrypt.compare(sentPassword, passwordFromDB);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+}
+
+async function checkPassword(sentPassword, passwordFromDB) {
+    try {
+        return await bcrypt.compare(sentPassword, passwordFromDB);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+}
+
 
 app.get('/', (req, res) => {
   res.json("from backend side");
 });
 
 app.get('/employee', async (req, res) => {
-  const { company } = req.query;
+  const { company: companyName } = req.query; 
+  if (!companyName) {
+    return res.status(400).json({ error: 'Company name is required' });
+  }
+
   try {
-    const employees = await Employee.find({ company });
+ 
+    const company = await Company.findOne({ name: companyName }).lean();
+    if (!company) {
+      
+      return res.json([]);
+    }
+
+    const employees = await Employee.find({ company: company._id });
     res.json(employees);
   } catch (err) {
+    console.error("Error in GET /employee:", err);
     res.status(500).json({ error: 'Failed to fetch employees' });
   }
 });
@@ -302,25 +326,118 @@ app.post('/admin/login', async (req, res) => {
       username,
       role: 'Administrator',
       isDeleted: false
-    });
+    }).populate('company'); // Use populate to also fetch the linked company's details
+
     if (!admin) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
+   
     // Hashing
-    // const isMatch = await bcrypt.compare(password, admin.passwordHash);
-    // if (!isMatch) {
-    //   return res.status(401).json({ error: 'Invalid credentials' });
-    // }
-
-    if (password !== admin.passwordHash) {
+    const isMatch = await bcrypt.compare(password, admin.passwordHash);
+    if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    res.json({ username: admin.username, company: admin.company });
+    // Send the company's name, not its _id
+    res.json({ username: admin.username, company: admin.company.name });
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/changePassword', async (req, res) => {
+  try {
+    const { username, oldPass, newPass } = req.body;
+    const account = await Account.findOne({ username: username });
+    const comparePass = await checkPassword(oldPass, account.passwordHash);
+
+    if(!comparePass){
+      return res.status(401).send("Wrong old password");
+    } // Wrong old pass
+
+    if( oldPass == newPass ){
+      return res.status(402).send("Same password");
+    } // Same password
+
+    const hashedPassword = await hashPassword(newPass);
+
+    account.passwordHash = hashedPassword;
+
+    await account.save();
+    return res.status(200).send("Success");
+  } catch (error) {
+    console.error("Error in POST /checkPassword:", error);
+    return res.status(500).send("Server Error");
+  }
+});
+
+app.post('/admin/register', async (req, res) => {
+  try {
+    const { username, password, company } = req.body;
+    if (!username || !password || !company) {
+      return res.status(400).json({ error: 'username, password and company are all required' });
+    }
+
+    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
+    const userExists = await Account.findOne({
+      username: { $regex: `^${username}$`, $options: 'i' }
+    });
+    if (userExists) {
+      return res.sendStatus(409); // Conflict
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const companyDoc = await Company
+      .findOne({ name: company })
+      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
+      .select('_id');
+    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
+
+    await account.save();
+
+    return res.status(201).json({
+      username: account.username,
+      company: account.company
+    });
+  } catch (err) {
+    console.error("Error in POST /admin/register:", err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/admin/register', async (req, res) => {
+  try {
+    const { username, password, company } = req.body;
+    if (!username || !password || !company) {
+      return res.status(400).json({ error: 'username, password and company are all required' });
+    }
+
+    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
+    const userExists = await Account.findOne({
+      username: { $regex: `^${username}$`, $options: 'i' }
+    });
+    if (userExists) {
+      return res.sendStatus(409); // Conflict
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const companyDoc = await Company
+      .findOne({ name: company })
+      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
+      .select('_id');
+    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
+
+    await account.save();
+
+    return res.status(201).json({
+      username: account.username,
+      company: account.company
+    });
+
+  } catch (err) {
+    console.error("Error in POST /admin/register:", err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 

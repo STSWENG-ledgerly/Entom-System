@@ -21,7 +21,13 @@ const Header = () => {
   const handleCalc = () => {
     navigate('/SearchEmployee/CalculatePayroll');
   };
+  const handleAddEmployee = () => {
+    navigate('/AddEmployee');
+  };
 
+  const handleEditEmployee = () => {
+    navigate('/EditEmployee');
+  };
   const handleBack = () => {
     navigate(-1);
   };
@@ -55,6 +61,16 @@ const Header = () => {
           <div className={styles.label}>CALCULATE PAYROLL</div>
         </button>
 
+        <button className={`${styles.iconGroup} ${styles.addButton}`} onClick={handleAddEmployee}>
+          <div className={styles.iconImage}></div>
+          <div className={styles.label}>ADD EMPLOYEE</div>
+        </button>
+
+        <button className={`${styles.iconGroup} ${styles.editButton}`} onClick={handleEditEmployee}>
+          <div className={styles.iconImage}></div>
+          <div className={styles.label}>EDIT EMPLOYEE</div>
+        </button>
+
         <button className={`${styles.iconGroup} ${styles.prevButton}`} onClick={handleBack}>
           <div className={styles.iconImage}></div>
           <div className={styles.label}>BACK</div>
@@ -62,9 +78,9 @@ const Header = () => {
 
         <button className={`${styles.iconGroup} ${styles.logoutButton}`} onClick={handleLogout}>
           <div className={styles.iconImage}></div>
-          <div className={styles.label}>LOGOUT</div>
+          <div className={styles.label}>EXIT</div>
         </button>
-
+        
       </div>
     </div>
   );

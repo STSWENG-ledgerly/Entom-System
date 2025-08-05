@@ -17,8 +17,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll",
+    "test:unit": "npm test -- --watchAll=false",
     "test:robot": "robot -d src/selenium/output src/selenium/",
+    "test:allLocal": "node runAllLocal.js",
     "test:all": "npm run test && npm run test:robot",
     "eject": "react-scripts eject",
     "server": "nodemon server.js",
