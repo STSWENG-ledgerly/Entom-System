@@ -42,14 +42,6 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
-async function checkPassword(sentPassword, passwordFromDB) {
-    try {
-        return await bcrypt.compare(sentPassword, passwordFromDB);
-    } catch (error) {
-        console.error('Error comparing passwords:', error);
-        return false;
-    }
-}
 
 
 app.get('/', (req, res) => {
@@ -339,7 +331,7 @@ app.post('/admin/login', async (req, res) => {
     }
 
     // Send the company's name, not its _id
-    res.json({ username: admin.username, company: admin.company.name });
+    res.json({ username: admin.username, company: {name: admin.company.name, id: admin.company._id}});
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
     return res.status(500).json({ error: 'Internal server error' });
