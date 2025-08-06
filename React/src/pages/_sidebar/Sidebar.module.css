@@ -14,7 +14,7 @@
 }
 
 .content {
-    width: 60px;
+    width: 70px;
     margin-top: 100px;
     padding-left: 5px;
     padding-right: 5px;
@@ -58,24 +58,35 @@
     background-image: url('logout.svg');
 }
 
+.addButton{
+    background-image: url('add.svg');
+}
+.editButton{
+    background-image: url('edit.svg');
+}
 .iconGroup {
     display:flex;
+    flex-direction:row;
+    align-items: center;
+    text-align: center;
 }
 
 .label {
     font-family: 'JetBrains Mono';
     font-size:16px;
     opacity: 0;
-    margin-left: 60px;
-    transition: ease-in-out all .2s;
+    margin-left: 50px;
+    transition: ease-in-out all 0.3s;
     color:white;
     visibility:hidden;
-    padding: 5px;
+    padding: 4px;
+    /* padding-left:2px; */
     border-radius:10px;
     text-align:left;
-    padding-top:20px;
+    /* padding-top:20px; */
     position:absolute;
     width:180px;
+    background-color: transparent;
 }
 
 .content:hover {
@@ -84,6 +95,14 @@
 
 .content:hover .label {
     opacity: 1;
+
     visibility:visible; 
  
+}
+
+.label:hover{
+
+background-color: #F0B9A8;
+transform: translateX(5px);
+transition: all 0.225s ease-in-out;
 }

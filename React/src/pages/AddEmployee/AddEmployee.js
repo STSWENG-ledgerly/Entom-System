@@ -1,11 +1,14 @@
 
+
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
-import Sidebar from '../_sidebar/Sidebar';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../ConfigContext';
 import global from '../../global.module.css';
 import Header from '../_header/Header';
+import Sidebar from '../_sidebar/Sidebar';
 import styles from './AddEmployee.module.css';
-import { BASE_URL } from '../../ConfigContext';
+
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -89,7 +92,6 @@ const AddEmployee = () => {
     }
   };
 
-
   const title = "Add Employee";
 
   return (
@@ -101,13 +103,13 @@ const AddEmployee = () => {
           <h1><span className={global.title}>{title}</span></h1>
           <div className={styles.infoContainer}>
             <div className={styles.searchBox}>
-              <h3>Employee Personal Info</h3>
+              <h3 id="outside">Employee Personal Info</h3>
               <div className={styles.searchContainer}>
-                <input type="text" placeholder="Enter employee's first name" value={fName} onChange={(e) => setFName(e.target.value)} />
-                <input type="text" placeholder="Enter employee's middle name" value={middleName} onChange={(e) => setMName(e.target.value)} />
-                <input type="text" placeholder="Enter employee's last name" value={lName} onChange={(e) => setLName(e.target.value)} />
-                <input type="tel" placeholder="Enter employee's phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                <input type="email" placeholder="Enter employee's email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input id="fname" type="text" placeholder="Enter employee's first name" value={fName} onChange={(e) => setFName(e.target.value)} />
+                <input id="mname" type="text" placeholder="Enter employee's middle name" value={middleName} onChange={(e) => setMName(e.target.value)} />
+                <input id="lname" type="text" placeholder="Enter employee's last name" value={lName} onChange={(e) => setLName(e.target.value)} />
+                <input id="phone" type="tel" placeholder="Enter employee's phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <input id="email" type="email" placeholder="Enter employee's email address" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
             </div>
 
@@ -115,38 +117,34 @@ const AddEmployee = () => {
               <h3>Employee Company Info</h3>
               <div className={styles.searchContainer}>
                 <input
-                  type="text"
-                  onFocus={(e) => (e.target.type = 'date')}
-                  onBlur={(e) => (e.target.type = 'text')}
+                  id="date"
+                  type="date"
                   placeholder="Enter employee's hiring date"
                   value={dateHired}
                   onChange={(e) => setDateHired(e.target.value)}
                 />
-                <input type="text" placeholder="Enter employee's department" value={department} onChange={(e) => setDepartment(e.target.value)} />
-                <input type="text" placeholder="Enter employee's position" value={position} onChange={(e) => setPosition(e.target.value)} />
-                <input type="text" placeholder="Enter employee's designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
-                <input type="number" placeholder="Enter employee's basic salary" value={basicSalary} onChange={(e) => setBasicSalary(e.target.value)} />
+                <input id="department" type="text" placeholder="Enter employee's department" value={department} onChange={(e) => setDepartment(e.target.value)} />
+                <input id="position" type="text" placeholder="Enter employee's position" value={position} onChange={(e) => setPosition(e.target.value)} />
+                <input id="designation" type="text" placeholder="Enter employee's designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
+                <input id="salary" type="number" placeholder="Enter employee's basic salary" value={basicSalary} onChange={(e) => setBasicSalary(e.target.value)} />
               </div>
             </div>
 
             <div className={styles.searchBox}>
               <h3>Employee Bank Info</h3>
               <div className={styles.searchContainer}>
-                <input name="bankName" type="text" placeholder="Enter employee's bank" value={bankAccount.bankName} onChange={handleBankAccount} />
-                <input name="accountNumber" type="number" placeholder="Enter bank account number" value={bankAccount.accountNumber} onChange={handleBankAccount} />
-                <input name="branch" type="text" placeholder="Enter bank branch" value={bankAccount.branch} onChange={handleBankAccount} />
+                <input id="bank" name="bankName" type="text" placeholder="Enter employee's bank" value={bankAccount.bankName} onChange={handleBankAccount} />
+                <input id="account" name="accountNumber" type="number" placeholder="Enter bank account number" value={bankAccount.accountNumber} onChange={handleBankAccount} />
+                <input id="branch" name="branch" type="text" placeholder="Enter bank branch" value={bankAccount.branch} onChange={handleBankAccount} />
               </div>
             </div>
           </div>
-
-
-          <button className={styles.buttonDesign} onClick={handeAddEmployeeButton}>Add Employee</button>
-        </div >
-      </div >
-    </div >
+          <button id="add-employee-btn" className={styles.buttonDesign} onClick={handeAddEmployeeButton}>Add Employee</button>
+        </div>
+      </div>
+    </div>
   );
-}
-
+};
 
 
 export default AddEmployee;

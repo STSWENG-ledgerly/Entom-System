@@ -21,72 +21,77 @@ const handleBlur = (e, setState, field) => {
 const DeductionsInfo = ({ deductions, setDeductions }) => (
     <div className={styles.formSection}>
         <span>DEDUCTIONS</span>
+
         <div className={styles.formGroup}>
-            <label>SSS:</label>
+            <label htmlFor="sss">SSS:</label>
             <input
+                id="sss"
                 type="number"
                 value={deductions.sss ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "sss")}
                 onBlur={(e) => handleBlur(e, setDeductions, "sss")}
             />
         </div>
+
         <div className={styles.formGroup}>
-            <label>philHealth:</label>
+            <label htmlFor="philhealth">Philhealth:</label>
             <input
+                id="philhealth"
                 type="number"
-                value={deductions.philHealth ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "philHealth")}
-                onBlur={(e) => handleBlur(e, setDeductions, "philHealth")}
+                value={deductions.philhealth ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "philhealth")}
+                onBlur={(e) => handleBlur(e, setDeductions, "philhealth")}
             />
         </div>
+
         <div className={styles.formGroup}>
-            <label>PAG-IBIG:</label>
+            <label htmlFor="pagibig">PAG-IBIG:</label>
             <input
+                id="pagibig"
                 type="number"
-                value={deductions.pagIbig ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "pagIbig")}
-                onBlur={(e) => handleBlur(e, setDeductions, "pagIbig")}
+                value={deductions.pagibig ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "pagibig")}
+                onBlur={(e) => handleBlur(e, setDeductions, "pagibig")}
             />
         </div>
+
         <div className={styles.formGroup}>
-            <label>Cash Advance:</label>
+            <label htmlFor="cashAdvance">Cash Advance:</label>
             <input
+                id="cashAdvance"
                 type="number"
                 value={deductions.cashAdvance ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "cashAdvance")}
                 onBlur={(e) => handleBlur(e, setDeductions, "cashAdvance")}
             />
         </div>
+
         <div className={styles.formGroup}>
-            <label>Health Card:</label>
+            <label htmlFor="healthCard">Health Card:</label>
             <input
+                id="healthCard"
                 type="number"
                 value={deductions.healthCard ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "healthCard")}
                 onBlur={(e) => handleBlur(e, setDeductions, "healthCard")}
             />
         </div>
+
         <div className={styles.formGroup}>
-            <label>Late (in Hours):</label>
+            <label htmlFor="absences">Late/Absent:</label>
             <input
+                id="absences"
                 type="number"
-                value={deductions.lateHours ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "lateHours")}
-                onBlur={(e) => handleBlur(e, setDeductions, "lateHours")}
+                value={deductions.absences ?? 0}
+                onChange={(e) => checkNumberInput(e, setDeductions, "absences")}
+                onBlur={(e) => handleBlur(e, setDeductions, "absences")}
             />
         </div>
+
         <div className={styles.formGroup}>
-            <label>Absences (per Day):</label>
+            <label htmlFor="otherDeductions">Others:</label>
             <input
-                type="number"
-                value={deductions.absentDays ?? 0}
-                onChange={(e) => checkNumberInput(e, setDeductions, "absentDays")}
-                onBlur={(e) => handleBlur(e, setDeductions, "absentDays")}
-            />
-        </div>
-        <div className={styles.formGroup}>
-            <label>Others:</label>
-            <input
+                id="otherDeductions"
                 type="number"
                 value={deductions.otherDeductions ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "otherDeductions")}
@@ -97,3 +102,4 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
 );
 
 export default DeductionsInfo;
+

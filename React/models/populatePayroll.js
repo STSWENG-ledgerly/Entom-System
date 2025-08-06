@@ -1,13 +1,19 @@
+
 const mongoose = require("mongoose");
 require('dotenv').config(); 
+const bcrypt = require("bcrypt");
 
 const {
   Employee,
   Payroll,
   Account,
   Company,
-} = require("../models/payrollSchema");
+  Config
+} = require("./payrollSchema.js");
 
+const sampleCompanies = require("./sampleData/sampleCompanies.js");
+const { initializeAccount, getCompanyID } = require("./sampleData/sampleAccounts");
+const { initializeEmployee } = require("./sampleData/sampleEmployees.js");
 
 async function dropDatabase() {
     try {
@@ -18,113 +24,60 @@ async function dropDatabase() {
     }
 }
 
+async function hashPassword(password){
+    const saltRounds = 10;
+    try {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        return hashedPassword;
+      } catch (error) {
+        console.error('Error hashing password:', error);
+      }
+}
+
 async function populateDatabase() {
     try {
       await dropDatabase();
 
-      const company = await Company.create({
-        name: "DLSU",
-        address: "2401 Taft",   
-        industry: "School"            
+      //================Populating of company================
+      for (const company of sampleCompanies) {
+        await Company.create(company);
+        console.log("Database: Inserted company " + company.name + '.');
+      }
+      //======================================================
+
+
+      //================Populating of accounts================
+      const sampleAccounts = await initializeAccount();
+      for (const acc of sampleAccounts) {
+        acc.passwordHash = await hashPassword(acc.passwordHash);
+        const accDoc = new Account(acc);
+
+        await accDoc.save();
+        console.log("Database: Inserted account " + acc.username + '.');
+      }
+      //======================================================
+
+      //================Populating of employees================
+      const sampleEmployees = await initializeEmployee();
+
+      for (const emp of sampleEmployees) {
+        await Employee.create(emp);
+        console.log("Database: Inserted employee " + emp.employee_id + '.');
+      }
+      //======================================================
+      
+      //========================Config========================
+      await Config.create({
+        standardRate: 645,
+        holidayRate: 800,
+        weekendRate: 700
       });
+      console.log("Database: Inserted payroll config.");
+      //======================================================
 
-      console.log("Database: Inserted company DLSU.");
 
 
-      const employeesData = [
-        {
-          employee_id: "110",
-          company: company._id,
-          status: "Active",
-          fname: "Admin",
-          middleName: "A",
-          lname: "User",
-          department: "HR",
-          position: "Professor",
-          designation: "CCS",
-          basicSalary: 100000,
-          overtimeRate: 200,
-          bankAccount: {
-            bankName: "BDO",
-            accountNumber: "0000000001",
-            branch: "Main"
-          },
-          dateHired: new Date("2020-01-01"),
-          phone: "09100000000",
-          email: "admin@example.com",
-          rbacProfile: 0
-        },
-        {
-          employee_id: "111",
-          company: company._id,
-          status: "Active",
-          fname: "John",
-          middleName: "A",
-          lname: "Doe",
-          department: "IT",
-          position: "Developer",
-          designation: "Software Engineer",
-          basicSalary: 8385,
-          overtimeRate: 200,
-          bankAccount: {
-            bankName: "BDO",
-            accountNumber: "0000000111",
-            branch: "Quezon City"
-          },
-          dateHired: new Date("2001-10-10"),
-          phone: "09100000000",
-          email: "jdoe@gmail.com",
-          rbacProfile: 1
-        },
-        {
-          employee_id: "112",
-          company: company._id,
-          status: "Active",
-          fname: "Iker",
-          middleName: "A",
-          lname: "Ventura",
-          department: "Marketing",
-          position: "Assistant",
-          designation: "Marketing Assistant",
-          basicSalary: 9385,
-          overtimeRate: 200,
-          bankAccount: {
-            bankName: "BPI",
-            accountNumber: "0000000112",
-            branch: "Manila"
-          },
-          dateHired: new Date("2001-10-10"),
-          phone: "09100000000",
-          email: "iventura@gmail.com",
-          rbacProfile: 1
-        },
-        {
-          employee_id: "113",
-          company: company._id,
-          status: "Active",
-          fname: "Zora",
-          middleName: "A",
-          lname: "Scott",
-          department: "Finance",
-          position: "Clerk",
-          designation: "Finance Staff",
-          basicSalary: 11485,
-          overtimeRate: 200,
-          bankAccount: {
-            bankName: "Landbank",
-            accountNumber: "0000000113",
-            branch: "Cebu"
-          },
-          dateHired: new Date("2001-10-10"),
-          phone: "09100000000",
-          email: "zscott@gmail.com",
-          rbacProfile: 1
-        }
-      ];
-
-      await Employee.insertMany(employeesData);
-      console.log(`Database: Inserted ${employeesData.length} employees.`);
-
+      
   // at the top of your file
   const PAYROLL_TIMEFRAMES = ['Weekly','Bi-Monthly','Monthly'];
 
@@ -132,16 +85,15 @@ async function populateDatabase() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  // pick a random date in October 2024
   function randomPayDate() {
-    // month is zero-based: 9 = October
-    const day = randomInt(1, 28);
+    const day = randomInt(1, 30);
     return new Date(2024, 9, day);
   }
 
   // main routine
   async function seedPayroll() {
-    const employees = await Employee.find({ company: company._id }).lean();
+    const dlsuCompanyID = await getCompanyID("DLSU");
+    const employees = await Employee.find({ company: dlsuCompanyID }).lean();
 
     const payrollData = employees.map(emp => {
       // 1) pick timeframe & payDate
@@ -194,21 +146,20 @@ async function populateDatabase() {
       };
     });
 
-    try {
-      const result = await Payroll.insertMany(payrollData, { ordered: false });
-      console.log(`Inserted ${result.length} payroll entries.`);
-    } catch (err) {
-      console.error("Insert error:", err);
-      if (err.writeErrors) {
-        err.writeErrors.forEach(e => console.error(e.errmsg));
+      try {
+        const result = await Payroll.insertMany(payrollData, { ordered: false });
+
+        console.log(`Inserted ${result.length} payroll entries.`);
+      } catch (err) {
+        console.error("Insert error:", err);
+        if (err.writeErrors) {
+          err.writeErrors.forEach(e => console.error(e.errmsg));
+        }
       }
-    }
   }
 
   // run it
   seedPayroll().catch(console.error);
-
-
       await Account.create({
         username: "admin",
         passwordHash: "123", // Ideally, this should be hashed
@@ -222,7 +173,7 @@ async function populateDatabase() {
     } catch (error) {
       console.error('Database: Error populating database', error);
     }
-
+}
     // --- Create second company ---
 const secondCompany = await Company.create({
   name: "OpenAI",
@@ -276,3 +227,4 @@ module.exports = populateDatabase;
     const connectToMongo = require('../src/scripts/conn');
     connectToMongo().then(() => populateDatabase());
   }
+
