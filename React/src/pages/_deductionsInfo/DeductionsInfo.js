@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './DeductionsInfo.module.css';
 
 const checkNumberInput = (e, setState, field) => {
@@ -102,4 +101,3 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
 );
 
 export default DeductionsInfo;
-

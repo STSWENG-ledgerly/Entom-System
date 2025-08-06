@@ -245,6 +245,7 @@ app.post('/editPayment/:payment_id', async (req, res) => {
       }
 
     };
+
     // perform the update
     const updated = await Payroll.findByIdAndUpdate(
       req.params.payment_id,
@@ -254,6 +255,7 @@ app.post('/editPayment/:payment_id', async (req, res) => {
     if (!updated) {
       return res.status(404).json({ error: 'Payroll not found' });
     }
+
     res.json({ message: 'Payment updated', updated });
   } catch (err) {
     console.error("❌ EditPayment Error:", err);
@@ -319,6 +321,7 @@ app.post('/addPayment', async (req, res) => {
 app.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+
     const admin = await Account.findOne({
       username,
       role: 'Administrator',
@@ -501,7 +504,9 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
   }
 });
 
+
 app.post('/addEmployee', async (req, res) => {
+
   try {
     const {
       employee_id,
@@ -524,7 +529,6 @@ app.post('/addEmployee', async (req, res) => {
       email,
       rbacProfile
     } = req.body;
-
     // validate company _id
     if (!mongoose.Types.ObjectId.isValid(company)) {
       return res.status(400).json({ error: 'Invalid company ID' });

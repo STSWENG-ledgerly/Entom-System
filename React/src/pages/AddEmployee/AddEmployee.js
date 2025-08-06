@@ -1,6 +1,4 @@
 
-
-import React, { useState, useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../ConfigContext';
@@ -8,7 +6,6 @@ import global from '../../global.module.css';
 import Header from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
 import styles from './AddEmployee.module.css';
-
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -145,6 +142,5 @@ const AddEmployee = () => {
     </div>
   );
 };
-
 
 export default AddEmployee;

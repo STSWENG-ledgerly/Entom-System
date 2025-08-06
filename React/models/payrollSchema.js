@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 // Employee Schema
 const employeeSchema = new Schema({
-  employee_id: { type: String, required: true },
+  employee_id: { type: String, required: true, unique: true },
   company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
   fname: { type: String, required: true },
@@ -25,29 +25,26 @@ const employeeSchema = new Schema({
   rbacProfile: { type: Number, required: true },
 }, { timestamps: true });
 
-employeeSchema.index(
-  { company: 1, employee_id: 1 },
-  { unique: true }
-);
+// Attendance Schema
+const attendanceSchema = new Schema({
+  employee: { type: Schema.Types.ObjectId, ref: 'Employee', required: true },
+  date: { type: Date, required: true },
+  hoursWorked: { type: Number, required: true },
+  overtimeHours: { type: Number, default: 0 },
+  approvedBy: { type: Schema.Types.ObjectId, ref: 'Account' }
+}, { timestamps: true });
 
 // Payroll Schema
 const payrollSchema = new Schema({
   employee: { type: Schema.Types.ObjectId, ref: 'Employee', required: true },
   payDate: { type: Date, required: true },
   payrollTimeframe: { type: String, enum: ['Weekly', 'Bi-Monthly', 'Monthly'], required: true },
-  overtimeDetails: {
-    hours: { type: Number, default: 0 },
-    rate: { type: Number, default: 0 },
-    total: { type: Number, default: 0 } // for clarity
-  },
   allowances: {
-    overtimePay: { type: Number, default: 0 },
     mealAllowance: { type: Number, default: 0 },
     birthdayBonus: { type: Number, default: 0 },
     incentives: { type: Number, default: 0 },
     otherAdditions: { type: Number, default: 0 }
   },
-  
   grossSalary: { type: Number, required: true },
   deductions: {
     tax: { type: Number, default: 0 },
@@ -56,8 +53,7 @@ const payrollSchema = new Schema({
     pagIbig: { type: Number, default: 0 },
     healthCard: { type: Number, default: 0 },
     cashAdvance: { type: Number, default: 0 },
-    lateHours: { type: Number, default: 0 },
-    absentDays:     { type: Number, default: 0 },
+    lateAbsent: { type: Number, default: 0 },
     otherDeductions: { type: Number, default: 0 }
   },
   totalDeductions: { type: Number, required: true },
@@ -84,24 +80,30 @@ const companySchema = new Schema({
   name: { type: String, required: true },
   address: { type: String },
   industry: { type: String },
-  overtimeMultiplier: { type: Number, default: 1.25 },    
-  workHoursPerDay: { type: Number, default: 8 },          
-  workingDaysPerMonth: { type: Number, default: 22 },    
   isDeleted: { type: Boolean, default: false }
 });
-
+// Config Schema (for rate settings)
+const configSchema = new Schema({
+  standardRate: { type: Number, default: 0 },
+  holidayRate: { type: Number, default: 0 },
+  weekendRate: { type: Number, default: 0 }
+});
 
 
 
 // Models
 const Employee = mongoose.model('Employee', employeeSchema);
+const Attendance = mongoose.model('Attendance', attendanceSchema);
 const Payroll = mongoose.model('Payroll', payrollSchema);
 const Account = mongoose.model('Account', accountSchema);
 const Company = mongoose.model('Company', companySchema);
+const Config = mongoose.model('Config', configSchema);
 
 module.exports = {
   Employee,
+  Attendance,
   Payroll,
   Account,
   Company,
+  Config
 };
