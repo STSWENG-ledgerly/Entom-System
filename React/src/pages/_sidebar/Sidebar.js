@@ -2,9 +2,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
-
+import { useAuth } from '../../AuthContext';
 const Header = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleMenu = () => {
     navigate('/MainMenu');
@@ -32,8 +33,8 @@ const Header = () => {
     navigate(-1);
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('userValid');
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
