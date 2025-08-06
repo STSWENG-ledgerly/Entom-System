@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './PayrollInfo.module.css';
 
 const checkNumberInput = (e, setState, field) => {
@@ -117,3 +118,4 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
 );
 
 export default PayrollInfo;
+
