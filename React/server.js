@@ -41,6 +41,16 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
+async function checkPassword(sentPassword, passwordFromDB) {
+    try {
+        return await bcrypt.compare(sentPassword, passwordFromDB);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+}
+
+
 app.get('/', (req, res) => {
   res.json("from backend side");
 });
@@ -74,7 +84,7 @@ app.get('/employee', async (req, res) => {
         }
       ]
     }).lean();
-    
+   
     res.json(employees);
   } catch (err) {
     console.error("Error in GET /employee:", err);

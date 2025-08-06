@@ -11,7 +11,13 @@ ${INVALID_PASSWORD}   wrongpass
 
 *** Keywords ***
 Open Login Page
-    Open Browser    ${URL}    ${BROWSER}
+    ${options}=    Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
+    Call Method    ${options}    add_argument    --headless
+    Call Method    ${options}    add_argument    --no-sandbox
+    Call Method    ${options}    add_argument    --disable-dev-shm-usage
+    Call Method    ${options}    add_argument    --disable-gpu
+    Create WebDriver    Chrome    options=${options}
+    Go To    ${URL}
     Maximize Browser Window
 
 Login With Valid Credentials

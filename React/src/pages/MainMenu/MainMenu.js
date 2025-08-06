@@ -54,7 +54,7 @@ const MainMenu = () => {
                 </div>
                 <span>Edit Employee</span>
               </Link>
-              <Link to="/" onClick={handleExit}>
+              <Link to="/" onClick={handleExit} id="exit-button">
                 <div className={styles.imageSwapContainer}>
                   <img src='/images/exit-greyed.png' alt='set rates grayed' className={styles.imageGray} />
                   <img src='/images/exit.png' alt='set rates hovered' className={styles.imageColor} />
