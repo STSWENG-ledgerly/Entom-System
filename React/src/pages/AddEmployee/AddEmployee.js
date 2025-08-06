@@ -82,7 +82,7 @@ const AddEmployee = () => {
 
       if (response.ok) {
         alert("✅ Employee has been added!");
-        navigate('/employeeList'); // or wherever you want to go
+        navigate('/MainMenu');
       } else {
         alert(`❌ Failed to add employee: ${result.error}`);
       }

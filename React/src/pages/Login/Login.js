@@ -14,6 +14,7 @@ const Login = () => {
   useEffect(() => {
     sessionStorage.removeItem('userValid');
     sessionStorage.removeItem('company');
+    sessionStorage.removeItem('companyName');
     sessionStorage.removeItem('username');
   }, []);
 
@@ -29,7 +30,8 @@ const Login = () => {
       if (res.status == 200) {
         const { username, company } = await res.json();
         sessionStorage.setItem('userValid', 'true');
-        sessionStorage.setItem('company', company);
+        sessionStorage.setItem('company', company.id);
+        sessionStorage.setItem('companyName', company.name);
         sessionStorage.setItem('username', userName);
 
         setUsername(username);
