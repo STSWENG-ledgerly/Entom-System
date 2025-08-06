@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './ResultsInfo.module.css';
 
 const ResultsInfo = ({ results }) => {
@@ -20,3 +21,4 @@ const ResultsInfo = ({ results }) => {
 };
 
 export default ResultsInfo;
+
