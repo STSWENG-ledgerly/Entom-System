@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 
 const {
   Employee,
+  Attendance,
   Payroll,
   Account,
   Company,
@@ -102,7 +103,6 @@ async function populateDatabase() {
 
       // 2) random allowances
       const allowances = {
-        overtimePay: randomInt(100, 500),
         mealAllowance: randomInt(100, 500),
         birthdayBonus: randomInt(0, 1000),
         incentives: randomInt(0, 2000),
@@ -122,8 +122,7 @@ async function populateDatabase() {
         pagIbig: randomInt(100, 500),
         healthCard: randomInt(50, 200),
         cashAdvance: randomInt(0, 1000),
-        lateHours: randomInt(0, 300),
-        absentDays: randomInt(0, 300),
+        lateAbsent: randomInt(0, 300),
         otherDeductions: randomInt(0, 300)
       };
       const totalDeductions = Object.values(deductions).reduce((a, b) => a + b, 0);
@@ -158,73 +157,12 @@ async function populateDatabase() {
       }
   }
 
-  // run it
-  seedPayroll().catch(console.error);
-      await Account.create({
-        username: "admin",
-        passwordHash: "123", // Ideally, this should be hashed
-        role: "Administrator",
-         company: company._id,
-        isDeleted: false
-      });
-      console.log(`Database: Inserted 1 admin account.`);
+      await seedPayroll().catch(console.error);
 
       console.log('Database: Population function completed');
     } catch (error) {
       console.error('Database: Error populating database', error);
     }
 }
-    // --- Create second company ---
-const secondCompany = await Company.create({
-  name: "OpenAI",
-  address: "Silicon Valley",
-  industry: "Technology"
-});
-console.log("Database: Inserted company TechNova Solutions.");
-
-
-// --- Create employee for second company ---
-const newEmployee = await Employee.create({
-  employee_id: "110",
-  company: secondCompany._id,
-  status: "Active",
-  fname: "Alice",
-  middleName: "B",
-  lname: "Tan",
-  department: "Engineering",
-  position: "QA Analyst",
-  designation: "Software QA",
-  basicSalary: 70000,
-  overtimeRate: 200,
-  bankAccount: {
-    bankName: "BPI",
-    accountNumber: "0000000210",
-    branch: "Makati"
-  },
-  dateHired: new Date("2022-06-15"),
-  phone: "09181234567",
-  email: "alice.tan@technova.com",
-  rbacProfile: 1
-});
-console.log("Database: Inserted employee Alice Tan.");
-
-
-  // --- Create admin account for second company ---
-  await Account.create({
-    username: "admin2",
-    passwordHash: "123", // Hashing recommended in production
-    role: "Administrator",
-    company: secondCompany._id,
-    isDeleted: false
-  });
-  console.log("Database: Inserted 1 admin account for OpenAI.");
-  }
 
 module.exports = populateDatabase;
-
-
-  if (require.main === module) {
-    const connectToMongo = require('../src/scripts/conn');
-    connectToMongo().then(() => populateDatabase());
-  }
-

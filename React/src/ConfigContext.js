@@ -119,4 +119,3 @@ export const ConfigProvider = ({ children }) => {
     </ConfigContext.Provider>
   );
 };
-

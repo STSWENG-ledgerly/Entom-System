@@ -250,6 +250,7 @@ app.post('/editPayment/:payment_id', async (req, res) => {
         isApproved
       }
     };
+
     const updated = await Payroll.findByIdAndUpdate(
       req.params.payment_id,
       update,
@@ -258,6 +259,7 @@ app.post('/editPayment/:payment_id', async (req, res) => {
     if (!updated) {
       return res.status(404).json({ error: 'Payroll not found' });
     }
+
     res.json({ message: 'Payment updated', updated });
   } catch (err) {
     console.error("❌ EditPayment Error:", err);
@@ -319,6 +321,7 @@ app.post('/addPayment', async (req, res) => {
 app.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+
     const admin = await Account.findOne({
       username,
       role: 'Administrator',

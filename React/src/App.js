@@ -13,6 +13,9 @@ import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
 import AccountRegistration from './pages/AccountRegistration/AccountRegistration.js';
 import ProtectedRoutes from './ProtectedRoutes'
 
+
+
+
 function App() {
   // setup all available/possible links within the app
   return (
@@ -21,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/AccountRegistration" element={<AccountRegistration />} />
+
           <Route element={<ProtectedRoutes />}>
             <Route path="/MainMenu" element={<MainMenu />} />
             <Route path="/SetDefaults" element={<SetDefaults />} />
@@ -31,6 +35,7 @@ function App() {
             <Route path="/AddEmployee" element={<AddEmployee />} />
             <Route path="/EditEmployee" element={<EditEmployee />} />
             <Route path="/EditEmployee/:id" element={<EditEmployeeForm />} />
+
           </Route>
 
         </Routes>
