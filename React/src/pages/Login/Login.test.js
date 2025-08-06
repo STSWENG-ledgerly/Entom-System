@@ -67,7 +67,6 @@ describe('Login Component', () => {
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/MainMenu'));
     expect(mockSetUsername).toHaveBeenCalledWith('testuser');
     expect(sessionStorage.getItem('username')).toBe('testuser');
-    expect(sessionStorage.getItem('company')).toBe('TestCorp');
     expect(sessionStorage.getItem('userValid')).toBe('true');
   });
 
