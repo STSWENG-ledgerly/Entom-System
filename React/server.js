@@ -20,7 +20,6 @@ async function database() {
   } catch (error) {
     console.error('Server: Failed to start server', error);
   }
-
 }
 
 async function hashPassword(password){
@@ -42,27 +41,40 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
-
-
 app.get('/', (req, res) => {
   res.json("from backend side");
 });
 
+// FIXED: Updated to use companyID directly
+// FIXED: Updated to use companyID directly and handle ObjectId format
 app.get('/employee', async (req, res) => {
-  const { company: companyName } = req.query; 
-  if (!companyName) {
-    return res.status(400).json({ error: 'Company name is required' });
+  const { company: companyId } = req.query; 
+
+  
+  if (!companyId) {
+    return res.status(400).json({ error: 'Company ID is required' });
   }
 
-  try {
- 
-    const company = await Company.findOne({ name: companyName }).lean();
-    if (!company) {
-      
-      return res.json([]);
-    }
 
-    const employees = await Employee.find({ company: company._id });
+  try {
+    // Try both string and ObjectId formats to handle any inconsistencies
+    const employees = await Employee.find({ 
+      $and: [
+        {
+          $or: [
+            { company: companyId },  // String format
+            { company: new mongoose.Types.ObjectId(companyId) }  // ObjectId format
+          ]
+        },
+        { 
+          $or: [
+            { isDeleted: false },
+            { isDeleted: { $exists: false } }
+          ]
+        }
+      ]
+    }).lean();
+    
     res.json(employees);
   } catch (err) {
     console.error("Error in GET /employee:", err);
@@ -70,7 +82,6 @@ app.get('/employee', async (req, res) => {
   }
 });
 
-// GET all payrolls for a given employee_id (your front-end is calling /payments/111)
 app.get('/payments/:employee_id', async (req, res) => {
   try {
     const { company } = req.query;
@@ -87,14 +98,11 @@ app.get('/payments/:employee_id', async (req, res) => {
       return res.status(404).json({ error: 'Employee not found' });
     }
 
-    // 2) find all non-deleted payrolls for that employee
     const payments = await Payroll.find({
       employee: employee._id,
       isDeleted: false
-    })
-      .lean();
+    }).lean();
 
-    // 3) format the date for each
     payments.forEach(p => {
       p.formatted_date = p.payDate.toISOString().slice(0, 10);
     });
@@ -115,7 +123,6 @@ app.get('/getPayment/:payment_id', async (req, res) => {
       return res.status(404).json({ error: 'Payment not found' });
     }
 
-    // Ensure the payment belongs to an employee in the same company
     const employeeBelongs = await Employee.exists({
       _id: payment.employee,
       company: company
@@ -172,7 +179,6 @@ app.post("/getEmail", async (req, res) => {
   }
 });
 
-
 app.post('/savePassword', async (req, res) => {
   try {
     const { password } = req.body;
@@ -200,7 +206,6 @@ app.post('/editPayment/:payment_id', async (req, res) => {
     console.log('⛔ payload.payrollInfo:', req.body.payrollInfo);
     console.log('⛔ payload.deductions: ', req.body.deductions);
 
-    // validate & parse the date
     const parsed = new Date(payDate);
     if (isNaN(parsed)) {
       return res.status(400).json({ error: 'Invalid payDate' });
@@ -216,7 +221,6 @@ app.post('/editPayment/:payment_id', async (req, res) => {
           incentives: payrollInfo.incentive,
           otherAdditions: payrollInfo.otherPayrollInfo
         },
-
         grossSalary,
         deductions: {
           tax: 0,
@@ -235,10 +239,8 @@ app.post('/editPayment/:payment_id', async (req, res) => {
         paymentMode,
         isApproved
       }
-
     };
 
-    // perform the update
     const updated = await Payroll.findByIdAndUpdate(
       req.params.payment_id,
       update,
@@ -275,7 +277,6 @@ app.post('/addPayment', async (req, res) => {
       return res.status(400).json({ error: `Employee ${employee} not found in company ${company}` });
     }
 
-    // Duplication check
     const exists = await Payroll.findOne({ payslipId });
     if (exists) {
       return res.status(400).json({ error: "Duplicate payslipId. Payment already exists." });
@@ -307,9 +308,6 @@ app.post('/addPayment', async (req, res) => {
   }
 });
 
-
-// Added new Routes
-
 app.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -318,19 +316,17 @@ app.post('/admin/login', async (req, res) => {
       username,
       role: 'Administrator',
       isDeleted: false
-    }).populate('company'); // Use populate to also fetch the linked company's details
+    }).populate('company');
 
     if (!admin) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
    
-    // Hashing
     const isMatch = await bcrypt.compare(password, admin.passwordHash);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Send the company's name, not its _id
     res.json({ username: admin.username, company: {name: admin.company.name, id: admin.company._id}});
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
@@ -346,24 +342,23 @@ app.post('/changePassword', async (req, res) => {
 
     if(!comparePass){
       return res.status(401).send("Wrong old password");
-    } // Wrong old pass
+    }
 
     if( oldPass == newPass ){
       return res.status(402).send("Same password");
-    } // Same password
+    }
 
     const hashedPassword = await hashPassword(newPass);
-
     account.passwordHash = hashedPassword;
-
     await account.save();
     return res.status(200).send("Success");
   } catch (error) {
-    console.error("Error in POST /checkPassword:", error);
+    console.error("Error in POST /changePassword:", error);
     return res.status(500).send("Server Error");
   }
 });
 
+// FIXED: Remove duplicate routes - keep only one
 app.post('/admin/register', async (req, res) => {
   try {
     const { username, password, company } = req.body;
@@ -371,18 +366,17 @@ app.post('/admin/register', async (req, res) => {
       return res.status(400).json({ error: 'username, password and company are all required' });
     }
 
-    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
     const userExists = await Account.findOne({
       username: { $regex: `^${username}$`, $options: 'i' }
     });
     if (userExists) {
-      return res.sendStatus(409); // Conflict
+      return res.sendStatus(409);
     }
 
     const hashedPassword = await hashPassword(password);
     const companyDoc = await Company
       .findOne({ name: company })
-      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
+      .collation({ locale: 'en', strength: 2 })
       .select('_id');
     const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
 
@@ -398,84 +392,13 @@ app.post('/admin/register', async (req, res) => {
   }
 });
 
-app.post('/admin/register', async (req, res) => {
-  try {
-    const { username, password, company } = req.body;
-    if (!username || !password || !company) {
-      return res.status(400).json({ error: 'username, password and company are all required' });
-    }
-
-    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
-    const userExists = await Account.findOne({
-      username: { $regex: `^${username}$`, $options: 'i' }
-    });
-    if (userExists) {
-      return res.sendStatus(409); // Conflict
-    }
-
-    const hashedPassword = await hashPassword(password);
-    const companyDoc = await Company
-      .findOne({ name: company })
-      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
-      .select('_id');
-    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
-
-    await account.save();
-
-    return res.status(201).json({
-      username: account.username,
-      company: account.company
-    });
-
-  } catch (err) {
-    console.error("Error in POST /admin/register:", err);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-app.post('/admin/register', async (req, res) => {
-  try {
-    const { username, password, company } = req.body;
-    if (!username || !password || !company) {
-      return res.status(400).json({ error: 'username, password and company are all required' });
-    }
-
-    // case‑insensitive lookup (beware of regex‑special chars in username – consider collation in production)
-    const userExists = await Account.findOne({
-      username: { $regex: `^${username}$`, $options: 'i' }
-    });
-    if (userExists) {
-      return res.sendStatus(409); // Conflict
-    }
-
-    const hashedPassword = await hashPassword(password);
-    const companyDoc = await Company
-      .findOne({ name: company })
-      .collation({ locale: 'en', strength: 2 })   // strength 2 = case‑ and diacritic‑insensitive
-      .select('_id');
-    const account = new Account({ username: username, passwordHash: hashedPassword, company: companyDoc });
-
-    await account.save();
-
-    return res.status(201).json({
-      username: account.username,
-      company: account.company
-    });
-
-  } catch (err) {
-    console.error("Error in POST /admin/register:", err);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-
+// FIXED: Remove duplicate - keep only one
 app.get('/getEmployeeDetails/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
     let employee = null;
 
-    // only call findById if 'id' is a 24-char hex string
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
       employee = await Employee.findById(id).lean();
     }
@@ -496,9 +419,7 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
   }
 });
 
-
 app.post('/addEmployee', async (req, res) => {
-
   try {
     const {
       employee_id,
@@ -521,12 +442,12 @@ app.post('/addEmployee', async (req, res) => {
       email,
       rbacProfile
     } = req.body;
-    // validate company _id
+
     if (!mongoose.Types.ObjectId.isValid(company)) {
       return res.status(400).json({ error: 'Invalid company ID' });
     }
 
-    const workingDaysInMonth = 22;      // adjust to your policy
+    const workingDaysInMonth = 22;
     const workHoursPerDay = 8;
     const overtimeMultiplier = 1.25;
 
@@ -562,19 +483,6 @@ app.post('/addEmployee', async (req, res) => {
   } catch (err) {
     console.error('Error in POST /addEmployee:', err);
     res.status(500).json({ error: err.message });
-  }
-});
-// app.listen(SERVER_PORT, () => {
-//   console.log(`Listening on port ${SERVER_PORT}`);
-// });
-//
-app.get('/getEmployeeDetails/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const employee = await Employee.findById(id);
-    res.json(employee);
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching employee details' });
   }
 });
 
