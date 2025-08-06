@@ -338,13 +338,18 @@ app.post('/admin/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Send the company's name, not its _id
-    res.json({ username: admin.username, company: admin.company.name });
+    // Send both company name and _id
+    res.json({ 
+      username: admin.username, 
+      company: { 
+        name: admin.company.name, 
+        id: admin.company._id 
+      } 
+    });
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
     return res.status(500).json({ error: 'Internal server error' });
-  }
-});
+  }});
 
 app.post('/changePassword', async (req, res) => {
   try {

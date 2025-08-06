@@ -11,6 +11,7 @@ import AddEmployee from './pages/AddEmployee/AddEmployee';
 import EditEmployee from './pages/EditEmployee/EditEmployee';
 import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
 import AccountRegistration from './pages/AccountRegistration/AccountRegistration.js';
+import EditCompanyRate from './pages/EditCompanyRate/EditCompanyRate.js'; 
 import ProtectedRoutes from './ProtectedRoutes'
 
 
@@ -35,7 +36,7 @@ function App() {
             <Route path="/AddEmployee" element={<AddEmployee />} />
             <Route path="/EditEmployee" element={<EditEmployee />} />
             <Route path="/EditEmployee/:id" element={<EditEmployeeForm />} />
-
+            <Route path="/EditCompanyRate" element={<EditCompanyRate />} />
           </Route>
 
         </Routes>
