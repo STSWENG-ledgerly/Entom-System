@@ -8,7 +8,7 @@ const Login = () => {
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [errMessage, setErrMessage] = useState('');
-  const { setUsername } = useContext(ConfigContext);
+  const { setUsername, setCompany } = useContext(ConfigContext);
   const navigate = useNavigate();
 
   // useEffect(() => {

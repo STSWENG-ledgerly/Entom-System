@@ -55,7 +55,7 @@
     "express": "^4.21.2",
     "jest-fetch-mock": "^3.0.3",
     "jspdf": "^2.5.2",
-    "mongoose": "^8.16.5",
+    "mongoose": "^8.17.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.11.5",
     "nodemon": "^3.1.10"
