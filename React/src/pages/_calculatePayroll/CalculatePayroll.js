@@ -1,16 +1,63 @@
-export const calculatePayroll = (payrollInfo, deductions, config) => {
-    const { ot, salaryIncrease, mealAllow, bdayBonus, incentive, otherPayrollInfo } = payrollInfo;
-    const { sss, philhealth, pagibig, cashAdvance, healthCard, absences, otherDeductions } = deductions;
-    const payroll_total = parseFloat(ot * config.rate) + parseFloat(salaryIncrease) + parseFloat(mealAllow) +
-        parseFloat(bdayBonus) + parseFloat(incentive) + parseFloat(otherPayrollInfo)
-        + parseFloat(config.basic);
-    const deductions_total = parseFloat(sss) + parseFloat(philhealth) + parseFloat(pagibig) + parseFloat(cashAdvance) + parseFloat(healthCard) +
-        parseFloat(absences) + parseFloat(otherDeductions);
-    const total = payroll_total - deductions_total;
+export const calculatePayroll = (payrollInfo = {}, deductions = {}, config = {}) => {
+  const toNumber = (val) => parseFloat(val) || 0;
 
-    return {
-        payroll: payroll_total,
-        deductions: deductions_total,
-        total: total,
-    };
+  // Destructure config defaults
+  const basic           = toNumber(config.basic);
+  const workingDays     = toNumber(config.workingDaysPerMonth) || 22;
+  const workHoursPerDay = toNumber(config.workHoursPerDay)     || 8;
+  const otMultiplier    = toNumber(config.overtimeMultiplier) || 1.25;
+
+  // Derived rates
+  const hourlyRate   = basic / (workingDays * workHoursPerDay);
+  const dailyRate    = basic / workingDays;
+  const overtimeRate = hourlyRate * otMultiplier;
+
+  // Overtime
+  const otHours = toNumber(payrollInfo.ot);
+  const otPay   = otHours * overtimeRate;
+
+  // Allowances/Additions
+  const meal     = toNumber(payrollInfo.mealAllow);
+  const bday     = toNumber(payrollInfo.bdayBonus);
+  const incent   = toNumber(payrollInfo.incentive);
+  const otherAdd = toNumber(payrollInfo.otherPayrollInfo);
+
+  const payroll_total = basic + otPay + meal + bday + incent + otherAdd;
+
+  // Raw deductions
+  const tax           = toNumber(deductions.tax);
+  const sss           = toNumber(deductions.sss);
+  const philHealth    = toNumber(deductions.philHealth);
+  const pagIbig       = toNumber(deductions.pagIbig);
+  const cashAdvance   = toNumber(deductions.cashAdvance);
+  const healthCard    = toNumber(deductions.healthCard);
+  const lateHours     = toNumber(deductions.lateHours);
+  const absentDays    = toNumber(deductions.absentDays);
+  const otherDeducts  = toNumber(deductions.otherDeductions);
+
+  // Money‐amount deductions
+  const lateDeduction   = lateHours  * hourlyRate;
+  const absentDeduction = absentDays * dailyRate;
+
+  const deductions_total =
+    tax + sss + philHealth + pagIbig +
+    cashAdvance + healthCard +
+    lateDeduction + absentDeduction +
+    otherDeducts;
+
+  const total = payroll_total - deductions_total;
+
+  return {
+    basic,                             
+    additions: payroll_total - basic,   
+    payroll: payroll_total,
+    deductions: deductions_total,
+    total,
+    overtimeDetails: { hours: otHours, rate: overtimeRate, total: otPay },
+    hourlyRate,                       
+    dailyRate,                     
+    lateDeduction,                   
+    absentDeduction                 
+  };
 };
+
