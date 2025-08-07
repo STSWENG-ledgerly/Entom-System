@@ -676,9 +676,17 @@ app.post('/updateCompanyRates', async (req, res) => {
 
 
 
-app.listen(port, async function() {
+/* app.listen(port, async function() {
   await database();
   console.log(`Server: Running on http://localhost:${port}`);
-});
+}); */
 
 module.exports = app;
+
+if (process.env.NODE_ENV !== 'production') {
+  const port = process.env.PORT || 4000;
+  app.listen(port, async function() {
+    await database();
+    console.log(`Server: Running on http://localhost:${port}`);
+  });
+}
