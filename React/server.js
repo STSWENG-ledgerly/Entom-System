@@ -84,7 +84,7 @@ app.get('/employee', async (req, res) => {
         }
       ]
     }).lean();
-   
+  
     res.json(employees);
   } catch (err) {
     console.error("Error in GET /employee:", err);
@@ -331,12 +331,11 @@ app.post('/admin/login', async (req, res) => {
     if (!admin) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-   
+
     const isMatch = await bcrypt.compare(password, admin.passwordHash);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
     res.json({ username: admin.username, company: {name: admin.company.name, id: admin.company._id}});
   } catch (err) {
     console.error("Error in POST /admin/login:", err);

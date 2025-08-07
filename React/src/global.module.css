@@ -15,12 +15,13 @@
     width: 100vw;       
     min-height: 100vh;      
     z-index: -2;
-
+    overflow-y: auto;
 }
 body {
   margin: 0;
   overflow-x: hidden;
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
+  overflow-y: auto;
 }
 .title {
     font-family: 'JetBrains Mono';
