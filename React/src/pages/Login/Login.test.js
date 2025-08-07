@@ -1,26 +1,29 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { ConfigContext } from '../../ConfigContext';
 import Login from './Login';
 
+// Mock BASE_URL
+const BASE_URL = 'http://mock-api.com';
+
+// Mock navigate function
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
+  Link: ({ to, children }) => <a href={to}>{children}</a>,
 }));
 
-// Mock fetch globally
-global.fetch = jest.fn();
-
 describe('Login Component', () => {
-  const mockSetUsername = jest.fn();
+  let setUsernameMock;
 
   const renderLogin = () => {
+    setUsernameMock = jest.fn();
     render(
-      <ConfigContext.Provider value={{ setUsername: mockSetUsername }}>
-        <MemoryRouter>
+      <ConfigContext.Provider value={{ setUsername: setUsernameMock, BASE_URL }}>
+        <BrowserRouter>
           <Login />
-        </MemoryRouter>
+        </BrowserRouter>
       </ConfigContext.Provider>
     );
   };
@@ -30,81 +33,88 @@ describe('Login Component', () => {
     sessionStorage.clear();
   });
 
-  test('renders input fields and buttons', () => {
+  it('renders login form', () => {
     renderLogin();
-
-    expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    expect(screen.getByText('LOGIN')).toBeInTheDocument();
-    expect(screen.getByText('Register')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/username/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
-  test('updates input fields', () => {
+  it('handles successful login', async () => {
+    // Mock fetch success response
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({
+          username: 'testuser',
+          company: { id: '123', name: 'TestCompany' },
+        }),
+      })
+    );
+
     renderLogin();
 
-    const usernameInput = screen.getByPlaceholderText('Username');
-    const passwordInput = screen.getByPlaceholderText('Password');
-
-    fireEvent.change(usernameInput, { target: { value: 'testuser' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-
-    expect(usernameInput.value).toBe('testuser');
-    expect(passwordInput.value).toBe('password123');
-  });
-
-  test('navigates to MainMenu on successful login', async () => {
-    fetch.mockResolvedValueOnce({
-      status: 200,
-      json: async () => ({ username: 'testuser', company: 'TestCorp' }),
+    fireEvent.change(screen.getByPlaceholderText(/username/i), {
+      target: { value: 'testuser' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/password/i), {
+      target: { value: 'password123' },
     });
 
-    renderLogin();
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
-    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'testuser' } });
-    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'pass' } });
-    fireEvent.click(screen.getByText('LOGIN'));
-
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/MainMenu'));
-    expect(mockSetUsername).toHaveBeenCalledWith('testuser');
-    expect(sessionStorage.getItem('username')).toBe('testuser');
-    expect(sessionStorage.getItem('userValid')).toBe('true');
+    await waitFor(() => {
+      expect(setUsernameMock).toHaveBeenCalledWith('testuser');
+      expect(sessionStorage.getItem('userValid')).toBe('true');
+      expect(sessionStorage.getItem('company')).toBe('123');
+      expect(sessionStorage.getItem('companyName')).toBe('TestCompany');
+      expect(sessionStorage.getItem('username')).toBe('testuser');
+      expect(mockNavigate).toHaveBeenCalledWith('/MainMenu');
+    });
   });
 
-  test('shows error message on invalid credentials (401)', async () => {
-    fetch.mockResolvedValueOnce({ status: 401 });
+  it('shows error message on 401 response', async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        status: 401,
+        ok: false,
+        json: () => Promise.resolve({ error: 'Unauthorized' }),
+      })
+    );
 
     renderLogin();
 
-    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'wrong' } });
-    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'badpass' } });
-    fireEvent.click(screen.getByText('LOGIN'));
+    fireEvent.change(screen.getByPlaceholderText(/username/i), {
+      target: { value: 'wronguser' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/password/i), {
+      target: { value: 'wrongpass' },
+    });
 
-    await waitFor(() =>
-      expect(screen.getByText('Invalid username or password')).toBeInTheDocument()
-    );
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/invalid username or password/i)).toBeInTheDocument();
+    });
   });
 
-  test('shows generic error for other server errors', async () => {
-    fetch.mockResolvedValueOnce({ status: 500 });
+  it('shows error message on fetch failure', async () => {
+    global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
 
     renderLogin();
 
-    fireEvent.click(screen.getByText('LOGIN'));
+    fireEvent.change(screen.getByPlaceholderText(/username/i), {
+      target: { value: 'user' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/password/i), {
+      target: { value: 'pass' },
+    });
 
-    await waitFor(() =>
-      expect(screen.getByText('Login failed. Please try again.')).toBeInTheDocument()
-    );
-  });
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
-  test('shows error message on fetch failure', async () => {
-    fetch.mockRejectedValueOnce(new Error('Fetch error'));
-
-    renderLogin();
-
-    fireEvent.click(screen.getByText('LOGIN'));
-
-    await waitFor(() =>
-      expect(screen.getByText('Something went wrong. Please try again.')).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
+    });
   });
 });

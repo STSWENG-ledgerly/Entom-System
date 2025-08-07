@@ -100,6 +100,7 @@ const configSchema = new Schema({
 
 
 
+
 // Models
 const Employee = mongoose.model('Employee', employeeSchema);
 const Payroll = mongoose.model('Payroll', payrollSchema);

@@ -23,6 +23,7 @@ app.use(cors({
       /^https:\/\/.*\.onrender\.com$/, 
       /^https:\/\/.*\.netlify\.app$/,
       'https://ledgerly-ochre.vercel.app'
+
     ];
     
     const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
@@ -426,7 +427,6 @@ app.get('/api/verify-auth', verifyToken, (req, res) => {
     } 
   });
 });
-
 
 // Logout endpoint
 app.post('/api/logout', (req, res) => {

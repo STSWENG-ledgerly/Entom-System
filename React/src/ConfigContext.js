@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-export const BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4000';
+export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 // Context setup
 export const ConfigContext = createContext();
