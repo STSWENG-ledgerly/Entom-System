@@ -24,6 +24,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>SSS:</label>
             <input
+                id="sss"
                 type="number"
                 value={deductions.sss ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "sss")}
@@ -33,6 +34,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>philHealth:</label>
             <input
+                id="philhealth"
                 type="number"
                 value={deductions.philHealth ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "philHealth")}
@@ -42,6 +44,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>PAG-IBIG:</label>
             <input
+id="pagibig"
                 type="number"
                 value={deductions.pagIbig ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "pagIbig")}
@@ -51,6 +54,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>Cash Advance:</label>
             <input
+id="cashAdvance"
                 type="number"
                 value={deductions.cashAdvance ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "cashAdvance")}
@@ -60,6 +64,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>Health Card:</label>
             <input
+id="healthCard"
                 type="number"
                 value={deductions.healthCard ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "healthCard")}
@@ -69,6 +74,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>Late (in Hours):</label>
             <input
+id="lateHours"
                 type="number"
                 value={deductions.lateHours ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "lateHours")}
@@ -78,6 +84,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>Absences (per Day):</label>
             <input
+id="absentDays"
                 type="number"
                 value={deductions.absentDays ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "absentDays")}
@@ -87,6 +94,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
         <div className={styles.formGroup}>
             <label>Others:</label>
             <input
+id="otherDeductions"
                 type="number"
                 value={deductions.otherDeductions ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "otherDeductions")}
@@ -97,3 +105,6 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
 );
 
 export default DeductionsInfo;
+
+
+    

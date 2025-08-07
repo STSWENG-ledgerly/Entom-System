@@ -60,3 +60,4 @@ export const calculatePayroll = (payrollInfo = {}, deductions = {}, config = {})
     absentDeduction                 
   };
 };
+
