@@ -34,7 +34,7 @@ app.use(cors({
       /^http:\/\/localhost:\d+$/,
       /^https:\/\/.*\.vercel\.app$/, 
       /^https:\/\/.*\.onrender\.com$/, 
-      /^https:\/\/.*\.netlify\.app$/,
+      /^https:\/\/.*\.netlify\.app$/
     ];
     
     const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
@@ -470,7 +470,6 @@ app.get('/api/verify-auth', verifyToken, (req, res) => {
     } 
   });
 });
-
 
 // Logout endpoint
 app.post('/api/logout', (req, res) => {

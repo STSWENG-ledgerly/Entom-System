@@ -1,50 +1,69 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Header from './Sidebar'; // Assuming the filename is Sidebar.js
+import Header from './Sidebar';
 
-// Mock useNavigate
+// Mocks
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
+  useNavigate: () => mockNavigate
 }));
 
-beforeEach(() => {
-  mockNavigate.mockClear();
-  sessionStorage.clear();
-  sessionStorage.setItem('userValid', 'true');
-});
+const mockLogout = jest.fn(() => Promise.resolve());
+jest.mock('../../AuthContext', () => ({
+  useAuth: () => ({
+    logout: mockLogout
+  })
+}));
 
-test('renders all navigation buttons and triggers navigation', () => {
-  render(
-    <MemoryRouter>
-      <Header />
-    </MemoryRouter>
-  );
+describe('Header (Sidebar) component', () => {
+  beforeEach(() => {
+    mockNavigate.mockClear();
+    mockLogout.mockClear();
+  });
 
-  // Check each button is rendered and simulate click
-  fireEvent.click(screen.getByText('MAIN MENU'));
-  expect(mockNavigate).toHaveBeenCalledWith('/MainMenu');
+  it('navigates correctly on button clicks', () => {
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
 
-  fireEvent.click(screen.getByText('SET DEFAULT RATES'));
-  expect(mockNavigate).toHaveBeenCalledWith('/SetDefaults');
+    fireEvent.click(screen.getByText(/MAIN MENU/i));
+    expect(mockNavigate).toHaveBeenCalledWith('/MainMenu');
 
-  fireEvent.click(screen.getByText('PAYROLL HISTORY'));
-  expect(mockNavigate).toHaveBeenCalledWith('/SearchEmployee/ViewPayrollHistory');
+    fireEvent.click(screen.getByText(/SET DEFAULT RATES/i));
+    expect(mockNavigate).toHaveBeenCalledWith('/SetDefaults');
 
-  fireEvent.click(screen.getByText('CALCULATE PAYROLL'));
-  expect(mockNavigate).toHaveBeenCalledWith('/SearchEmployee/CalculatePayroll');
+    fireEvent.click(screen.getByText(/PAYROLL HISTORY/i));
+    expect(mockNavigate).toHaveBeenCalledWith('/SearchEmployee/ViewPayrollHistory');
 
-  fireEvent.click(screen.getByText('ADD EMPLOYEE'));
-  expect(mockNavigate).toHaveBeenCalledWith('/AddEmployee');
+    fireEvent.click(screen.getByText(/CALCULATE PAYROLL/i));
+    expect(mockNavigate).toHaveBeenCalledWith('/SearchEmployee/CalculatePayroll');
 
-  fireEvent.click(screen.getByText('EDIT EMPLOYEE'));
-  expect(mockNavigate).toHaveBeenCalledWith('/EditEmployee');
+    fireEvent.click(screen.getByText(/ADD EMPLOYEE/i));
+    expect(mockNavigate).toHaveBeenCalledWith('/AddEmployee');
 
-  fireEvent.click(screen.getByText('BACK'));
-  expect(mockNavigate).toHaveBeenCalledWith(-1);
+    fireEvent.click(screen.getByText(/EDIT EMPLOYEE/i));
+    expect(mockNavigate).toHaveBeenCalledWith('/EditEmployee');
 
-  fireEvent.click(screen.getByText('EXIT'));
-  expect(mockNavigate).toHaveBeenCalledWith('/');
-  expect(sessionStorage.getItem('userValid')).toBeNull(); // session cleared
+    fireEvent.click(screen.getByText(/BACK/i));
+    expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
+
+  it('calls logout and navigates to root on EXIT click', async () => {
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText(/EXIT/i));
+
+    // Wait for logout to be awaited
+    expect(mockLogout).toHaveBeenCalledTimes(1);
+    // Ensure it navigates to root
+    await Promise.resolve(); // Flush promise
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
 });

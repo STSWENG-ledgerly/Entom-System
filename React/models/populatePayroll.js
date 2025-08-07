@@ -74,7 +74,6 @@ async function populateDatabase() {
         await Config.create(rate);
         console.log("Database: Inserted config for company " + rate.company + '.');
       }
-
       /*
       await Config.create({
         standardRate: 645,

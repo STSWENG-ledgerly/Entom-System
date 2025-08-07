@@ -22,7 +22,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
     <div className={styles.formSection}>
         <span>DEDUCTIONS</span>
         <div className={styles.formGroup}>
-            <label>SSS:</label>
+            <label htmlFor="sss">SSS:</label>
             <input
                 id="sss"
                 type="number"
@@ -32,7 +32,7 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>philHealth:</label>
+            <label htmlFor="philhealth">philHealth:</label>
             <input
                 id="philhealth"
                 type="number"
@@ -42,9 +42,9 @@ const DeductionsInfo = ({ deductions, setDeductions }) => (
             />
         </div>
         <div className={styles.formGroup}>
-            <label>PAG-IBIG:</label>
+            <label htmlFor="pagibig">PAG-IBIG:</label>
             <input
-id="pagibig"
+                id="pagibig"
                 type="number"
                 value={deductions.pagIbig ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "pagIbig")}
@@ -52,9 +52,9 @@ id="pagibig"
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Cash Advance:</label>
+            <label htmlFor="cashAdvance">Cash Advance:</label>
             <input
-id="cashAdvance"
+                id="cashAdvance"
                 type="number"
                 value={deductions.cashAdvance ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "cashAdvance")}
@@ -62,9 +62,9 @@ id="cashAdvance"
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Health Card:</label>
+            <label htmlFor="healthCard">Health Card:</label>
             <input
-id="healthCard"
+                id="healthCard"
                 type="number"
                 value={deductions.healthCard ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "healthCard")}
@@ -72,9 +72,9 @@ id="healthCard"
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Late (in Hours):</label>
+            <label htmlFor="lateHours">Late (in Hours):</label>
             <input
-id="lateHours"
+                id="lateHours"
                 type="number"
                 value={deductions.lateHours ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "lateHours")}
@@ -82,9 +82,9 @@ id="lateHours"
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Absences (per Day):</label>
+            <label htmlFor="absentDays">Absences (per Day):</label>
             <input
-id="absentDays"
+                id="absentDays"
                 type="number"
                 value={deductions.absentDays ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "absentDays")}
@@ -92,9 +92,9 @@ id="absentDays"
             />
         </div>
         <div className={styles.formGroup}>
-            <label>Others:</label>
+            <label htmlFor="otherDeductions">Others:</label>
             <input
-id="otherDeductions"
+                id="otherDeductions"
                 type="number"
                 value={deductions.otherDeductions ?? 0}
                 onChange={(e) => checkNumberInput(e, setDeductions, "otherDeductions")}
