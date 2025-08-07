@@ -11,6 +11,7 @@ import AddEmployee from './pages/AddEmployee/AddEmployee';
 import EditEmployee from './pages/EditEmployee/EditEmployee';
 import EditEmployeeForm from './pages/EditEmployee/EditEmployeeForm.js';
 import AccountRegistration from './pages/AccountRegistration/AccountRegistration.js';
+import LandingPage from './pages/LandingPage/LandingPage.js';
 import ProtectedRoutes from './ProtectedRoutes'
 
 
@@ -22,6 +23,7 @@ function App() {
     <BrowserRouter>
       <ConfigProvider>
         <Routes>
+          <Route path='/LandingPage' element={<LandingPage />} />
           <Route path="/" element={<Login />} />
           <Route path="/AccountRegistration" element={<AccountRegistration />} />
 
