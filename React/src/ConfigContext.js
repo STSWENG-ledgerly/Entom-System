@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import { createContext, useEffect, useState } from 'react';
 export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 // Context setup

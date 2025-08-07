@@ -67,11 +67,13 @@ async function populateDatabase() {
       //======================================================
       
       //========================Config========================
+      /*
       await Config.create({
         standardRate: 645,
         holidayRate: 800,
         weekendRate: 700
       });
+      */
       console.log("Database: Inserted payroll config.");
       //======================================================
 
