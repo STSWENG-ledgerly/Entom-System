@@ -28,15 +28,14 @@ const EditCompanyRate = () => {
         return;
       }
 
-      const response = await fetch(`${BASE_URL}/getCompanyRates?company=${companyId}`); //subject to change depende sa route
+      const response = await fetch(`${BASE_URL}/getCompanyRates?companyID=${companyId}`);
       
       if (response.ok) {
         const rates = await response.json();
-        setStandardRate(rates.standardRate || '');
-        setHolidayRate(rates.holidayRate || '');
-        setWeekendRate(rates.weekendRate || '');
+        setStandardRate(rates.standard || '');
+        setHolidayRate(rates.holiday || '');
+        setWeekendRate(rates.weekend || '');
       } else {
-        // If no rates exist yet, start with empty values
         console.log('No existing rates found, starting with defaults');
       }
     } catch (error) {
@@ -88,8 +87,6 @@ const EditCompanyRate = () => {
 
       if (response.ok) {
         alert("✅ Company rates have been updated successfully!");
-        // Optionally navigate back or stay on page
-        // navigate('/MainMenu');
       } else {
         alert(`❌ Failed to update rates: ${result.error}`);
       }

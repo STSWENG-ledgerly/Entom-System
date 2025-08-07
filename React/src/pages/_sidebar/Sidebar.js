@@ -11,7 +11,7 @@ const Header = () => {
   };
 
   const handleDefa = () => {
-    navigate('/SetDefaults');
+    navigate('/EditCompanyRate');
   };
 
   const handleHist = () => {
@@ -48,7 +48,7 @@ const Header = () => {
 
         <button className={`${styles.iconGroup} ${styles.defaButton}`} onClick={handleDefa}>
           <div className={styles.iconImage}></div>
-          <div className={styles.label}>SET DEFAULT RATES</div>
+          <div className={styles.label}>SET COMPANY RATES</div>
         </button>
 
         <button className={`${styles.iconGroup} ${styles.histButton}`} onClick={handleHist}>

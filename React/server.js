@@ -346,6 +346,7 @@ app.post('/admin/login', async (req, res) => {
         id: admin.company._id 
       } 
     });
+    // console.log(admin.company._id);
   } catch (err) {
     console.error("Error in POST /admin/login:", err);
     return res.status(500).json({ error: 'Internal server error' });
@@ -613,6 +614,70 @@ app.post('/editEmployee/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update employee', details: error.message });
   }
 });
+
+app.get('/getCompanyRates', async (req, res) => {
+  try {
+    const { companyID } = req.query;
+    if (!companyID) {
+      return res
+        .status(400)
+        .json({ error: 'Missing required query parameter `companyID`' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(companyID)) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid `companyID` format' });
+    }
+
+    const config = await Config.findOne({ company: companyID }).lean();
+    if (!config) {
+      console.log("Config not found");
+      return res
+        .status(404)
+        .json({ error: `No rate configuration found for company ${companyID}` });
+    }
+
+    const rates = {
+      standard: config.standardRate,
+      holiday:  config.holidayRate,
+      weekend:  config.weekendRate
+    };
+
+    return res.status(200).json(rates);
+  } catch (err) {
+    console.error('getCompanyRates error:', err);
+    return res
+      .status(500)
+      .json({ error: 'Internal server error in getCompanyRates' });
+  }
+});
+
+app.post('/updateCompanyRates', async (req, res) => {
+  try {
+    // directly pull out the properties your client sent
+    const { company, standardRate, holidayRate, weekendRate } = req.body;
+
+    const config = await Config.findOne({ company });
+    if (!config) {
+      return res.status(404).json({ error: 'Config not found' });
+    }
+
+    // update and save
+    config.standardRate = standardRate;
+    config.holidayRate  = holidayRate;
+    config.weekendRate  = weekendRate;
+    await config.save();
+
+    return res.json({ message: 'Config updated successfully' });
+  } catch (error) {
+    console.error('Error updating config:', error);
+    res.status(500).json({ error: 'Failed to update config', details: error.message });
+  }
+});
+
+
+
+
 
 app.listen(port, async function() {
   await database();

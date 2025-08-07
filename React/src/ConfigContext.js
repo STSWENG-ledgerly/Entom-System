@@ -8,15 +8,25 @@ export const ConfigProvider = ({ children }) => {
   const [config, setConfig] = useState({ rate: '', basic: '' });
   const [passwordHash, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [company, setCompany] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
-    useEffect(() => {
+  useEffect(() => {
     const storedUsername = sessionStorage.getItem('username');
     
     if (storedUsername && !username) {
       setUsername(storedUsername);
     }
   }, [username]);
+
+  useEffect(() => {
+    const storedCompany = sessionStorage.getItem('company');
+    
+    if (storedCompany && !company) {
+      setCompany(storedCompany);
+    }
+  }, [company]);
+
 
 
   useEffect(() => {
@@ -113,7 +123,7 @@ export const ConfigProvider = ({ children }) => {
       selectedEmployeeId, setSelectedEmployeeId,
       userPayroll, setUserPayroll, createUserPayment,
       getAllUserPayments, getUserPayment, saveUserPayment, deleteUserPayment,
-      passwordHash, setPassword, username, setUsername
+      passwordHash, setPassword, username, setUsername, company, setCompany
     }}>
       {children}
     </ConfigContext.Provider>
