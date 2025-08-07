@@ -26,14 +26,14 @@ describe('MainMenu', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Set Default Rates')).toBeInTheDocument();
+    expect(screen.getByText('Set Company Rates')).toBeInTheDocument();
     expect(screen.getByText('Calculate Employee Payroll')).toBeInTheDocument();
     expect(screen.getByText('View Payroll History')).toBeInTheDocument();
     expect(screen.getByText('Add Employee')).toBeInTheDocument();
     expect(screen.getByText('Edit Employee')).toBeInTheDocument();
     expect(screen.getByText('Exit')).toBeInTheDocument();
 
-    expect(screen.getByRole('link', { name: /Set Default Rates/i })).toHaveAttribute('id', 'set-default-button');
+    expect(screen.getByRole('link', { name: /Set Company Rates/i })).toHaveAttribute('id', 'set-default-button');
     expect(screen.getByRole('link', { name: /Calculate Employee Payroll/i })).toHaveAttribute('id', 'calculate-payroll-button');
     expect(screen.getByRole('link', { name: /View Payroll History/i })).toHaveAttribute('id', 'view-payroll-button');
     expect(screen.getByRole('link', { name: /Add Employee/i })).toHaveAttribute('id', 'add-employee-button');

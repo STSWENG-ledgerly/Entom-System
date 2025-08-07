@@ -32,8 +32,8 @@ describe('Header (Sidebar) component', () => {
     fireEvent.click(screen.getByText(/MAIN MENU/i));
     expect(mockNavigate).toHaveBeenCalledWith('/MainMenu');
 
-    fireEvent.click(screen.getByText(/SET DEFAULT RATES/i));
-    expect(mockNavigate).toHaveBeenCalledWith('/SetDefaults');
+    fireEvent.click(screen.getByText(/SET COMPANY RATES/i));
+    expect(mockNavigate).toHaveBeenCalledWith('/EditCompanyRate');
 
     fireEvent.click(screen.getByText(/PAYROLL HISTORY/i));
     expect(mockNavigate).toHaveBeenCalledWith('/SearchEmployee/ViewPayrollHistory');
