@@ -1,8 +1,7 @@
 
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Sidebar.module.css';
 import { useAuth } from '../../AuthContext';
+import styles from './Sidebar.module.css';
 const Header = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -12,7 +11,7 @@ const Header = () => {
   };
 
   const handleDefa = () => {
-    navigate('/EditCompanyRate');
+    navigate('/SetDefaults');
   };
 
   const handleHist = () => {
