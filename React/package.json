@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "react-scripts build",
+    "build": "CI-falsereact-scripts build",
     "test": "react-scripts test --watchAll",
     "test:unit": "npm test -- --watchAll=false",
     "test:robot": "robot -d src/selenium/output src/selenium/",
@@ -33,7 +33,7 @@
     "eject": "react-scripts eject",
     "server": "nodemon server.js",
     "start:both": "concurrently \"react-scripts start\" \"nodemon server.js\"",
-    "vercel-build": "npm run build"
+    "vercel-build": "CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [
