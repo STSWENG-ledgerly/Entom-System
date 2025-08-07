@@ -12,6 +12,18 @@ require('dotenv').config();
 
 const port = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET
+console.log('🚀 Server starting...');
+console.log('🔑 JWT_SECRET exists:', !!JWT_SECRET);
+console.log('🔗 MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('🏢 DB_NAME:', process.env.DB_NAME);
+console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+
+// Check if JWT_SECRET is undefined and crash early with better error
+if (!JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is not set!');
+  console.error('Available env vars:', Object.keys(process.env).filter(key => !key.includes('SECRET')));
+  // Don't crash in serverless, but log the issue
+}
 
 const app = express();
 app.use(cors({
@@ -59,12 +71,19 @@ const verifyToken = (req, res, next) => {
 
 async function database() {
   try {
+    console.log('🔌 Attempting database connection...');
     await connectToMongo();
+    console.log('✅ Database connected successfully');
+    
+    console.log('📊 Attempting database population...');
     await populateDatabase();
+    console.log('✅ Database populated successfully');
   } catch (error) {
-    console.error('Server: Failed to start server', error);
+    console.error('❌ Database error:', error.message);
+    console.error('❌ Full error:', error);
+    // Don't crash in serverless
   }
-}
+  }
 
 async function hashPassword(password){
     const saltRounds = 10;
