@@ -9,7 +9,7 @@ const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
 
-const port = 4000;
+const port = process.env.port || 4000;
 const JWT_SECRET = process.env.JWT_SECRET
 
 const app = express();
@@ -21,7 +21,8 @@ app.use(cors({
       /^http:\/\/localhost:\d+$/,
       /^https:\/\/.*\.vercel\.app$/, 
       /^https:\/\/.*\.onrender\.com$/, 
-      /^https:\/\/.*\.netlify\.app$/, 
+      /^https:\/\/.*\.netlify\.app$/,
+      'https://ledgerly-ochre.vercel.app'
     ];
     
     const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
