@@ -105,6 +105,36 @@ async function checkPassword(sentPassword, passwordFromDB) {
 }
 
 app.use(express.static(path.join(__dirname, 'build')));
+const ensureDb = async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      console.log('🔌 Connecting to database...');
+      await connectToMongo();
+      console.log('✅ Database connected');
+    }
+    next();
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+};
+
+// Apply ensureDb to ALL database routes:
+app.use('/admin/*', ensureDb);
+app.use('/api/*', ensureDb);
+app.use('/employee*', ensureDb);
+app.use('/payments*', ensureDb);
+app.use('/getPayment*', ensureDb);
+app.use('/deletePayment*', ensureDb);
+app.use('/addPayment', ensureDb);
+app.use('/editPayment*', ensureDb);
+app.use('/addEmployee', ensureDb);
+app.use('/getEmail', ensureDb);
+app.use('/savePassword', ensureDb);
+app.use('/changePassword', ensureDb);
+app.use('/getEmployeeDetails*', ensureDb);
+app.use('/getCompanyRates', ensureDb);
+app.use('/updateCompanyRates', ensureDb);
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -694,7 +724,6 @@ app.post('/updateCompanyRates', async (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
-
 module.exports = app;
 
 if (process.env.NODE_ENV !== 'production') {
