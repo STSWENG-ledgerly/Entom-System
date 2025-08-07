@@ -9,7 +9,7 @@ const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
 
-const port = process.env.port || 4000;
+const port = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET
 
 const app = express();
@@ -93,7 +93,7 @@ async function checkPassword(sentPassword, passwordFromDB) {
         return false;
     }
 }
-
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -606,8 +606,14 @@ app.post('/editEmployee/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update employee', details: error.message });
   }
 });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 
 app.listen(port, async function() {
   await database();
   console.log(`Server: Running on http://localhost:${port}`);
 });
+
+module.exports = app;
