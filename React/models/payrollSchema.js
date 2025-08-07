@@ -90,6 +90,13 @@ const companySchema = new Schema({
   isDeleted: { type: Boolean, default: false }
 });
 
+// Config Schema (for rate settings)
+const configSchema = new Schema({
+  company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
+  standardRate: { type: Number, default: 0 },
+  holidayRate: { type: Number, default: 0 },
+  weekendRate: { type: Number, default: 0 }
+});
 
 
 

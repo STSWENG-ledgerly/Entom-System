@@ -427,6 +427,7 @@ app.get('/api/verify-auth', verifyToken, (req, res) => {
   });
 });
 
+
 // Logout endpoint
 app.post('/api/logout', (req, res) => {
   res.clearCookie('authToken');
@@ -609,6 +610,70 @@ app.post('/editEmployee/:id', async (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
+
+
+app.get('/getCompanyRates', async (req, res) => {
+  try {
+    const { companyID } = req.query;
+    if (!companyID) {
+      return res
+        .status(400)
+        .json({ error: 'Missing required query parameter `companyID`' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(companyID)) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid `companyID` format' });
+    }
+
+    const config = await Config.findOne({ company: companyID }).lean();
+    if (!config) {
+      console.log("Config not found");
+      return res
+        .status(404)
+        .json({ error: `No rate configuration found for company ${companyID}` });
+    }
+
+    const rates = {
+      standard: config.standardRate,
+      holiday:  config.holidayRate,
+      weekend:  config.weekendRate
+    };
+
+    return res.status(200).json(rates);
+  } catch (err) {
+    console.error('getCompanyRates error:', err);
+    return res
+      .status(500)
+      .json({ error: 'Internal server error in getCompanyRates' });
+  }
+});
+
+app.post('/updateCompanyRates', async (req, res) => {
+  try {
+    // directly pull out the properties your client sent
+    const { company, standardRate, holidayRate, weekendRate } = req.body;
+
+    const config = await Config.findOne({ company });
+    if (!config) {
+      return res.status(404).json({ error: 'Config not found' });
+    }
+
+    // update and save
+    config.standardRate = standardRate;
+    config.holidayRate  = holidayRate;
+    config.weekendRate  = weekendRate;
+    await config.save();
+
+    return res.json({ message: 'Config updated successfully' });
+  } catch (error) {
+    console.error('Error updating config:', error);
+    res.status(500).json({ error: 'Failed to update config', details: error.message });
+  }
+});
+
+
+
 
 
 app.listen(port, async function() {
