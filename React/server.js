@@ -406,6 +406,7 @@ app.post('/admin/login', async (req, res) => {
     });
 
     console.log('✅ Sending response...');
+
     res.json({ username: admin.username, company: {name: admin.company.name, id: admin.company._id}});
   } catch (err) {
     console.error("❌ FULL ERROR in POST /admin/login:", err);
