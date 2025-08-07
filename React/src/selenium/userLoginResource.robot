@@ -2,7 +2,7 @@
 Library           SeleniumLibrary
 
 *** Variables ***
-${URL}                http://localhost:3000
+${URL}                https://ledgerly-ochre.vercel.app/
 ${BROWSER}            Chrome
 ${VALID_USERNAME}     DLSU admin
 ${VALID_PASSWORD}     123
