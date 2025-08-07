@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
 // export const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://ledgerly-git-bugfix-serverless-crash-edgs-projects-b4b4a396.vercel.app' : 'http://localhost:4000';
-export const BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4000';
+export const BASE_URL = "ledgerly-git-bugfix-serverless-crash-edgs-projects-b4b4a396.vercel.app";
 // Context setup
 export const ConfigContext = createContext();
 
