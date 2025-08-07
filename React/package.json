@@ -17,7 +17,9 @@
     "web-vitals": "^2.1.4",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "mongoose": "^8.17.0"
+    "mongoose": "^8.17.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0"
   },
   "scripts": {
     "start": "node server.js",
@@ -31,9 +33,7 @@
     "eject": "react-scripts eject",
     "server": "nodemon server.js",
     "start:both": "concurrently \"react-scripts start\" \"nodemon server.js\"",
-    "vercel-build": "npm run build",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0"
+    "vercel-build": "npm run build"
   },
   "eslintConfig": {
     "extends": [

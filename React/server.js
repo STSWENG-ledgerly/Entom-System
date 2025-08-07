@@ -600,9 +600,6 @@ app.post('/editEmployee/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update employee', details: error.message });
   }
 });
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
 
 
 app.get('/getCompanyRates', async (req, res) => {
@@ -648,7 +645,7 @@ app.post('/updateCompanyRates', async (req, res) => {
     const { company, standardRate, holidayRate, weekendRate } = req.body;
 
     const config = await Config.findOne({ company });
-    if (!config) {
+    if (!config){
       return res.status(404).json({ error: 'Config not found' });
     }
 
@@ -673,6 +670,9 @@ app.post('/updateCompanyRates', async (req, res) => {
   await database();
   console.log(`Server: Running on http://localhost:${port}`);
 }); */
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 module.exports = app;
 
