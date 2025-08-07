@@ -3,15 +3,58 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { Employee, Payroll, Account, Company, Config } = require("./models/payrollSchema.js");
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
 
 const port = 4000;
+const JWT_SECRET = process.env.JWT_SECRET
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    const allowedPatterns = [
+      /^http:\/\/localhost:\d+$/,
+      /^https:\/\/.*\.vercel\.app$/, 
+      /^https:\/\/.*\.onrender\.com$/, 
+      /^https:\/\/.*\.netlify\.app$/, 
+    ];
+    
+    const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
+app.use(cookieParser());
+
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.authToken;
+  
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'No token provided' });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ success: false, message: 'Invalid token' });
+  }
+}; 
 
 async function database() {
   try {
@@ -189,7 +232,6 @@ app.post("/getEmail", async (req, res) => {
   }
 });
 
-
 app.post('/savePassword', async (req, res) => {
   try {
     const { password } = req.body;
@@ -289,7 +331,6 @@ app.post('/addPayment', async (req, res) => {
       return res.status(400).json({ error: `Employee ${employee} not found in company ${company}` });
     }
 
-
     const exists = await Payroll.findOne({ payslipId });
     if (exists) {
       return res.status(400).json({ error: "Duplicate payslipId. Payment already exists." });
@@ -322,7 +363,8 @@ app.post('/addPayment', async (req, res) => {
 });
 
 app.post('/admin/login', async (req, res) => {
-  try {
+ try {
+    console.log('🔍 Login request received:', req.body);
     const { username, password } = req.body;
 
     const admin = await Account.findOne({
@@ -332,20 +374,62 @@ app.post('/admin/login', async (req, res) => {
     }).populate('company');
 
     if (!admin) {
+      console.log('❌ Admin not found for username:', username);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, admin.passwordHash);
     if (!isMatch) {
+      console.log('❌ Password mismatch for username:', username);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    console.log('✅ Login successful, creating JWT token...');
+
+    // CREATE JWT TOKEN
+    const token = jwt.sign(
+      { 
+        username: admin.username, 
+        companyId: admin.company._id,
+        companyName: admin.company.name,
+        userId: admin._id
+      }, 
+      JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: prcess.env.NODE_ENV === "production",
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+    });
+
+    console.log('✅ Sending response...');
     res.json({ username: admin.username, company: {name: admin.company.name, id: admin.company._id}});
   } catch (err) {
-    console.error("Error in POST /admin/login:", err);
+    console.error("❌ FULL ERROR in POST /admin/login:", err);
+    console.error("❌ Error message:", err.message);
+    console.error("❌ Error stack:", err.stack);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+app.get('/api/verify-auth', verifyToken, (req, res) => {
+  res.json({ 
+    success: true, 
+    user: { 
+      username: req.user.username, 
+      companyId: req.user.companyId,
+      companyName: req.user.companyName
+    } 
+  });
+});
 
+// Logout endpoint
+app.post('/api/logout', (req, res) => {
+  res.clearCookie('authToken');
+  res.json({ success: true, message: 'Logged out successfully' });
+});
 app.post('/changePassword', async (req, res) => {
   try {
     const { username, oldPass, newPass } = req.body;
