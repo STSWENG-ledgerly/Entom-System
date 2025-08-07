@@ -29,7 +29,7 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
       />
     </div>
     <div className={styles.formGroup}>
-      <label htmlFor="ot">Overtime (in Days):</label>
+      <label htmlFor="ot">Overtime (in Hours):</label>
       <input
         id="ot"
         type="number"
@@ -88,32 +88,9 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
         onBlur={(e) => handleBlur(e, setPayrollInfo, "otherPayrollInfo")}
       />
     </div>
-    <div className={styles.formGroup}>
-      <label>Multiplier:</label>
-      <div className={styles.radioGroup}>
-        <label>
-          <input
-            type="radio"
-            name="multiplier"
-            value="hourly"
-            checked={payrollInfo.multiplier === 'hourly'}
-            onChange={(e) => setPayrollInfo({ ...payrollInfo, multiplier: e.target.value })} //no backend logic pa. check _calculatepayroll directory
-          />
-          Hourly
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="multiplier"
-            value="daily"
-            checked={payrollInfo.multiplier === 'daily'}
-            onChange={(e) => setPayrollInfo({ ...payrollInfo, multiplier: e.target.value })} //no backend logic pa. check _calculatepayroll directory.  
-          />
-          Daily
-        </label>
-      </div>
-    </div>
+ 
   </div>
 );
 
 export default PayrollInfo;
+

@@ -102,7 +102,7 @@ app.get('/payments/:employee_id', async (req, res) => {
 
     const employee = await Employee.findOne({
       employee_id: req.params.employee_id,
-      company
+      company                
     });
     if (!employee) {
       return res.status(404).json({ error: 'Employee not found' });
@@ -189,6 +189,7 @@ app.post("/getEmail", async (req, res) => {
   }
 });
 
+
 app.post('/savePassword', async (req, res) => {
   try {
     const { password } = req.body;
@@ -256,6 +257,7 @@ app.post('/editPayment/:payment_id', async (req, res) => {
       update,
       { new: true, runValidators: true }
     );
+
     if (!updated) {
       return res.status(404).json({ error: 'Payroll not found' });
     }
@@ -281,11 +283,12 @@ app.post('/addPayment', async (req, res) => {
     if (!company) {
       return res.status(400).json({ error: 'Missing company in request' });
     }
-
+    
     const emp = await Employee.findOne({ employee_id: employee, company }).lean();
     if (!emp) {
       return res.status(400).json({ error: `Employee ${employee} not found in company ${company}` });
     }
+
 
     const exists = await Payroll.findOne({ payslipId });
     if (exists) {
