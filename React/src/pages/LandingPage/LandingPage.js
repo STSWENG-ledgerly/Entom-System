@@ -148,7 +148,7 @@ return (
             <div className={styles.teamPhoto}>
                 <img src="/images/team/member6.jpg" alt="Emily Davis" />
             </div>
-            <h3>Rafael Anton Torralba Ramos</h3>
+            <h3>Rafael Ramos</h3>
             <p className={styles.teamRole}>Quality Assurance</p>
             <div className={styles.teamContact}>
                 <a href="mailto:rafael_anton_ramos@dlsu.edu.ph">rafael_anton_ramos@dlsu.edu.ph</a>
