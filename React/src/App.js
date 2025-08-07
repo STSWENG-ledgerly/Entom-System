@@ -23,8 +23,8 @@ function App() {
     <BrowserRouter>
       <ConfigProvider>
         <Routes>
-          <Route path='/LandingPage' element={<LandingPage />} />
-          <Route path="/" element={<Login />} />
+          <Route path='/Login' element={<Login />} />
+          <Route path="/" element={<LandingPage/>} />
           <Route path="/AccountRegistration" element={<AccountRegistration />} />
 
           <Route element={<ProtectedRoutes />}>
