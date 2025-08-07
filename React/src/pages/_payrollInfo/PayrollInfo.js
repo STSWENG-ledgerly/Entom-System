@@ -39,16 +39,6 @@ const PayrollInfo = ({ payrollInfo, setPayrollInfo }) => (
       />
     </div>
     <div className={styles.formGroup}>
-      <label htmlFor="salaryIncrease">Salary Increase:</label>
-      <input
-        id="salaryIncrease"
-        type="number"
-        value={payrollInfo.salaryIncrease ?? 0}
-        onChange={(e) => checkNumberInput(e, setPayrollInfo, "salaryIncrease")}
-        onBlur={(e) => handleBlur(e, setPayrollInfo, "salaryIncrease")}
-      />
-    </div>
-    <div className={styles.formGroup}>
       <label htmlFor="mealAllow">Meal Allowance:</label>
       <input
         id="mealAllow"

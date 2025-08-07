@@ -1,4 +1,5 @@
 
+import jsPDF from 'jspdf';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BASE_URL, ConfigContext } from '../../ConfigContext';
@@ -6,8 +7,6 @@ import global from '../../global.module.css';
 import { calculatePayroll } from '../_calculatePayroll/CalculatePayroll';
 import DeductionsInfo from '../_deductionsInfo/DeductionsInfo';
 import Header from '../_header/Header';
-import { ConfigContext, BASE_URL } from '../../ConfigContext';
-import jsPDF from 'jspdf';
 import PayrollInfo from '../_payrollInfo/PayrollInfo';
 import ResultsInfo from '../_resultsInfo/ResultsInfo';
 import Sidebar from '../_sidebar/Sidebar';

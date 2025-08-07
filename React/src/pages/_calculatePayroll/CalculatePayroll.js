@@ -5,7 +5,7 @@ export const calculatePayroll = (payrollInfo = {}, deductions = {}, config = {})
   const basic           = toNumber(config.basic);
   const workingDays     = toNumber(config.workingDaysPerMonth) || 22;
   const workHoursPerDay = toNumber(config.workHoursPerDay)     || 8;
-  const otMultiplier    = toNumber(config.overtimeMultiplier)  || 1.25;
+  const otMultiplier    = toNumber(config.overtimeMultiplier) || 1.25;
 
   // Derived rates
   const hourlyRate   = basic / (workingDays * workHoursPerDay);
