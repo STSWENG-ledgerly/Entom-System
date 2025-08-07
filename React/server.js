@@ -358,6 +358,9 @@ app.post('/addPayment', async (req, res) => {
 
 app.post('/admin/login', async (req, res) => {
  try {
+    console.log('🔍 Login endpoint hit!');
+    console.log('🔑 JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('🔗 MongoDB URI exists:', !!process.env.MONGODB_URI);
     console.log('🔍 Login request received:', req.body);
     const { username, password } = req.body;
 
