@@ -1,5 +1,6 @@
+
 import { createContext, useEffect, useState } from 'react';
-export const BASE_URL = process.env.REACT_APP_BASE_URL;
+export const BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4000';
 
 // Context setup
 export const ConfigContext = createContext();
@@ -134,7 +135,6 @@ export const ConfigProvider = ({ children }) => {
   };
 
 
-
   return (
     <ConfigContext.Provider value={{
       config, setConfig,
@@ -147,3 +147,4 @@ export const ConfigProvider = ({ children }) => {
     </ConfigContext.Provider>
   );
 };
+

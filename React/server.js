@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -11,6 +12,18 @@ require('dotenv').config();
 
 const port = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET
+console.log('🚀 Server starting...');
+console.log('🔑 JWT_SECRET exists:', !!JWT_SECRET);
+console.log('🔗 MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('🏢 DB_NAME:', process.env.DB_NAME);
+console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+
+// Check if JWT_SECRET is undefined and crash early with better error
+if (!JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is not set!');
+  console.error('Available env vars:', Object.keys(process.env).filter(key => !key.includes('SECRET')));
+  // Don't crash in serverless, but log the issue
+}
 
 const app = express();
 app.use(cors({
@@ -21,9 +34,7 @@ app.use(cors({
       /^http:\/\/localhost:\d+$/,
       /^https:\/\/.*\.vercel\.app$/, 
       /^https:\/\/.*\.onrender\.com$/, 
-      /^https:\/\/.*\.netlify\.app$/,
-      'https://ledgerly-ochre.vercel.app'
-
+      /^https:\/\/.*\.netlify\.app$/
     ];
     
     const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
@@ -60,12 +71,19 @@ const verifyToken = (req, res, next) => {
 
 async function database() {
   try {
+    console.log('🔌 Attempting database connection...');
     await connectToMongo();
+    console.log('✅ Database connected successfully');
+    
+    console.log('📊 Attempting database population...');
     await populateDatabase();
+    console.log('✅ Database populated successfully');
   } catch (error) {
-    console.error('Server: Failed to start server', error);
+    console.error('❌ Database error:', error.message);
+    console.error('❌ Full error:', error);
+    // Don't crash in serverless
   }
-}
+  }
 
 async function hashPassword(password){
     const saltRounds = 10;
@@ -86,15 +104,37 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
-async function checkPassword(sentPassword, passwordFromDB) {
-    try {
-        return await bcrypt.compare(sentPassword, passwordFromDB);
-    } catch (error) {
-        console.error('Error comparing passwords:', error);
-        return false;
-    }
-}
 app.use(express.static(path.join(__dirname, 'build')));
+const ensureDb = async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      console.log('🔌 Connecting to database...');
+      await connectToMongo();
+      console.log('✅ Database connected');
+    }
+    next();
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+};
+
+// Apply ensureDb to ALL database routes:
+app.use('/admin/*', ensureDb);
+app.use('/api/*', ensureDb);
+app.use('/employee*', ensureDb);
+app.use('/payments*', ensureDb);
+app.use('/getPayment*', ensureDb);
+app.use('/deletePayment*', ensureDb);
+app.use('/addPayment', ensureDb);
+app.use('/editPayment*', ensureDb);
+app.use('/addEmployee', ensureDb);
+app.use('/getEmail', ensureDb);
+app.use('/savePassword', ensureDb);
+app.use('/changePassword', ensureDb);
+app.use('/getEmployeeDetails*', ensureDb);
+app.use('/getCompanyRates', ensureDb);
+app.use('/updateCompanyRates', ensureDb);
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -366,6 +406,9 @@ app.post('/addPayment', async (req, res) => {
 
 app.post('/admin/login', async (req, res) => {
  try {
+    console.log('🔍 Login endpoint hit!');
+    console.log('🔑 JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('🔗 MongoDB URI exists:', !!process.env.MONGODB_URI);
     console.log('🔍 Login request received:', req.body);
     const { username, password } = req.body;
 
@@ -607,9 +650,6 @@ app.post('/editEmployee/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update employee', details: error.message });
   }
 });
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
 
 
 app.get('/getCompanyRates', async (req, res) => {
@@ -655,7 +695,7 @@ app.post('/updateCompanyRates', async (req, res) => {
     const { company, standardRate, holidayRate, weekendRate } = req.body;
 
     const config = await Config.findOne({ company });
-    if (!config) {
+    if (!config){
       return res.status(404).json({ error: 'Config not found' });
     }
 
@@ -680,7 +720,9 @@ app.post('/updateCompanyRates', async (req, res) => {
   await database();
   console.log(`Server: Running on http://localhost:${port}`);
 }); */
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 module.exports = app;
 
 if (process.env.NODE_ENV !== 'production') {
