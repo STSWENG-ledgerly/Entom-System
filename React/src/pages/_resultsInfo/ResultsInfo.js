@@ -4,6 +4,14 @@ const ResultsInfo = ({ results }) => {
     return (
         <div>
             <div className={styles.formGroup}>
+                <label>BASIC SALARY:</label>
+                <input value={parseFloat(results.basic).toFixed(2)} readOnly />
+            </div>
+            <div className={styles.formGroup}>
+                <label>ADDITIONS/ ALLOWANCES:</label>
+                <input value={parseFloat(results.additions).toFixed(2)} readOnly />
+            </div>
+            <div className={styles.formGroup}>
                 <label htmlFor="payroll">PAYROLL: </label>
                 <input id="payroll" value={parseFloat(results.payroll).toFixed(2)} readOnly />
             </div>
@@ -20,3 +28,4 @@ const ResultsInfo = ({ results }) => {
 };
 
 export default ResultsInfo;
+

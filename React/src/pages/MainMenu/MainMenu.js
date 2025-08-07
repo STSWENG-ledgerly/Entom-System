@@ -4,10 +4,12 @@ import Sidebar from '../_sidebar/Sidebar'
 import global from '../../global.module.css';
 import Header from '../_header/Header';
 import styles from './MainMenu.module.css';
+import { useAuth } from '../../AuthContext';
 
 const MainMenu = () => {
-  const handleExit = () => {
-    sessionStorage.removeItem('userValid');
+  const { logout } = useAuth();
+  const handleExit = async () => {
+    await logout();
   };
 
   return (
