@@ -23,7 +23,6 @@ app.use(cors({
       /^https:\/\/.*\.vercel\.app$/, 
       /^https:\/\/.*\.onrender\.com$/, 
       /^https:\/\/.*\.netlify\.app$/,
-      'https://ledgerly-git-bugfix-serverless-crash-edgs-projects-b4b4a396.vercel.app/'
     ];
     
     const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
