@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -85,14 +86,6 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
-async function checkPassword(sentPassword, passwordFromDB) {
-    try {
-        return await bcrypt.compare(sentPassword, passwordFromDB);
-    } catch (error) {
-        console.error('Error comparing passwords:', error);
-        return false;
-    }
-}
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/', (req, res) => {
