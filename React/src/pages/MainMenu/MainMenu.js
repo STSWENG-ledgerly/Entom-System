@@ -1,13 +1,14 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import Sidebar from '../_sidebar/Sidebar'
+import { useAuth } from '../../AuthContext';
 import global from '../../global.module.css';
 import Header from '../_header/Header';
+import Sidebar from '../_sidebar/Sidebar';
 import styles from './MainMenu.module.css';
 
 const MainMenu = () => {
-  const handleExit = () => {
-    sessionStorage.removeItem('userValid');
+  const { logout } = useAuth();
+  const handleExit = async () => {
+    await logout();
   };
 
   return (
@@ -24,7 +25,7 @@ const MainMenu = () => {
                   <img src='/images/set-greyed.png' alt='set rates grayed' className={styles.imageGray} />
                   <img src='/images/set.png' alt='set rates hovered' className={styles.imageColor} />
                 </div>
-                <span>Set Default Rates</span>
+                <span>Set Company Rates</span>
               </Link>
               <Link to="/SearchEmployee/CalculatePayroll" id="calculate-payroll-button">
                 <div className={styles.imageSwapContainer}>

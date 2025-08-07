@@ -8,44 +8,59 @@ const Login = () => {
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [errMessage, setErrMessage] = useState('');
-  const { setUsername } = useContext(ConfigContext);
+  const { setUsername, setCompany } = useContext(ConfigContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    sessionStorage.removeItem('userValid');
-    sessionStorage.removeItem('company');
-    sessionStorage.removeItem('companyName');
-    sessionStorage.removeItem('username');
-  }, []);
+  // useEffect(() => {
+  //   sessionStorage.removeItem('userValid');
+  //   sessionStorage.removeItem('company');
+  //   sessionStorage.removeItem('companyName');
+  //   sessionStorage.removeItem('username');
+  // }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${BASE_URL}/admin/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: userName, password: userPassword })
-      });
+  e.preventDefault();
+  try {
+    console.log('🔍 Attempting login with:', { userName, BASE_URL });
+    
+    const res = await fetch(`${BASE_URL}/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // RE-ENABLE THIS for cookies
+      body: JSON.stringify({ username: userName, password: userPassword })
+    });
 
-      if (res.status == 200) {
-        const { username, company } = await res.json();
-        sessionStorage.setItem('userValid', 'true');
-        sessionStorage.setItem('company', company.id);
-        sessionStorage.setItem('companyName', company.name);
-        sessionStorage.setItem('username', userName);
+    console.log('📡 Response status:', res.status);
+    console.log('📡 Response ok:', res.ok);
 
-        setUsername(username);
-        navigate('/MainMenu');
-      } else if (res.status === 401) {
-        setErrMessage('Invalid username or password');
-      } else {
-        setErrMessage('Login failed. Please try again.');
-      }
-    } catch (err) {
-      console.error('Login error:', err);
-      setErrMessage('Something went wrong. Please try again.');
+    if (res.status == 200) {
+      const { username, company } = await res.json();
+      console.log('✅ Login successful:', { username, company });
+      
+      // Keep sessionStorage for immediate UI updates
+      sessionStorage.setItem('userValid', 'true');
+      sessionStorage.setItem('company', company.id);
+      sessionStorage.setItem('companyName', company.name);
+      sessionStorage.setItem('username', userName);
+
+      setUsername(username);
+      navigate('/MainMenu');
+    } else if (res.status === 401) {
+      const errorData = await res.json();
+      console.log('❌ 401 Error data:', errorData);
+      setErrMessage('Invalid username or password');
+    } else {
+      const errorData = await res.json();
+      console.log('❌ Other error:', res.status, errorData);
+      setErrMessage('Login failed. Please try again.');
     }
-  };
+  } catch (err) {
+    console.error('❌ Login error (full details):', err);
+    console.error('❌ Error message:', err.message);
+    console.error('❌ Error stack:', err.stack);
+    setErrMessage('Something went wrong. Please try again.');
+  }
+};
 
   return (
     <div className={styles.background}>

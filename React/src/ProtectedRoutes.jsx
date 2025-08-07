@@ -1,7 +1,9 @@
 import {Outlet, Navigate} from "react-router-dom";
 import {useState, useEffect} from "react";
+import {useAuth} from './AuthContext';
 
 const ProtectedRoutes = () => {
+    const { isAuthenticated, loading } = useAuth();
     const [userValid, setUserValid] = useState(() => {
         return sessionStorage.getItem('userValid') || '';
       });
@@ -17,8 +19,11 @@ const ProtectedRoutes = () => {
           window.removeEventListener('storage', handleStorageChange);
         };
       }, []);
-
-    return userValid ? <Outlet/> : <Navigate to="/"/>
+      if (loading) {
+        return <div>Loading...</div>; // Or your loading component
+      }
+    const isUserAuthenticated = isAuthenticated || userValid === 'true';
+    return isUserAuthenticated ? <Outlet/> : <Navigate to="/"/>
 }
 
 export default ProtectedRoutes;

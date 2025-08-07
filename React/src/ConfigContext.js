@@ -1,11 +1,17 @@
-import React, { createContext, useState, useEffect } from 'react';
-export const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { createContext, useEffect, useState } from 'react';
+export const BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4000';
 
 // Context setup
 export const ConfigContext = createContext();
 
 export const ConfigProvider = ({ children }) => {
-  const [config, setConfig] = useState({ rate: '', basic: '' });
+    const [config, setConfig] = useState({ // Using Default Values
+    rate:                 0,   
+    basic:                0,   
+    workingDaysPerMonth: 22,    
+    workHoursPerDay:       8,   
+    overtimeMultiplier:  1.25, 
+  });
   const [passwordHash, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
@@ -16,8 +22,31 @@ export const ConfigProvider = ({ children }) => {
     if (storedUsername && !username) {
       setUsername(storedUsername);
     }
-  }, [username]);
+    }, [username]);
 
+  // Mount Company rates
+    useEffect(() => {
+      const companyId = sessionStorage.getItem('company');
+      if (!companyId) return;
+
+      fetch(`${BASE_URL}/getCompany/${companyId}`)
+        .then(res => {
+          if (!res.ok) throw new Error(`Server error: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          setConfig(prev => ({
+            ...prev,
+            // only overwrite if the API returned a value
+            workingDaysPerMonth: data.workingDaysPerMonth  ?? prev.workingDaysPerMonth,
+            workHoursPerDay:      data.workHoursPerDay     ?? prev.workHoursPerDay,
+            overtimeMultiplier:   data.overtimeMultiplier  ?? prev.overtimeMultiplier,
+          }));
+        })
+        .catch(err => {
+          console.error("Error fetching company config:", err.message);
+        });
+    }, []); 
 
   useEffect(() => {
     if (!selectedEmployeeId) {
@@ -30,12 +59,11 @@ export const ConfigProvider = ({ children }) => {
         return res.json();
       })
       .then(data => {
-        if (data) {
-          setConfig({
-            rate: data.overtimeRate ?? 0,
-            basic: data.basicSalary ?? 0
-          });
-        }
+       setConfig(prev => ({
+          ...prev,
+          basic: data.basicSalary  ?? prev.basic,
+          rate:  data.overtimeRate ?? prev.rate,
+        }));
       })
       .catch(err => {
         console.error("Error fetching employee config:", err.message);
@@ -104,7 +132,6 @@ export const ConfigProvider = ({ children }) => {
     }));
     console.log("Deleted Payment", userId, paymentId);   //for debugging
   };
-
 
 
   return (

@@ -1,10 +1,10 @@
 
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../AuthContext';
 import styles from './Sidebar.module.css';
-
 const Header = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleMenu = () => {
     navigate('/MainMenu');
@@ -32,8 +32,8 @@ const Header = () => {
     navigate(-1);
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('userValid');
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -48,7 +48,7 @@ const Header = () => {
 
         <button className={`${styles.iconGroup} ${styles.defaButton}`} onClick={handleDefa}>
           <div className={styles.iconImage}></div>
-          <div className={styles.label}>SET DEFAULT RATES</div>
+          <div className={styles.label}>SET COMPANY RATES</div>
         </button>
 
         <button className={`${styles.iconGroup} ${styles.histButton}`} onClick={handleHist}>

@@ -1,26 +1,89 @@
 const express = require('express');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { Employee, Payroll, Account, Company, Config } = require("./models/payrollSchema.js");
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
 require('dotenv').config();
 
-const port = 4000;
+const port = process.env.PORT || 4000;
+const JWT_SECRET = process.env.JWT_SECRET
+console.log('🚀 Server starting...');
+console.log('🔑 JWT_SECRET exists:', !!JWT_SECRET);
+console.log('🔗 MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('🏢 DB_NAME:', process.env.DB_NAME);
+console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+
+// Check if JWT_SECRET is undefined and crash early with better error
+if (!JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is not set!');
+  console.error('Available env vars:', Object.keys(process.env).filter(key => !key.includes('SECRET')));
+  // Don't crash in serverless, but log the issue
+}
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    const allowedPatterns = [
+      /^http:\/\/localhost:\d+$/,
+      /^https:\/\/.*\.vercel\.app$/, 
+      /^https:\/\/.*\.onrender\.com$/, 
+      /^https:\/\/.*\.netlify\.app$/
+    ];
+    
+    const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
+app.use(cookieParser());
+
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.authToken;
+  
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'No token provided' });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ success: false, message: 'Invalid token' });
+  }
+}; 
 
 async function database() {
   try {
+    console.log('🔌 Attempting database connection...');
     await connectToMongo();
+    console.log('✅ Database connected successfully');
+    
+    console.log('📊 Attempting database population...');
     await populateDatabase();
+    console.log('✅ Database populated successfully');
   } catch (error) {
-    console.error('Server: Failed to start server', error);
+    console.error('❌ Database error:', error.message);
+    console.error('❌ Full error:', error);
+    // Don't crash in serverless
   }
-}
+  }
 
 async function hashPassword(password){
     const saltRounds = 10;
@@ -41,15 +104,37 @@ async function checkPassword(sentPassword, passwordFromDB) {
     }
 }
 
-async function checkPassword(sentPassword, passwordFromDB) {
-    try {
-        return await bcrypt.compare(sentPassword, passwordFromDB);
-    } catch (error) {
-        console.error('Error comparing passwords:', error);
-        return false;
+app.use(express.static(path.join(__dirname, 'build')));
+const ensureDb = async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      console.log('🔌 Connecting to database...');
+      await connectToMongo();
+      console.log('✅ Database connected');
     }
-}
+    next();
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+};
 
+// Apply ensureDb to ALL database routes:
+app.use('/admin/*', ensureDb);
+app.use('/api/*', ensureDb);
+app.use('/employee*', ensureDb);
+app.use('/payments*', ensureDb);
+app.use('/getPayment*', ensureDb);
+app.use('/deletePayment*', ensureDb);
+app.use('/addPayment', ensureDb);
+app.use('/editPayment*', ensureDb);
+app.use('/addEmployee', ensureDb);
+app.use('/getEmail', ensureDb);
+app.use('/savePassword', ensureDb);
+app.use('/changePassword', ensureDb);
+app.use('/getEmployeeDetails*', ensureDb);
+app.use('/getCompanyRates', ensureDb);
+app.use('/updateCompanyRates', ensureDb);
 
 app.get('/', (req, res) => {
   res.json("from backend side");
@@ -102,7 +187,7 @@ app.get('/payments/:employee_id', async (req, res) => {
 
     const employee = await Employee.findOne({
       employee_id: req.params.employee_id,
-      company
+      company                
     });
     if (!employee) {
       return res.status(404).json({ error: 'Employee not found' });
@@ -256,6 +341,7 @@ app.post('/editPayment/:payment_id', async (req, res) => {
       update,
       { new: true, runValidators: true }
     );
+
     if (!updated) {
       return res.status(404).json({ error: 'Payroll not found' });
     }
@@ -281,7 +367,7 @@ app.post('/addPayment', async (req, res) => {
     if (!company) {
       return res.status(400).json({ error: 'Missing company in request' });
     }
-
+    
     const emp = await Employee.findOne({ employee_id: employee, company }).lean();
     if (!emp) {
       return res.status(400).json({ error: `Employee ${employee} not found in company ${company}` });
@@ -319,7 +405,11 @@ app.post('/addPayment', async (req, res) => {
 });
 
 app.post('/admin/login', async (req, res) => {
-  try {
+ try {
+    console.log('🔍 Login endpoint hit!');
+    console.log('🔑 JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('🔗 MongoDB URI exists:', !!process.env.MONGODB_URI);
+    console.log('🔍 Login request received:', req.body);
     const { username, password } = req.body;
 
     const admin = await Account.findOne({
@@ -329,20 +419,63 @@ app.post('/admin/login', async (req, res) => {
     }).populate('company');
 
     if (!admin) {
+      console.log('❌ Admin not found for username:', username);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, admin.passwordHash);
     if (!isMatch) {
+      console.log('❌ Password mismatch for username:', username);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    console.log('✅ Login successful, creating JWT token...');
+
+    // CREATE JWT TOKEN
+    const token = jwt.sign(
+      { 
+        username: admin.username, 
+        companyId: admin.company._id,
+        companyName: admin.company.name,
+        userId: admin._id
+      }, 
+      JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+    });
+
+    console.log('✅ Sending response...');
+
     res.json({ username: admin.username, company: {name: admin.company.name, id: admin.company._id}});
   } catch (err) {
-    console.error("Error in POST /admin/login:", err);
+    console.error("❌ FULL ERROR in POST /admin/login:", err);
+    console.error("❌ Error message:", err.message);
+    console.error("❌ Error stack:", err.stack);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+app.get('/api/verify-auth', verifyToken, (req, res) => {
+  res.json({ 
+    success: true, 
+    user: { 
+      username: req.user.username, 
+      companyId: req.user.companyId,
+      companyName: req.user.companyName
+    } 
+  });
+});
 
+// Logout endpoint
+app.post('/api/logout', (req, res) => {
+  res.clearCookie('authToken');
+  res.json({ success: true, message: 'Logged out successfully' });
+});
 app.post('/changePassword', async (req, res) => {
   try {
     const { username, oldPass, newPass } = req.body;
@@ -518,7 +651,84 @@ app.post('/editEmployee/:id', async (req, res) => {
   }
 });
 
-app.listen(port, async function() {
+
+app.get('/getCompanyRates', async (req, res) => {
+  try {
+    const { companyID } = req.query;
+    if (!companyID) {
+      return res
+        .status(400)
+        .json({ error: 'Missing required query parameter `companyID`' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(companyID)) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid `companyID` format' });
+    }
+
+    const config = await Config.findOne({ company: companyID }).lean();
+    if (!config) {
+      console.log("Config not found");
+      return res
+        .status(404)
+        .json({ error: `No rate configuration found for company ${companyID}` });
+    }
+
+    const rates = {
+      standard: config.standardRate,
+      holiday:  config.holidayRate,
+      weekend:  config.weekendRate
+    };
+
+    return res.status(200).json(rates);
+  } catch (err) {
+    console.error('getCompanyRates error:', err);
+    return res
+      .status(500)
+      .json({ error: 'Internal server error in getCompanyRates' });
+  }
+});
+
+app.post('/updateCompanyRates', async (req, res) => {
+  try {
+    // directly pull out the properties your client sent
+    const { company, standardRate, holidayRate, weekendRate } = req.body;
+
+    const config = await Config.findOne({ company });
+    if (!config){
+      return res.status(404).json({ error: 'Config not found' });
+    }
+
+    // update and save
+    config.standardRate = standardRate;
+    config.holidayRate  = holidayRate;
+    config.weekendRate  = weekendRate;
+    await config.save();
+
+    return res.json({ message: 'Config updated successfully' });
+  } catch (error) {
+    console.error('Error updating config:', error);
+    res.status(500).json({ error: 'Failed to update config', details: error.message });
+  }
+});
+
+
+
+
+
+/* app.listen(port, async function() {
   await database();
   console.log(`Server: Running on http://localhost:${port}`);
+}); */
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
+module.exports = app;
+
+if (process.env.NODE_ENV !== 'production') {
+  const port = process.env.PORT || 4000;
+  app.listen(port, async function() {
+    await database();
+    console.log(`Server: Running on http://localhost:${port}`);
+  });
+}

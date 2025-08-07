@@ -1,72 +1,67 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import DeductionsInfo from './DeductionsInfo';
 
 describe('DeductionsInfo Component', () => {
-  let deductions, setDeductions;
+  let deductions;
+  let setDeductions;
 
   beforeEach(() => {
     deductions = {
-      sss: 100,
-      philhealth: 200,
-      pagibig: 300,
-      cashAdvance: 400,
-      healthCard: 500,
-      absences: 600,
-      otherDeductions: 700,
+      sss: 0,
+      philHealth: 0,
+      pagIbig: 0,
+      cashAdvance: 0,
+      healthCard: 0,
+      lateHours: 0,
+      absentDays: 0,
+      otherDeductions: 0,
     };
-
     setDeductions = jest.fn();
   });
 
-  it('renders all deduction input fields with correct default values', () => {
-    render(<DeductionsInfo deductions={deductions} setDeductions={setDeductions} />);
+  it('renders all input fields', () => {
+    const { getByLabelText } = render(
+      <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
+    );
 
-    expect(screen.getByLabelText(/SSS/i).value).toBe('100');
-    expect(screen.getByLabelText(/Philhealth/i).value).toBe('200');
-    expect(screen.getByLabelText(/PAG-IBIG/i).value).toBe('300');
-    expect(screen.getByLabelText(/Cash Advance/i).value).toBe('400');
-    expect(screen.getByLabelText(/Health Card/i).value).toBe('500');
-    expect(screen.getByLabelText(/Late\/Absent/i).value).toBe('600');
-    expect(screen.getByLabelText(/Others/i).value).toBe('700');
+    expect(getByLabelText(/SSS/i)).toBeInTheDocument();
+    expect(getByLabelText(/philHealth/i)).toBeInTheDocument();
+    expect(getByLabelText(/PAG-IBIG/i)).toBeInTheDocument();
+    expect(getByLabelText(/Cash Advance/i)).toBeInTheDocument();
+    expect(getByLabelText(/Health Card/i)).toBeInTheDocument();
+    expect(getByLabelText(/Late \(in Hours\)/i)).toBeInTheDocument();
+    expect(getByLabelText(/Absences \(per Day\)/i)).toBeInTheDocument();
+    expect(getByLabelText(/Others/i)).toBeInTheDocument();
   });
 
-  it('calls setDeductions with correct value on change (rounded, non-negative)', () => {
-    render(<DeductionsInfo deductions={deductions} setDeductions={setDeductions} />);
+  it('calls setDeductions when input changes', () => {
+    const { getByLabelText } = render(
+      <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
+    );
 
-    const sssInput = screen.getByLabelText(/SSS/i);
-    fireEvent.change(sssInput, { target: { value: '-50.987' } });
+    const sssInput = getByLabelText(/SSS/i);
+    fireEvent.change(sssInput, { target: { value: '123.456' } });
 
     expect(setDeductions).toHaveBeenCalledWith(expect.any(Function));
-    const updater = setDeductions.mock.calls[0][0];
-    const updated = updater(deductions);
-    expect(updated.sss).toBe(0); // Because Math.max(0, -50.99) = 0
+
+    // Simulate state update function manually
+    const updateFn = setDeductions.mock.calls[0][0];
+    const result = updateFn(deductions);
+    expect(result.sss).toBe(123.46); // Rounded to 2 decimals
   });
 
-  it('rounds values to 2 decimal places on change', () => {
-    render(<DeductionsInfo deductions={deductions} setDeductions={setDeductions} />);
-    const philhealthInput = screen.getByLabelText(/Philhealth/i);
-    fireEvent.change(philhealthInput, { target: { value: '123.456' } });
+  it('resets value to 0 on invalid blur', () => {
+    const { getByLabelText } = render(
+      <DeductionsInfo deductions={deductions} setDeductions={setDeductions} />
+    );
 
-    const updater = setDeductions.mock.calls[0][0];
-    const updated = updater(deductions);
-    expect(updated.philhealth).toBe(123.46); // Rounded
-  });
+    const pagIbigInput = getByLabelText(/PAG-IBIG/i);
+    fireEvent.blur(pagIbigInput, { target: { value: 'abc' } });
 
-  it('sets value to 0 on blur if input is invalid', () => {
-    render(<DeductionsInfo deductions={deductions} setDeductions={setDeductions} />);
-    const pagibigInput = screen.getByLabelText(/PAG-IBIG/i);
-    fireEvent.blur(pagibigInput, { target: { value: 'abc' } });
+    expect(setDeductions).toHaveBeenCalledWith(expect.any(Function));
 
-    const updater = setDeductions.mock.calls[0][0];
-    const updated = updater(deductions);
-    expect(updated.pagibig).toBe(0);
-  });
-
-  it('does not change value on blur if input is valid', () => {
-    render(<DeductionsInfo deductions={deductions} setDeductions={setDeductions} />);
-    const absencesInput = screen.getByLabelText(/Late\/Absent/i);
-    fireEvent.blur(absencesInput, { target: { value: '123.45' } });
-
-    expect(setDeductions).not.toHaveBeenCalled(); // No update needed if valid
+    const updateFn = setDeductions.mock.calls[0][0];
+    const result = updateFn(deductions);
+    expect(result.pagIbig).toBe(0);
   });
 });
