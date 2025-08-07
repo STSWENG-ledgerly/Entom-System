@@ -78,7 +78,7 @@ const AccountRegistration = () => {
             />
             <span className={styles.errMessage}>{errMessage}</span><br></br>
             <button className={styles.submitButton} type="submit">REGISTER</button>
-            <Link to="/"><button className={styles.submitButton} type="button">LOGIN</button></Link>
+            <Link to="/Login"><button className={styles.submitButton} type="button">LOGIN</button></Link>
           </form>
         </div>
       </div>
