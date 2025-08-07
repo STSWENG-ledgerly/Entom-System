@@ -11,7 +11,7 @@ const LandingPage = () => {
             <img src="/images/ledger.png" alt="ledgerly" />
           </div>
           <div className={styles.navLinks}>
-            <Link to="/" className={styles.loginBtn}>Login</Link>
+            <Link to="/Login" className={styles.loginBtn}>Login</Link>
             <Link to="/AccountRegistration" className={styles.signupBtn}>Sign Up</Link>
           </div>
         </div>
@@ -31,7 +31,7 @@ const LandingPage = () => {
               <Link to="/AccountRegistration" className={styles.primaryBtn}>
                 Sign up now
               </Link>
-              <Link to="/" className={styles.secondaryBtn}>
+              <Link to="/Login" className={styles.secondaryBtn}>
                 Login to Your Account
               </Link>
             </div>
