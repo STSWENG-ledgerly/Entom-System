@@ -1,18 +1,26 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { ConfigContext } from '../../ConfigContext'; // adjust the path if needed
+import { ConfigContext } from '../../ConfigContext'; // Adjust path as needed
 import MainMenu from './MainMenu';
 
-const contextValue = {
-  password: '',
-  setPassword: jest.fn(),
-  username: 'testUser',
-};
-
 describe('MainMenu', () => {
-  test('renders all menu links', () => {
+  beforeEach(() => {
+    sessionStorage.setItem('userValid', 'true');
+  });
+
+  afterEach(() => {
+    sessionStorage.clear();
+  });
+
+  it('renders all navigation buttons with correct IDs and text', () => {
+    const mockContext = {
+      username: 'testuser',
+      password: 'testpass',
+      setPassword: jest.fn(),
+    };
+
     render(
-      <ConfigContext.Provider value={contextValue}>
+      <ConfigContext.Provider value={mockContext}>
         <MemoryRouter>
           <MainMenu />
         </MemoryRouter>
@@ -20,9 +28,10 @@ describe('MainMenu', () => {
     );
 
     expect(screen.getByText('Set Default Rates')).toBeInTheDocument();
-    expect(screen.getByText('Generate Employee Payroll')).toBeInTheDocument();
+    expect(screen.getByText('Calculate Employee Payroll')).toBeInTheDocument();
     expect(screen.getByText('View Payroll History')).toBeInTheDocument();
     expect(screen.getByText('Add Employee')).toBeInTheDocument();
     expect(screen.getByText('Edit Employee')).toBeInTheDocument();
+    expect(screen.getByText('Exit')).toBeInTheDocument();
   });
 });

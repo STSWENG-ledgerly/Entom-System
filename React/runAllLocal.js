@@ -24,8 +24,8 @@ async function main() {
   appProcess.unref();
 
   // Wait for app to be ready
-  console.log('[INFO] Waiting 30 seconds for app to be ready...');
-  await sleep(30_000); // wait 30 seconds
+  console.log('[INFO] Waiting 60 seconds for app to be ready...');
+  await sleep(60_000); // wait 60 seconds
 
   try {
     console.log('[INFO] Running unit tests...');
@@ -37,15 +37,6 @@ async function main() {
     console.error('[ERROR] Tests failed:', err);
   } finally {
     console.log('[INFO] Killing app process...');
-    try {
-      if (isWindows) {
-        execSync('taskkill /F /IM node.exe >nul 2>&1');
-      } else {
-        execSync('pkill -f "react-scripts start" || pkill -f "node server.js" || true');
-      }
-    } catch (killErr) {
-      console.warn('[WARN] Failed to kill app:', killErr.message);
-    }
   }
 }
 

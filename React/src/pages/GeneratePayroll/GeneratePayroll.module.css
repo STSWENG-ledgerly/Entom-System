@@ -5,6 +5,7 @@
     align-items: center;
     width: 100%;
     margin: 0 auto;
+    padding-bottom: 100px;
 }
 
 .infoSection {
@@ -12,6 +13,7 @@
     align-items: flex-start;
     justify-content: center;
     width: 100%;
+ 
 }
 
 .formsSection {
@@ -24,7 +26,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 95%;
+    width: 75%;
     padding: 20px;
     margin-bottom: 30px;
     background-color: white;

@@ -1,17 +1,50 @@
-// Sidebar.test.js
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import Header from './Sidebar'; // Assuming the filename is Sidebar.js
 
-describe('Sidebar Component', () => {
-  test('renders without crashing', () => {
-    render(<Sidebar />, { wrapper: MemoryRouter });
+// Mock useNavigate
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
 
-    expect(screen.getByText(/MAIN MENU/i)).toBeInTheDocument();
-    expect(screen.getByText(/SET DEFAULT RATES/i)).toBeInTheDocument();
-    expect(screen.getByText(/PAYROLL HISTORY/i)).toBeInTheDocument();
-    expect(screen.getByText(/CALCULATE PAYROLL/i)).toBeInTheDocument();
-    expect(screen.getByText(/BACK/i)).toBeInTheDocument();
-    expect(screen.getByText(/LOGOUT/i)).toBeInTheDocument();
-  });
+beforeEach(() => {
+  mockNavigate.mockClear();
+  sessionStorage.clear();
+  sessionStorage.setItem('userValid', 'true');
+});
+
+test('renders all navigation buttons and triggers navigation', () => {
+  render(
+    <MemoryRouter>
+      <Header />
+    </MemoryRouter>
+  );
+
+  // Check each button is rendered and simulate click
+  fireEvent.click(screen.getByText('MAIN MENU'));
+  expect(mockNavigate).toHaveBeenCalledWith('/MainMenu');
+
+  fireEvent.click(screen.getByText('SET DEFAULT RATES'));
+  expect(mockNavigate).toHaveBeenCalledWith('/SetDefaults');
+
+  fireEvent.click(screen.getByText('PAYROLL HISTORY'));
+  expect(mockNavigate).toHaveBeenCalledWith('/SearchEmployee/ViewPayrollHistory');
+
+  fireEvent.click(screen.getByText('CALCULATE PAYROLL'));
+  expect(mockNavigate).toHaveBeenCalledWith('/SearchEmployee/CalculatePayroll');
+
+  fireEvent.click(screen.getByText('ADD EMPLOYEE'));
+  expect(mockNavigate).toHaveBeenCalledWith('/AddEmployee');
+
+  fireEvent.click(screen.getByText('EDIT EMPLOYEE'));
+  expect(mockNavigate).toHaveBeenCalledWith('/EditEmployee');
+
+  fireEvent.click(screen.getByText('BACK'));
+  expect(mockNavigate).toHaveBeenCalledWith(-1);
+
+  fireEvent.click(screen.getByText('EXIT'));
+  expect(mockNavigate).toHaveBeenCalledWith('/');
+  expect(sessionStorage.getItem('userValid')).toBeNull(); // session cleared
 });

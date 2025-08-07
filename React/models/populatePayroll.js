@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 
 const {
   Employee,
-  Attendance,
   Payroll,
   Account,
   Company,
@@ -75,6 +74,15 @@ async function populateDatabase() {
         await Config.create(rate);
         console.log("Database: Inserted config for company " + rate.company + '.');
       }
+
+      /*
+      await Config.create({
+        standardRate: 645,
+        holidayRate: 800,
+        weekendRate: 700
+      });
+      */
+      console.log("Database: Inserted payroll config.");
       //======================================================
 
 
@@ -104,6 +112,7 @@ async function populateDatabase() {
 
       // 2) random allowances
       const allowances = {
+        overtimePay: randomInt(100, 500),
         mealAllowance: randomInt(100, 500),
         birthdayBonus: randomInt(0, 1000),
         incentives: randomInt(0, 2000),
@@ -123,7 +132,8 @@ async function populateDatabase() {
         pagIbig: randomInt(100, 500),
         healthCard: randomInt(50, 200),
         cashAdvance: randomInt(0, 1000),
-        lateAbsent: randomInt(0, 300),
+        lateHours: randomInt(0, 300),
+        absentDays: randomInt(0, 300),
         otherDeductions: randomInt(0, 300)
       };
       const totalDeductions = Object.values(deductions).reduce((a, b) => a + b, 0);
@@ -157,9 +167,7 @@ async function populateDatabase() {
         }
       }
   }
-
       await seedPayroll().catch(console.error);
-
       console.log('Database: Population function completed');
     } catch (error) {
       console.error('Database: Error populating database', error);
@@ -167,3 +175,4 @@ async function populateDatabase() {
 }
 
 module.exports = populateDatabase;
+
