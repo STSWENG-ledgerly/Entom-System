@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './DeductionsInfo.module.css';
 
 const checkNumberInput = (e, setState, field) => {

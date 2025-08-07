@@ -14,6 +14,7 @@ const {
 const sampleCompanies = require("./sampleData/sampleCompanies.js");
 const { initializeAccount, getCompanyID } = require("./sampleData/sampleAccounts");
 const { initializeEmployee } = require("./sampleData/sampleEmployees.js");
+const { initializeRates } = require("./sampleData/sampleRates.js");
 
 async function dropDatabase() {
     try {
@@ -67,6 +68,12 @@ async function populateDatabase() {
       //======================================================
       
       //========================Config========================
+      const sampleRates = await initializeRates();
+
+      for (const rate of sampleRates){
+        await Config.create(rate);
+        console.log("Database: Inserted config for company " + rate.company + '.');
+      }
       /*
       await Config.create({
         standardRate: 645,
