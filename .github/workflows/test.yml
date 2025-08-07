@@ -49,7 +49,7 @@ jobs:
         if: false
 
       - name: Run All Tests Locally (start app + run tests + teardown)
-        run: npm run test:allLocal
+        run: npm run test:allGHLocal
         working-directory: React
         if: true
 
