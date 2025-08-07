@@ -8,8 +8,13 @@ export const calculatePayroll = (payrollInfo = {}, deductions = {}, config = {})
   const otMultiplier    = toNumber(config.overtimeMultiplier);
 
   // Derived rates
-  const hourlyRate   = basic / (workingDays * workHoursPerDay);
-  const dailyRate    = basic / workingDays;
+  const hourlyRate = (workingDays && workHoursPerDay)
+    ? basic / (workingDays * workHoursPerDay)
+    : 0;
+
+  const dailyRate = workingDays
+    ? basic / workingDays
+    : 0;
   const overtimeRate = hourlyRate * otMultiplier;
 
   // Overtime
