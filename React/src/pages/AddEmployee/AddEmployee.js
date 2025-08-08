@@ -35,7 +35,10 @@ const AddEmployee = () => {
       [name]: value
     }));
   };
-
+  function generateEmployeeId() {
+    const randomNum = Math.floor(10000000 + Math.random() * 90000000); // 8 digits
+    return `EMP${randomNum}`;
+  }
   const handeAddEmployeeButton = async () => {
 
     const companyId = sessionStorage.getItem('company');
@@ -46,7 +49,7 @@ const AddEmployee = () => {
     }
 
     const employeeData = {
-      employee_id: `EMP${Date.now()}`,
+      employee_id: generateEmployeeId(),
       company: companyId,
       fname: fName,
       middleName,
