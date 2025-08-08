@@ -3,9 +3,11 @@ import { BASE_URL } from '../../ConfigContext';
 import global from '../../global.module.css';
 import Header from '../_header/Header';
 import Sidebar from '../_sidebar/Sidebar';
+import { useNavigate } from 'react-router-dom'; 
 import styles from './EditCompanyRate.module.css';
 
 const EditCompanyRate = () => {
+  const navigate = useNavigate(); 
   const companyId = sessionStorage.getItem('company');
   const [overtimeMultiplier, setOvertimeMultiplier] = useState('');
   const [workHoursPerDay, setWorkHoursPerDay] = useState('');
@@ -80,22 +82,13 @@ const EditCompanyRate = () => {
         body: JSON.stringify(data),
       });
       const result = await response.json();
-      if (response.ok) {
-        alert('✅ Company rates updated successfully!');
-      } else {
-        alert(`❌ Failed to update rates: ${result.error}`);
-      }
+    
     } catch (error) {
       console.error('Error updating rates:', error);
-      alert('Error updating company rates');
     } finally {
       setSaving(false);
     }
   };
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <div className={global.wrapper}>
@@ -103,8 +96,6 @@ const EditCompanyRate = () => {
       <div>
         <Header />
         <div className={global.mainContent}>
-          {/* Removed the title and companyName JSX */}
-
           <div className={styles.rateContainer}>
             <div className={styles.rateBox}>
               <h3>Company Rate Configuration</h3>
@@ -167,16 +158,23 @@ const EditCompanyRate = () => {
             </div>
           </div>
 
-          <div className={styles.buttonContainer}>
-            <button
-              id="save-rates-btn"
-              className={styles.saveButton}
+         <div className={styles.buttonContainer}>
+            <button 
+              id="save-rates-btn" 
+              className={styles.saveButton} 
               onClick={handleSaveRates}
               disabled={saving}
             >
               {saving ? 'Saving...' : 'Save Rates'}
             </button>
-            {/* Removed Cancel button */}
+            
+            <button 
+              className={styles.cancelButton} 
+              onClick={() => navigate('/MainMenu')}
+              disabled={saving}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>
