@@ -29,7 +29,7 @@ export const ConfigProvider = ({ children }) => {
       const companyId = sessionStorage.getItem('company');
       if (!companyId) return;
 
-      fetch(`${BASE_URL}/getCompanyRates?companyID=${companyId}`)
+      fetch(`${BASE_URL}/getCompany/${companyId}`)
         .then(res => {
           if (!res.ok) throw new Error(`Server error: ${res.status}`);
           return res.json();
