@@ -716,6 +716,7 @@ app.post('/updateCompanyRates', async (req, res) => {
 
 
 
+
 /* app.listen(port, async function() {
   await database();
   console.log(`Server: Running on http://localhost:${port}`);
