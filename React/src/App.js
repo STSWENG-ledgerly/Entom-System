@@ -12,6 +12,7 @@ import MainMenu from './pages/MainMenu/MainMenu';
 import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import SetDefaults from './pages/SetDefaults/SetDefaults';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
+import EditCompanyRate from './pages/EditCompanyRate/EditCompanyRate.js';
 import ProtectedRoutes from './ProtectedRoutes';
 
 
@@ -36,7 +37,7 @@ function App() {
               <Route path="/AddEmployee" element={<AddEmployee />} />
               <Route path="/EditEmployee" element={<EditEmployee />} />
               <Route path="/EditEmployee/:id" element={<EditEmployeeForm />} />
-
+              <Route path="/EditCompanyRate" element={<EditCompanyRate />} />
             </Route>
 
           </Routes>
