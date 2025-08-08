@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../ConfigContext';
 import global from '../../global.module.css';
 import Header from '../_header/Header';
@@ -13,13 +12,13 @@ const EditCompanyRate = () => {
   const [workingDaysPerMonth, setWorkingDaysPerMonth] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
   useEffect(() => {
     fetchCurrentRates();
   }, []);
 
   const fetchCurrentRates = async () => {
     try {
-      const companyId = sessionStorage.getItem('company');
       if (!companyId || companyId.length !== 24) {
         alert('Company ID is missing or invalid. Please log in again.');
         return;
@@ -43,7 +42,6 @@ const EditCompanyRate = () => {
   };
 
   const handleSaveRates = async () => {
-    const companyId = sessionStorage.getItem('company');
     if (!companyId || companyId.length !== 24) {
       alert('Company ID is missing or invalid. Please log in again.');
       return;
@@ -71,7 +69,7 @@ const EditCompanyRate = () => {
       company: companyId,
       overtimeMultiplier: Number(overtimeMultiplier),
       workHoursPerDay: Number(workHoursPerDay),
-      workingDaysPerMonth: Number(workingDaysPerMonth)
+      workingDaysPerMonth: Number(workingDaysPerMonth),
     };
 
     setSaving(true);
@@ -79,7 +77,7 @@ const EditCompanyRate = () => {
       const response = await fetch(`${BASE_URL}/updateCompanyRates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       const result = await response.json();
       if (response.ok) {
@@ -96,110 +94,94 @@ const EditCompanyRate = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>; // Keep your spinner UI as before
+    return <p>Loading...</p>;
   }
 
- return (
-  <div className={global.wrapper}>
-    <Sidebar />
-    <div>
-      <Header />
-      <div className={global.mainContent}>
-        <h1><span className={global.title}>{title}</span></h1>
-        
-        {companyName && (
-          <div className={styles.companyInfo}>
-            <h2>Company: <span className={styles.companyName}>{companyName}</span></h2>
+  return (
+    <div className={global.wrapper}>
+      <Sidebar />
+      <div>
+        <Header />
+        <div className={global.mainContent}>
+          {/* Removed the title and companyName JSX */}
+
+          <div className={styles.rateContainer}>
+            <div className={styles.rateBox}>
+              <h3>Company Rate Configuration</h3>
+              <div className={styles.inputContainer}>
+                <div className={styles.inputGroup}>
+                  <label htmlFor="overtimeMultiplier">Overtime Multiplier</label>
+                  <input
+                    id="overtimeMultiplier"
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    placeholder="Enter overtime multiplier"
+                    value={overtimeMultiplier}
+                    onChange={(e) => setOvertimeMultiplier(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label htmlFor="workHoursPerDay">Work Hours Per Day</label>
+                  <input
+                    id="workHoursPerDay"
+                    type="number"
+                    step="1"
+                    min="1"
+                    placeholder="Enter work hours per day"
+                    value={workHoursPerDay}
+                    onChange={(e) => setWorkHoursPerDay(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label htmlFor="workingDaysPerMonth">Working Days Per Month</label>
+                  <input
+                    id="workingDaysPerMonth"
+                    type="number"
+                    step="1"
+                    min="1"
+                    placeholder="Enter working days per month"
+                    value={workingDaysPerMonth}
+                    onChange={(e) => setWorkingDaysPerMonth(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.ratePreview}>
+              <h4>Rate Preview</h4>
+              <div className={styles.previewItem}>
+                <span>Overtime Multiplier:</span>
+                <span>{Number(overtimeMultiplier || 1).toFixed(2)}</span>
+              </div>
+              <div className={styles.previewItem}>
+                <span>Work Hours Per Day:</span>
+                <span>{Number(workHoursPerDay || 8)}</span>
+              </div>
+              <div className={styles.previewItem}>
+                <span>Working Days Per Month:</span>
+                <span>{Number(workingDaysPerMonth || 22)}</span>
+              </div>
+            </div>
           </div>
-        )}
 
-        <div className={styles.rateContainer}>
-          <div className={styles.rateBox}>
-            <h3>Company Rate Configuration</h3>
-            <div className={styles.inputContainer}>
-
-              <div className={styles.inputGroup}>
-                <label htmlFor="overtimeMultiplier">Overtime Multiplier</label>
-                <input 
-                  id="overtimeMultiplier" 
-                  type="number" 
-                  step="0.01" 
-                  min="1"
-                  placeholder="Enter overtime multiplier" 
-                  value={overtimeMultiplier} 
-                  onChange={(e) => setOvertimeMultiplier(e.target.value)} 
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label htmlFor="workHoursPerDay">Work Hours Per Day</label>
-                <input 
-                  id="workHoursPerDay" 
-                  type="number" 
-                  step="1" 
-                  min="1"
-                  placeholder="Enter work hours per day" 
-                  value={workHoursPerDay} 
-                  onChange={(e) => setWorkHoursPerDay(e.target.value)} 
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label htmlFor="workingDaysPerMonth">Working Days Per Month</label>
-                <input 
-                  id="workingDaysPerMonth" 
-                  type="number" 
-                  step="1" 
-                  min="1"
-                  placeholder="Enter working days per month" 
-                  value={workingDaysPerMonth} 
-                  onChange={(e) => setWorkingDaysPerMonth(e.target.value)} 
-                />
-              </div>
-
-            </div>
-          </div>
-
-          <div className={styles.ratePreview}>
-            <h4>Rate Preview</h4>
-            <div className={styles.previewItem}>
-              <span>Overtime Multiplier:</span>
-              <span>{Number(overtimeMultiplier || 1).toFixed(2)}</span>
-            </div>
-            <div className={styles.previewItem}>
-              <span>Work Hours Per Day:</span>
-              <span>{Number(workHoursPerDay || 8)}</span>
-            </div>
-            <div className={styles.previewItem}>
-              <span>Working Days Per Month:</span>
-              <span>{Number(workingDaysPerMonth || 22)}</span>
-            </div>
+          <div className={styles.buttonContainer}>
+            <button
+              id="save-rates-btn"
+              className={styles.saveButton}
+              onClick={handleSaveRates}
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : 'Save Rates'}
+            </button>
+            {/* Removed Cancel button */}
           </div>
         </div>
-
-        <div className={styles.buttonContainer}>
-          <button 
-            id="save-rates-btn" 
-            className={styles.saveButton} 
-            onClick={handleSaveRates}
-            disabled={saving}
-          >
-            {saving ? 'Saving...' : 'Save Rates'}
-          </button>
-          
-          <button 
-            className={styles.cancelButton} 
-            onClick={() => navigate('/MainMenu')}
-            disabled={saving}
-          >
-            Cancel
-          </button>
-        </div>
-
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default EditCompanyRate;
