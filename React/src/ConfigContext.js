@@ -24,27 +24,39 @@ export const ConfigProvider = ({ children }) => {
     }
     }, [username]);
 
-  useEffect(() => {
-      const companyId = sessionStorage.getItem('company');
-      if (!companyId) return;
+useEffect(() => {
+  const companyId = sessionStorage.getItem('company');
+  console.log('Company ID:', companyId);
 
-      fetch(`${BASE_URL}/getCompanyRates?companyID=${companyId}`)
-        .then(res => {
-          if (!res.ok) throw new Error(`Server error: ${res.status}`);
-          return res.json();
-        })
-        .then(data => {
-          setConfig(prev => ({
-            ...prev,
-            overtimeMultiplier: Number(data.overtimeMultiplier) || prev.overtimeMultiplier,
-            workHoursPerDay: Number(data.workHoursPerDay) || prev.workHoursPerDay,
-            workingDaysPerMonth: Number(data.workingDaysPerMonth) || prev.workingDaysPerMonth,
-          }));
-        })
-        .catch(err => {
-          console.error("Error fetching company config:", err.message);
-        });
-    }, []);
+  if (!companyId) {
+    console.warn('No company ID found in sessionStorage');
+    return;
+  }
+
+  if (companyId.length !== 24) {
+    console.warn('Company ID format looks invalid:', companyId);
+    return;
+  }
+
+  fetch(`${BASE_URL}/getCompanyRates?companyID=${companyId}`)
+    .then(res => {
+      console.log('Response status:', res.status);
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      console.log('Fetched company rates:', data);
+      setConfig(prev => ({
+        ...prev,
+        overtimeMultiplier: Number(data.overtimeMultiplier) || prev.overtimeMultiplier,
+        workHoursPerDay: Number(data.workHoursPerDay) || prev.workHoursPerDay,
+        workingDaysPerMonth: Number(data.workingDaysPerMonth) || prev.workingDaysPerMonth,
+      }));
+    })
+    .catch(err => {
+      console.error("Error fetching company config:", err.message);
+    });
+}, []);
 
   useEffect(() => {
     if (!selectedEmployeeId) {
