@@ -656,62 +656,62 @@ app.get('/getCompanyRates', async (req, res) => {
   try {
     const { companyID } = req.query;
     if (!companyID) {
-      return res
-        .status(400)
-        .json({ error: 'Missing required query parameter `companyID`' });
+      return res.status(400).json({ error: 'Missing required query parameter `companyID`' });
     }
     if (!mongoose.Types.ObjectId.isValid(companyID)) {
-      return res
-        .status(400)
-        .json({ error: 'Invalid `companyID` format' });
+      return res.status(400).json({ error: 'Invalid `companyID` format' });
     }
 
-    const config = await Config.findOne({ company: companyID }).lean();
-    if (!config) {
-      console.log("Config not found");
-      return res
-        .status(404)
-        .json({ error: `No rate configuration found for company ${companyID}` });
+    // Fetch company info directly
+    const company = await Company.findById(companyID).lean();
+    if (!company) {
+      return res.status(404).json({ error: `Company not found with id ${companyID}` });
     }
 
     const rates = {
-      standard: config.standardRate,
-      holiday:  config.holidayRate,
-      weekend:  config.weekendRate
+      overtimeMultiplier: company.overtimeMultiplier || 1.25,
+      workHoursPerDay: company.workHoursPerDay || 8,
+      workingDaysPerMonth: company.workingDaysPerMonth || 22
     };
 
     return res.status(200).json(rates);
   } catch (err) {
     console.error('getCompanyRates error:', err);
-    return res
-      .status(500)
-      .json({ error: 'Internal server error in getCompanyRates' });
+    return res.status(500).json({ error: 'Internal server error in getCompanyRates' });
   }
 });
 
 app.post('/updateCompanyRates', async (req, res) => {
   try {
-    // directly pull out the properties your client sent
-    const { company, standardRate, holidayRate, weekendRate } = req.body;
+    const { company, overtimeMultiplier, workHoursPerDay, workingDaysPerMonth } = req.body;
 
-    const config = await Config.findOne({ company });
-    if (!config){
-      return res.status(404).json({ error: 'Config not found' });
+    if (!company || !mongoose.Types.ObjectId.isValid(company)) {
+      return res.status(400).json({ error: 'Invalid or missing company ID' });
     }
 
-    // update and save
-    config.standardRate = standardRate;
-    config.holidayRate  = holidayRate;
-    config.weekendRate  = weekendRate;
-    await config.save();
+    // Find company document
+    const companyDoc = await Company.findById(company);
+    if (!companyDoc) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
 
-    return res.json({ message: 'Config updated successfully' });
+    // Validate input (optional but recommended)
+    if (overtimeMultiplier === undefined || workHoursPerDay === undefined || workingDaysPerMonth === undefined) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    companyDoc.overtimeMultiplier = Number(overtimeMultiplier);
+    companyDoc.workHoursPerDay = Number(workHoursPerDay);
+    companyDoc.workingDaysPerMonth = Number(workingDaysPerMonth);
+
+    await companyDoc.save();
+
+    return res.json({ message: 'Company rates updated successfully' });
   } catch (error) {
-    console.error('Error updating config:', error);
-    res.status(500).json({ error: 'Failed to update config', details: error.message });
+    console.error('Error updating company rates:', error);
+    res.status(500).json({ error: 'Failed to update company rates', details: error.message });
   }
 });
-
 
 
 
