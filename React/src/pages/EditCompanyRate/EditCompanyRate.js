@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './EditCompanyRate.module.css';
 
 const EditCompanyRate = () => {
-  const navigate = useNavigate(); 
+  
   const companyId = sessionStorage.getItem('company');
   const [overtimeMultiplier, setOvertimeMultiplier] = useState('');
   const [workHoursPerDay, setWorkHoursPerDay] = useState('');
@@ -29,31 +29,11 @@ const EditCompanyRate = () => {
       const response = await fetch(`${BASE_URL}/getCompanyRates?companyID=${companyId}`);
       if (response.ok) {
         const data = await response.json();
-
-        setOvertimeMultiplier(
-          data.overtimeMultiplier !== undefined && data.overtimeMultiplier !== null
-            ? data.overtimeMultiplier
-            : 1.25
-        );
-
-        setWorkHoursPerDay(
-          data.workHoursPerDay !== undefined && data.workHoursPerDay !== null
-            ? data.workHoursPerDay
-            : 8
-        );
-
-        setWorkingDaysPerMonth(
-          data.workingDaysPerMonth !== undefined && data.workingDaysPerMonth !== null
-            ? data.workingDaysPerMonth
-            : 22
-        );
-
+        setOvertimeMultiplier(data.overtimeMultiplier || '');
+        setWorkHoursPerDay(data.workHoursPerDay || '');
+        setWorkingDaysPerMonth(data.workingDaysPerMonth || '');
       } else {
         console.log('No existing data found, starting with defaults');
-        // Set defaults here as well
-        setOvertimeMultiplier(1.25);
-        setWorkHoursPerDay(8);
-        setWorkingDaysPerMonth(22);
       }
     } catch (error) {
       console.error('Error fetching company data:', error);
