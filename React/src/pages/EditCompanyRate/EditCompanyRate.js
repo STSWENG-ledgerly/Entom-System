@@ -168,13 +168,13 @@ const EditCompanyRate = () => {
               {saving ? 'Saving...' : 'Save Rates'}
             </button>
             
-            <button 
+            {/* <button 
               className={styles.cancelButton} 
               onClick={() => navigate('/MainMenu')}
               disabled={saving}
             >
               Cancel
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
