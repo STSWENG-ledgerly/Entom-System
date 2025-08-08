@@ -570,8 +570,26 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
     if (!employee) return res.status(404).json({ error: 'Employee not found' });
 
     res.json({
+      _id: employee._id,
+      employee_id: employee.employee_id,
+      fname: employee.fname,
+      middleName: employee.middleName || '',
+      lname: employee.lname,
+      phone: employee.phone || '',
+      email: employee.email || '',
+      department: employee.department || '',
+      position: employee.position || '',
+      designation: employee.designation || '',
       basicSalary: employee.basicSalary,
       overtimeRate: employee.overtimeRate,
+      dateHired: employee.dateHired,
+      bankAccount: {
+        bankName: employee.bankAccount?.bankName || '',
+        accountNumber: employee.bankAccount?.accountNumber || '',
+        branch: employee.bankAccount?.branch || ''
+      },
+      status: employee.status,
+      company: employee.company
     });
   } catch (err) {
     console.error("Error fetching employee details:", err);
