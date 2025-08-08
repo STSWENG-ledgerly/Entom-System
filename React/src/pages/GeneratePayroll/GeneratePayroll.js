@@ -76,12 +76,6 @@ const GeneratePayroll = () => {
         total: 0
     });
 
-    const [companyConfig, setCompanyConfig] = useState({
-    workingDaysPerMonth: 22,
-    workHoursPerDay: 8,
-    overtimeMultiplier: 1.25,
-    });
-
 
     const otHours = parseFloat(payrollInfo.ot) || 0;
     const basic = parseFloat(config.basic) || 0;
@@ -310,13 +304,7 @@ const GeneratePayroll = () => {
     };
 
     const showPayrollResults = () => {
-        const combinedConfig = {
-            basic: Number(config.basic) || 0,               // from employee config
-            workingDaysPerMonth: companyConfig.workingDaysPerMonth,
-            workHoursPerDay: companyConfig.workHoursPerDay,
-            overtimeMultiplier: companyConfig.overtimeMultiplier,
-        };
-        setResults(calculatePayroll(payrollInfo, deductions, combinedConfig));
+        setResults(calculatePayroll(payrollInfo, deductions, config));
         setShowResults(true);
         setShowDownloadButtons(false); // Reset the visibility of download/email buttons
         setSavedStatus('');
