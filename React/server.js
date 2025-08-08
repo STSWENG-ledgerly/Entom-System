@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
+const { isValidObjectId } = require('mongoose');
 require('dotenv').config();
 
 const port = process.env.PORT || 4000;
@@ -142,7 +143,7 @@ app.get('/', (req, res) => {
 
 // FIXED: Updated to use companyID directly
 // FIXED: Updated to use companyID directly and handle ObjectId format
-app.get('/employee', async (req, res) => {
+/* app.get('/employee', async ( res) => {
   const { company: companyId } = req.query; 
 
   
@@ -174,6 +175,23 @@ app.get('/employee', async (req, res) => {
   } catch (err) {
     console.error("Error in GET /employee:", err);
     res.status(500).json({ error: 'Failed to fetch employees' });
+  }
+}); */
+
+app.get('/employee', async (req, res) => {
+  try {
+    const { company } = req.query;
+
+    if (!company || !isValidObjectId(company)) {
+      return res.status(400).json({ error: 'Valid company (ObjectId) is required' });
+    }
+
+    const employees = await Employee.find({ company }).lean();
+
+    return res.json(employees);
+  } catch (err) {
+    console.error('Error in GET /employee:', err);
+    return res.status(500).json({ error: 'Failed to fetch employees' });
   }
 });
 
