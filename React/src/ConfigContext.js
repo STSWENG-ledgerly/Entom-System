@@ -24,8 +24,7 @@ export const ConfigProvider = ({ children }) => {
     }
     }, [username]);
 
-  // Mount Company rates
-    useEffect(() => {
+  useEffect(() => {
       const companyId = sessionStorage.getItem('company');
       if (!companyId) return;
 
@@ -37,16 +36,15 @@ export const ConfigProvider = ({ children }) => {
         .then(data => {
           setConfig(prev => ({
             ...prev,
-            // only overwrite if the API returned a value
-            workingDaysPerMonth: data.workingDaysPerMonth  ?? prev.workingDaysPerMonth,
-            workHoursPerDay:      data.workHoursPerDay     ?? prev.workHoursPerDay,
-            overtimeMultiplier:   data.overtimeMultiplier  ?? prev.overtimeMultiplier,
+            overtimeMultiplier: Number(data.overtimeMultiplier) || prev.overtimeMultiplier,
+            workHoursPerDay: Number(data.workHoursPerDay) || prev.workHoursPerDay,
+            workingDaysPerMonth: Number(data.workingDaysPerMonth) || prev.workingDaysPerMonth,
           }));
         })
         .catch(err => {
           console.error("Error fetching company config:", err.message);
         });
-    }, []); 
+    }, []);
 
   useEffect(() => {
     if (!selectedEmployeeId) {
