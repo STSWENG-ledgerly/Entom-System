@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const connectToMongo = require('./src/scripts/conn.js');
 const populateDatabase = require("./models/populatePayroll.js");
+const { isValidObjectId } = require('mongoose');
 require('dotenv').config();
 
 const port = process.env.PORT || 4000;
@@ -142,7 +143,7 @@ app.get('/', (req, res) => {
 
 // FIXED: Updated to use companyID directly
 // FIXED: Updated to use companyID directly and handle ObjectId format
-app.get('/employee', async (req, res) => {
+/* app.get('/employee', async ( res) => {
   const { company: companyId } = req.query; 
 
   
@@ -174,6 +175,23 @@ app.get('/employee', async (req, res) => {
   } catch (err) {
     console.error("Error in GET /employee:", err);
     res.status(500).json({ error: 'Failed to fetch employees' });
+  }
+}); */
+
+app.get('/employee', async (req, res) => {
+  try {
+    const { company } = req.query;
+
+    if (!company || !isValidObjectId(company)) {
+      return res.status(400).json({ error: 'Valid company (ObjectId) is required' });
+    }
+
+    const employees = await Employee.find({ company }).lean();
+
+    return res.json(employees);
+  } catch (err) {
+    console.error('Error in GET /employee:', err);
+    return res.status(500).json({ error: 'Failed to fetch employees' });
   }
 });
 
@@ -552,8 +570,26 @@ app.get('/getEmployeeDetails/:id', async (req, res) => {
     if (!employee) return res.status(404).json({ error: 'Employee not found' });
 
     res.json({
+      _id: employee._id,
+      employee_id: employee.employee_id,
+      fname: employee.fname,
+      middleName: employee.middleName || '',
+      lname: employee.lname,
+      phone: employee.phone || '',
+      email: employee.email || '',
+      department: employee.department || '',
+      position: employee.position || '',
+      designation: employee.designation || '',
       basicSalary: employee.basicSalary,
       overtimeRate: employee.overtimeRate,
+      dateHired: employee.dateHired,
+      bankAccount: {
+        bankName: employee.bankAccount?.bankName || '',
+        accountNumber: employee.bankAccount?.accountNumber || '',
+        branch: employee.bankAccount?.branch || ''
+      },
+      status: employee.status,
+      company: employee.company
     });
   } catch (err) {
     console.error("Error fetching employee details:", err);
