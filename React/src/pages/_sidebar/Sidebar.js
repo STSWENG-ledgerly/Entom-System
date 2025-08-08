@@ -11,7 +11,7 @@ const Header = () => {
   };
 
   const handleDefa = () => {
-    navigate('/SetDefaults');
+    navigate('/EditCompanyRate');
   };
 
   const handleHist = () => {

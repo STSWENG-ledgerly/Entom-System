@@ -13,7 +13,8 @@ import SearchEmployee from './pages/SearchEmployee/SearchEmployee';
 import SetDefaults from './pages/SetDefaults/SetDefaults';
 import ViewPayment from './pages/ViewPayment/ViewPayment';
 import LandingPage from './pages/LandingPage/LandingPage.js';
-import ProtectedRoutes from './ProtectedRoutes'
+import EditCompanyRate from './pages/EditCompanyRate/EditCompanyRate.js';
+import ProtectedRoutes from './ProtectedRoutes';
 
 function App() {
   // setup all available/possible links within the app
@@ -36,6 +37,7 @@ function App() {
               <Route path="/AddEmployee" element={<AddEmployee />} />
               <Route path="/EditEmployee" element={<EditEmployee />} />
               <Route path="/EditEmployee/:id" element={<EditEmployeeForm />} />
+              <Route path="/EditCompanyRate" element={<EditCompanyRate />} />
             </Route>
 
           </Routes>
