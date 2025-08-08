@@ -7,6 +7,7 @@ import Sidebar from '../_sidebar/Sidebar';
 import styles from './EditCompanyRate.module.css';
 
 const EditCompanyRate = () => {
+  const companyId = sessionStorage.getItem('company');
   const [overtimeMultiplier, setOvertimeMultiplier] = useState('');
   const [workHoursPerDay, setWorkHoursPerDay] = useState('');
   const [workingDaysPerMonth, setWorkingDaysPerMonth] = useState('');
