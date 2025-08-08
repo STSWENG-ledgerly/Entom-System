@@ -106,10 +106,14 @@ const Employee = mongoose.model('Employee', employeeSchema);
 const Payroll = mongoose.model('Payroll', payrollSchema);
 const Account = mongoose.model('Account', accountSchema);
 const Company = mongoose.model('Company', companySchema);
+const Config = mongoose.model('Config', configSchema);
+
 
 module.exports = {
   Employee,
   Payroll,
   Account,
   Company,
+  Config
 };
+
